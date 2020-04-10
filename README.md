@@ -13,8 +13,6 @@ npm install joey-the-differ
 ```js
 import JoeyTheDiffer from 'joey-the-differ';
 
-const joey = new JoeyTheDiffer();
-
 const currentBookData = {
   id: 42,
   title: 'The Prince',
@@ -62,8 +60,6 @@ const newBookData = {
 };
 
 const options = {
-  primitiveEquality: (source, target) => source === target,
-  verifySameTypes: true,
   okIfValuesAppear: false,
   blacklist: ['reviewsCount', 'merchants.name'],
   diffs: {
@@ -88,7 +84,10 @@ const options = {
   },
 };
 
+const joey = new JoeyTheDiffer(options);
+
 const results = joey.diff(currentBookData, newBookData, options);
+
 console.log(results);
 
 /*
