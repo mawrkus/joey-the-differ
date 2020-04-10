@@ -713,12 +713,14 @@ describe('JoeyTheDiffer', () => {
               areEqual: source <= target,
               meta: {
                 reason: 'number of reviews decreased',
+                difference: target - source,
               },
             }),
             'starsCount': (source, target) => ({
               areEqual: source <= target,
               meta: {
                 reason: 'number of stars decreased',
+                difference: target - source,
               },
             }),
             'genres\\.(\\d+)\\.name': (source, target) => ({
@@ -777,6 +779,7 @@ describe('JoeyTheDiffer', () => {
             target: 1,
             meta: {
               reason: 'number of stars decreased',
+              difference: -8561,
             },
           },
         ]);
