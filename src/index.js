@@ -8,11 +8,13 @@ class JoeyTheDiffer {
    * @param {Object} [options.primitiveEquality=(s, t) => s === t]
    * @param {Object} [options.differs={}]
    * @param {string[]} [options.blacklist=[]]
+   * @param {boolean} [options.allowNewTargetValues=false
    */
   constructor({
     primitiveEquality = (source, target) => source === target,
     differs = {},
     blacklist = [],
+    allowNewTargetValues = false,
   } = {}) {
     this.primitiveEquality = primitiveEquality;
 
@@ -23,6 +25,7 @@ class JoeyTheDiffer {
       }));
 
     this.blacklistRegexes = blacklist;
+    this.allowNewTargetValues = allowNewTargetValues;
   }
 
   /**
@@ -189,6 +192,10 @@ class JoeyTheDiffer {
         return this.diff(sourceValue, targetValue, newPath);
       })
       .filter(Boolean);
+
+    if (this.allowNewTargetValues) {
+      return flattenDeep(sourceResults);
+    }
 
     const targetResults = Object.entries(target)
       .map(([key, targetValue]) => {

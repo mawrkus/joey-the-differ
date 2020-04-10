@@ -66,6 +66,7 @@ const options = {
     'reviewsCount',
     'genres\\.(\\d+)\\.booksCount',
   ],
+  allowNewTargetValues: false,
   differs: {
     'publishedOn': (source, target) => ({
       areEqual: source == target, // eslint-disable-line eqeqeq

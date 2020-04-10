@@ -981,5 +981,130 @@ describe('JoeyTheDiffer', () => {
         ]);
       });
     });
+
+    describe('when allowing new values on target object', () => {
+      it('should return the proper array of differences', () => {
+        const options = {
+          allowNewTargetValues: true,
+          blacklist: [
+            'reviewsCount',
+            'genres\\.(\\d+)\\.booksCount',
+          ],
+          differs: {
+            'publishedOn': (source, target) => ({
+              areEqual: source == target, // eslint-disable-line eqeqeq
+              meta: {
+                reason: 'different publish years after loose comparison',
+              },
+            }),
+            'starsCount': (source, target) => ({
+              areEqual: source <= target,
+              meta: {
+                reason: 'number of stars decreased',
+              },
+            }),
+            'genres\\.(\\d+)\\.name': (source, target) => ({
+              areEqual: source.toLowerCase() === target.toLowerCase(),
+              meta: {
+                reason: 'different genre names in lower case',
+              },
+            }),
+          },
+        };
+
+        const joey = new JoeyTheDiffer(options);
+
+        const source = {
+          id: 42,
+          title: 'The Prince',
+          author: {
+            name: 'Niccolò',
+            surname: 'Machiavelli',
+            life: {
+              bornOn: '3 May 1469',
+              diedOn: '21 June 1527',
+            },
+          },
+          publishedOn: '1532',
+          reviewsCount: 9614,
+          starsCount: 8562,
+          genres: [{
+            id: 4,
+            name: 'classics',
+          }, {
+            id: 93,
+            name: 'philosophy',
+          }],
+        };
+
+        const target = {
+          id: 42,
+          title: 'The Prince',
+          author: {
+            name: 'Niccolò',
+            surname: 'Machiavelli',
+            life: {
+              diedOn: '21 June 1532',
+              bornIn: 'Firenze',
+            },
+          },
+          publishedOn: 1532,
+          starsCount: 1,
+          genres: [{
+            id: 4,
+            name: 'CLASSIC',
+          }, {
+            name: 'PHILOSOPHY',
+            booksCount: 843942,
+          }, {
+            id: 1,
+            name: 'HISTORY',
+          }],
+        };
+
+        const results = joey.diff(source, target);
+
+        expect(results).toEqual([
+          {
+            path: 'author.life.bornOn',
+            source: '3 May 1469',
+            meta: {
+              reason: 'value disappeared',
+            },
+          },
+          {
+            path: 'author.life.diedOn',
+            source: '21 June 1527',
+            target: '21 June 1532',
+            meta: {
+              reason: 'different strings',
+            },
+          },
+          {
+            path: 'starsCount',
+            source: 8562,
+            target: 1,
+            meta: {
+              reason: 'number of stars decreased',
+            },
+          },
+          {
+            path: 'genres.0.name',
+            source: 'classics',
+            target: 'CLASSIC',
+            meta: {
+              reason: 'different genre names in lower case',
+            },
+          },
+          {
+            path: 'genres.1.id',
+            source: 93,
+            meta: {
+              reason: 'value disappeared',
+            },
+          },
+        ]);
+      });
+    });
   });
 });
