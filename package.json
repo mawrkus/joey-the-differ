@@ -16,6 +16,7 @@
     "json",
     "diff",
     "difference",
+    "comparison",
     "compare"
   ],
   "engines": {
