@@ -155,8 +155,6 @@ console.log(results);
 */
 ```
 
-## Algorithm
-
 ## Contribute
 
 - Fork: `git clone https://github.com/mawrkus/node-package.git`
