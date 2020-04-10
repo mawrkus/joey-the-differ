@@ -698,5 +698,89 @@ describe('JoeyTheDiffer', () => {
         });
       });
     });
+
+    describe('when using custom differs', () => {
+      fit('should use them properly for diffing', () => {
+        const joey = new JoeyTheDiffer({
+          differs: {
+            'publishedOn': (source, target) => ({
+              areEqual: source == target, // eslint-disable-line eqeqeq
+              meta: {
+                reason: 'different publish year after loose comparison',
+              },
+            }),
+            'reviewsCount': (source, target) => ({
+              areEqual: source <= target,
+              meta: {
+                reason: 'number of reviews decreased',
+              },
+            }),
+            'starsCount': (source, target) => ({
+              areEqual: source <= target,
+              meta: {
+                reason: 'number of stars decreased',
+              },
+            }),
+            'genres\\.(\\d+)\\.name': (source, target) => ({
+              areEqual: source.toLowerCase() === target.toLowerCase(),
+              meta: {
+                reason: 'different genre names in lower case',
+              },
+            }),
+          },
+        });
+
+        const source = {
+          id: 42,
+          title: 'The Prince',
+          author: {
+            name: 'Niccolò',
+            surname: 'Machiavelli',
+          },
+          publishedOn: '1532',
+          reviewsCount: 9614,
+          starsCount: 8562,
+          genres: [{
+            id: 4,
+            name: 'classics',
+          }, {
+            id: 93,
+            name: 'philosophy',
+          }],
+        };
+
+        const target = {
+          id: 42,
+          title: 'The Prince',
+          author: {
+            name: 'Niccolò',
+            surname: 'Machiavelli',
+          },
+          publishedOn: 1532,
+          reviewsCount: 10000,
+          starsCount: 1,
+          genres: [{
+            id: 4,
+            name: 'CLASSICS',
+          }, {
+            id: 93,
+            name: 'PHILOSOPHY',
+          }],
+        };
+
+        const results = joey.diff(source, target);
+
+        expect(results).toEqual([
+          {
+            path: 'starsCount',
+            source: 8562,
+            target: 1,
+            meta: {
+              reason: 'number of stars decreased',
+            },
+          },
+        ]);
+      });
+    });
   });
 });

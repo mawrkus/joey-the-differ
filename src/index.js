@@ -6,20 +6,33 @@ class JoeyTheDiffer {
   /**
    * @param {Object} options
    * @param {Object} [options.primitiveEquality=(s, t) => s === t]
+   * @param {Object} [options.differs={}]
    */
   constructor({
     primitiveEquality = (source, target) => source === target,
+    differs = {},
   } = {}) {
     this.primitiveEquality = primitiveEquality;
+    this.customDiffers = Object.entries(differs)
+      .map(([regex, differ]) => ({
+        regex,
+        differ,
+      }));
   }
 
   /**
    * @param {*} source
    * @param {*} target
    * @param {Array} [path=[]] current path
-   * @param {Array}
+   * @return {Array}
    */
   diff(source, target, path = []) {
+    const customDiffer = this.findCustomDiffer(path);
+
+    if (customDiffer) {
+      return JoeyTheDiffer.customCompare(source, target, path, customDiffer);
+    }
+
     const sourceType = JoeyTheDiffer.getType(source);
 
     if (sourceType.isPrimitive) {
@@ -28,6 +41,41 @@ class JoeyTheDiffer {
     }
 
     return this.compareObjects(source, target, path);
+  }
+
+  /**
+   * @param {Array} path
+   * @return {Function|Null}
+   */
+  findCustomDiffer(path) {
+    const pathAsString = path.join('.');
+    const result = this.customDiffers.find(({ regex }) => (new RegExp(regex)).test(pathAsString));
+
+    return result
+      ? result.differ
+      : null;
+  }
+
+  /**
+   * @param {*} source
+   * @param {*} target
+   * @param {Array} path
+   * @param {Function} customDiffer
+   * @return {Array}
+   */
+  static customCompare(source, target, path, customDiffer) {
+    const { areEqual, meta } = customDiffer(source, target, path);
+
+    if (areEqual) {
+      return [];
+    }
+
+    return [{
+      path: path.join('.'),
+      source,
+      target,
+      meta,
+    }];
   }
 
   /**

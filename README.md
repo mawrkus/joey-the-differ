@@ -26,6 +26,7 @@ const currentBookData = {
   },
   publishedOn: '1532',
   reviewsCount: 9614,
+  starsCount: 8562,
   genres: [{
     id: 4,
     name: 'classics',
@@ -39,7 +40,7 @@ const newBookData = {
   id: 42,
   title: 'The Prince',
   author: {
-    name: 'Nicolas',
+    name: 'Niccolò',
     surname: 'Machiavelli',
     life: {
       diedOn: '21 June 1532',
@@ -47,38 +48,32 @@ const newBookData = {
     },
   },
   publishedOn: 1532,
-  starsCount: 8562,
+  starsCount: 1,
   genres: [{
     id: 4,
-    name: 'classic',
+    name: 'CLASSIC',
   }, {
-    name: 'philosophy',
+    name: 'PHILOSOPHY',
     booksCount: 843942,
   }, {
     id: 1,
-    name: 'history',
+    name: 'HISTORY',
   }],
 };
 
 const options = {
   blacklist: ['reviewsCount', 'merchants.name'],
   diffs: {
-    'author.surname': (source, target) => ({
-      areEqual: source.toLowercase() === target.toLowercase(),
-      meta: {
-        reason: 'different lowercase strings',
-      },
-    }),
-    'viewsCount': (source, target) => ({
+    'starsCount': (source, target) => ({
       areEqual: source <= target,
       meta: {
-        reason: 'value decreased',
+        reason: 'number of stars decreased',
       },
     }),
-    'merchants.certified': (source, target) => ({
-      areEqual: source == target,
+    'genres\\.(\\d+)\\.name': (source, target) => ({
+      areEqual: source.toLowerCase() === target.toLowerCase(),
       meta: {
-        reason: 'different values after loose comparison',
+        reason: 'different genre names in lower case',
       },
     }),
   },
@@ -92,14 +87,6 @@ console.log(results);
 
 /*
 [
-  {
-    path: 'author.name',
-    source: 'Niccolò',
-    target: 'Nicolas',
-    meta: {
-      reason: 'different strings',
-    },
-  },
   {
     path: 'author.life.bornOn',
     source: '3 May 1469',
@@ -141,11 +128,19 @@ console.log(results);
     },
   },
   {
+    path: 'starsCount',
+    source: 8562,
+    target: 1,
+    meta: {
+      reason: 'number of stars decreased',
+    },
+  },
+  {
     path: 'genres.0.name',
     source: 'classics',
-    target: 'classic',
+    target: 'CLASSIC',
     meta: {
-      reason: 'different strings',
+      reason: 'different genre names in lower case',
     },
   },
   {
@@ -167,15 +162,7 @@ console.log(results);
   {
     path: 'genres.2',
     source: undefined,
-    target: { id: 1, name: 'history' },
-    meta: {
-      reason: 'value appeared',
-    },
-  },
-  {
-    path: 'starsCount',
-    source: undefined,
-    target: 8562,
+    target: { id: 1, name: 'HISTORY' },
     meta: {
       reason: 'value appeared',
     },
