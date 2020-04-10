@@ -99,6 +99,7 @@ console.log(results);
   {
     path: 'author.life.bornOn',
     source: '3 May 1469',
+    target: undefined,
     meta: {
       reason: 'value disappeared',
     },
@@ -113,6 +114,7 @@ console.log(results);
   },
   {
     path: 'author.life.bornIn',
+    source: undefined,
     target: 'Firenze',
     meta: {
       reason: 'value appeared',
@@ -137,12 +139,14 @@ console.log(results);
   {
     path: 'genres.1.id',
     source: 93,
+    target: undefined,
     meta: {
       reason: 'value disappeared',
     },
   },
   {
     path: 'genres.2',
+    source: undefined,
     target: {
       id: 1,
       name: 'HISTORY',
