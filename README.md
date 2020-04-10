@@ -66,7 +66,13 @@ const options = {
     'reviewsCount',
     'genres\\.(\\d+)\\.booksCount',
   ],
-  diffs: {
+  differs: {
+    'publishedOn': (source, target) => ({
+      areEqual: source == target, // eslint-disable-line eqeqeq
+      meta: {
+        reason: 'different publish years after loose comparison',
+      },
+    }),
     'starsCount': (source, target) => ({
       areEqual: source <= target,
       meta: {
@@ -84,7 +90,7 @@ const options = {
 
 const joey = new JoeyTheDiffer(options);
 
-const results = joey.diff(currentBookData, newBookData, options);
+const results = joey.diff(currentBookData, newBookData);
 
 console.log(results);
 
@@ -93,7 +99,6 @@ console.log(results);
   {
     path: 'author.life.bornOn',
     source: '3 May 1469',
-    target: undefined,
     meta: {
       reason: 'value disappeared',
     },
@@ -108,18 +113,9 @@ console.log(results);
   },
   {
     path: 'author.life.bornIn',
-    source: undefined,
     target: 'Firenze',
     meta: {
       reason: 'value appeared',
-    },
-  },
-  {
-    path: 'publishedOn',
-    source: '1532',
-    target: 1532,
-    meta: {
-      reason: 'type changed from "string" to "number"',
     },
   },
   {
@@ -141,15 +137,16 @@ console.log(results);
   {
     path: 'genres.1.id',
     source: 93,
-    target: undefined,
     meta: {
       reason: 'value disappeared',
     },
   },
   {
     path: 'genres.2',
-    source: undefined,
-    target: { id: 1, name: 'HISTORY' },
+    target: {
+      id: 1,
+      name: 'HISTORY',
+    },
     meta: {
       reason: 'value appeared',
     },
