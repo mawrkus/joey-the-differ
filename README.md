@@ -173,19 +173,19 @@ console.log(changes);
 
 ### diff(source, target)
 
-Compares `source` to `target` by recursively visiting all `source` properties and diffing them with the corresponding properties in `target`. If a `blacklist` option was passed, the regular expressions are used to prevent diffing specific `source` properties identified by their path.
+Compares `source` to `target` by recursively visiting all `source` properties and diffing them with the corresponding properties in `target`. If a `blacklist` option was passed, it is used to prevent diffing specific `source` properties identified by their path.
 
-If `allowNewTargetProperties` was set to `true`, properties that exist in `target` but not in `source`will not appear in the results.
+If `allowNewTargetProperties` is set to `true`, the properties that exist in `target` but not in `source` don't appear in the changes.
 
-If custom differs were passed, they will be used to compare the `source` and `target` properties matched by the regular expressions provided.
+If custom differs are passed, they are used to compare the `source` and `target` properties matched by the regular expressions provided.
 
 All JSON primitive values will be compared using strict equality (`===`).
 
 ```js
-const results = joey.diff(source, target);
+const changes = joey.diff(source, target);
 ```
 
-`results` is an array of differences where each element is like:
+`changes` is an array of differences where each element is like:
 
 ```js
 {
