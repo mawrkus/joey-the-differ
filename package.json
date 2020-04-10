@@ -12,6 +12,12 @@
     "type": "git",
     "url": "git://github.com/mawrkus/joey-the-differ.git"
   },
+  "keywords": [
+    "json",
+    "diff",
+    "difference",
+    "compare"
+  ],
   "engines": {
     "node": ">= 10"
   },
