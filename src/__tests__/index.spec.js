@@ -9,6 +9,7 @@ describe('JoeyTheDiffer', () => {
   describe('#diff(source, target, [options])', () => {
     it('should return an array', () => {
       const joey = new JoeyTheDiffer();
+
       expect(joey.diff('1', '2')).toBeInstanceOf(Array);
     });
 
@@ -124,6 +125,93 @@ describe('JoeyTheDiffer', () => {
           const joey = new JoeyTheDiffer();
 
           expect(() => joey.diff(Symbol('?'), '?')).toThrow(TypeError);
+        });
+      });
+    });
+
+    describe('when source and target are objects', () => {
+      describe('for flat objects', () => {
+        describe('when all their properties are equal', () => {
+          it('should return an empty array', () => {
+            const joey = new JoeyTheDiffer();
+
+            const source = {
+              id: 42,
+              title: 'The Prince',
+              author: 'Niccolò Machiavelli',
+              publishedOn: '1532',
+            };
+
+            const target = {
+              id: 42,
+              title: 'The Prince',
+              author: 'Niccolò Machiavelli',
+              publishedOn: '1532',
+            };
+
+            const results = joey.diff(source, target);
+
+            expect(results).toEqual([]);
+          });
+        });
+
+        describe('when some of their properties are different', () => {
+          it('should return the proper array of differences', () => {
+            const joey = new JoeyTheDiffer();
+
+            const source = {
+              id: 42,
+              title: 'The Prince',
+              author: 'Niccolò Machiavelli',
+              publishedOn: '1532',
+              viewsCount: 9614,
+            };
+
+            const target = {
+              id: 42,
+              title: 'The Prince',
+              author: 'Nicolas Machiavelli',
+              publishedOn: 1532,
+              starsCount: 8562,
+            };
+
+            const results = joey.diff(source, target);
+
+            expect(results).toEqual([
+              {
+                path: 'author',
+                source: 'Niccolò Machiavelli',
+                target: 'Nicolas Machiavelli',
+                meta: {
+                  reason: 'different strings',
+                },
+              },
+              {
+                path: 'publishedOn',
+                source: '1532',
+                target: 1532,
+                meta: {
+                  reason: 'type changed from "string" to "number"',
+                },
+              },
+              {
+                path: 'viewsCount',
+                source: 9614,
+                target: undefined,
+                meta: {
+                  reason: 'value disappeared',
+                },
+              },
+              {
+                path: 'starsCount',
+                source: undefined,
+                target: 8562,
+                meta: {
+                  reason: 'value appeared',
+                },
+              },
+            ]);
+          });
         });
       });
     });

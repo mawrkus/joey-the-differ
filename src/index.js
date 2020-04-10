@@ -14,16 +14,22 @@ class JoeyTheDiffer {
   /**
    * @param {*} source
    * @param {*} target
-   * @param {string} [path=''] current path
+   * @param {Array} [path=[]] current path
+   * @param {Array}
    */
-  diff(source, target, path = '') {
+  diff(source, target, path = []) {
     const sourceType = JoeyTheDiffer.getType(source);
 
     if (sourceType.isPrimitive) {
-      return this.comparePrimitiveTypes(source, target, path, sourceType);
+      const results = this.comparePrimitiveTypes(source, target, path, sourceType);
+      return results === null ? [] : [results];
     }
 
-    return this.compareObjectTypes(source, target, path);
+    if (sourceType.name === 'object') {
+      return this.compareObjects(source, target, path);
+    }
+
+    return this.compareArrays(source, target, path);
   }
 
   /**
@@ -70,15 +76,15 @@ class JoeyTheDiffer {
   /**
    * @param {*} source
    * @param {*} target
-   * @param {string} path
+   * @param {Array} path
    * @param {Object} types
-   * @return {Array}
+   * @return {Null|Object}
    */
   comparePrimitiveTypes(source, target, path, sourceType) {
     const areEqual = this.primitiveEquality(source, target);
 
     if (areEqual) {
-      return [];
+      return null;
     }
 
     const targetType = JoeyTheDiffer.getType(target);
@@ -86,23 +92,79 @@ class JoeyTheDiffer {
       ? `different ${sourceType.name}s`
       : `type changed from "${sourceType.name}" to "${targetType.name}"`;
 
-    return [{
-      path,
+    return {
+      path: path.join('.'),
       source,
       target,
       meta: {
         reason,
       },
-    }];
+    };
   }
 
   /**
    * @param {*} source
    * @param {*} target
-   * @param {string} path
+   * @param {Array} path
    * @return {Array}
    */
-  compareObjectTypes(source, target, path) {
+  compareObjects(source, target, path) {
+    const sourceResults = Object.entries(source)
+      .map(([key, sourceValue]) => {
+        const targetValue = target[key];
+        const newPath = [...path, key];
+
+        if (typeof targetValue === 'undefined') {
+          return {
+            path: newPath.join('.'),
+            source: sourceValue,
+            target: targetValue,
+            meta: {
+              reason: 'value disappeared',
+            },
+          };
+        }
+
+        const sourceValueType = JoeyTheDiffer.getType(sourceValue);
+
+        if (sourceValueType.isPrimitive) {
+          return this.comparePrimitiveTypes(sourceValue, targetValue, newPath, sourceValueType);
+        }
+
+        return null;
+      })
+      .filter(Boolean);
+
+    const targetResults = Object.entries(target)
+      .map(([key, targetValue]) => {
+        const sourceValue = source[key];
+        const newPath = [...path, key];
+
+        if (typeof sourceValue === 'undefined') {
+          return {
+            path: newPath.join('.'),
+            source: sourceValue,
+            target: targetValue,
+            meta: {
+              reason: 'value appeared',
+            },
+          };
+        }
+
+        return null;
+      })
+      .filter(Boolean);
+
+    return [...sourceResults, ...targetResults];
+  }
+
+  /**
+   * @param {*} source
+   * @param {*} target
+   * @param {Array} path
+   * @return {Array}
+   */
+  compareArrays(source, target, path) {
     return [];
   }
 }

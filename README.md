@@ -60,7 +60,6 @@ const newBookData = {
 };
 
 const options = {
-  okIfValuesAppear: false,
   blacklist: ['reviewsCount', 'merchants.name'],
   diffs: {
     'author.surname': (source, target) => ({
