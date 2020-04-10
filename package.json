@@ -4,9 +4,22 @@
   "description": "JSON diffing on steroids",
   "author": "mawrkus <web@sparring-partner.be>",
   "license": "MIT",
+  "homepage": "https://github.com/mawrkus/joey-the-differ",
+  "bugs": {
+    "url": "https://github.com/mawrkus/joey-the-differ/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mawrkus/joey-the-differ.git"
+  },
   "engines": {
     "node": ">= 10"
   },
+  "files": [
+    "bin",
+    "src/index",
+    "README.md"
+  ],
   "main": "src/index.js",
   "scripts": {
     "lint": "eslint ./src",
