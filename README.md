@@ -1,14 +1,14 @@
-# 🧬 Joey the Differ
+# Joey the Differ
 
 JSON diffing on steroids.
 
-## Installation
+## 🧬 Installation
 
 ```shell
 npm install joey-the-differ
 ```
 
-## Usage
+## 🧬 Usage
 
 ```js
 import JoeyTheDiffer from 'joey-the-differ';
@@ -66,10 +66,10 @@ const options = {
     'reviewsCount',
     'genres\\.(\\d+)\\.booksCount',
   ],
-  allowNewTargetValues: false,
+  allowNewTargetProperties: false,
   differs: {
     'publishedOn': (source, target) => ({
-      areEqual: source == target, // eslint-disable-line eqeqeq
+      areEqual: source == target,
       meta: {
         reason: 'different publish years after loose comparison',
       },
@@ -160,7 +160,43 @@ console.log(results);
 */
 ```
 
-## Contribute
+## 🧬 API
+
+### constructor options
+
+| Name  | Type  | Default | Description | Example |
+| ---   | ---   | ---     | ---         | ---     |
+| `blacklist` | String[] | [] | An array of regular expressions used to match specific `source` properties identified by their path | `'genres\\.(\\d+)\\.booksCount'` will prevent diffing the `booksCount` property of all the `genres` array elements (objects) |
+| `allowNewTargetProperties` | Boolean | false | To allow or not diffing properties that exist in `target` but not in `source` | |
+| `differs` | Object | {} | Custom differs, associating a regular expression to a diffing function  | `starsCount: (source, target) => ({ areEqual: source <= target, meta: { reason: 'number of stars decreased' } })` |
+
+### diff(source, target)
+
+Compares `source` to `target` by recursively visiting all `source` properties and diffing them with the corresponding properties in `target`. If a `blacklist` option was passed, the regular expressions are used to prevent diffing specific `source` properties identified by their path.
+
+If `allowNewTargetProperties` was set to `true`, properties that exist in `target` but not in `source`will not appear in the results.
+
+If custom differs were passed, they will be used to compare the `source` and `target` properties matched by the regular expressions provided.
+
+```js
+const results = joey.diff(source, target);
+```
+
+`results` is an array of differences where each element is like:
+
+```js
+{
+  path: 'path.to.value',
+  source: 'source value',
+  target: 'target value',
+  meta: {
+    reason: 'an explanation of why the source and target values are not equal',
+    // any other value returned by your custom differs or by Joey the Differ in the future
+  },
+}
+```
+
+## 🧬 Contribute
 
 - Fork: `git clone https://github.com/mawrkus/node-package.git`
 - Create your feature branch: `git checkout -b feature/my-new-feature`
