@@ -181,7 +181,7 @@ class JoeyTheDiffer {
       .map(([key, sourceValue]) => {
         const targetValue = target[key];
         const newPath = [...path, key];
-        const existenceResult = this.compareValueExistence(sourceValue, targetValue, newPath, 'disappearance');
+        const existenceResult = this.comparePropertyExistence(sourceValue, targetValue, newPath, 'disappearance');
 
         if (existenceResult) {
           return existenceResult;
@@ -200,7 +200,7 @@ class JoeyTheDiffer {
         const sourceValue = source[key];
         const newPath = [...path, key];
 
-        return this.compareValueExistence(sourceValue, targetValue, newPath, 'appearance');
+        return this.comparePropertyExistence(sourceValue, targetValue, newPath, 'appearance');
       })
       .filter(Boolean);
 
@@ -214,7 +214,7 @@ class JoeyTheDiffer {
    * @param {string} checkFor 'appearance' or 'disappearance'
    * @return {Null|Object}
    */
-  compareValueExistence(sourceValue, targetValue, path, checkFor) {
+  comparePropertyExistence(sourceValue, targetValue, path, checkFor) {
     if (this.isBlacklisted(path)) {
       return null;
     }
