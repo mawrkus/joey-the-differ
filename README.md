@@ -64,6 +64,7 @@ const newBookData = {
 const options = {
   primitiveEquality: (source, target) => source === target,
   verifySameTypes: true,
+  okIfValuesAppear: false,
   blacklist: ['reviewsCount', 'merchants.name'],
   diffs: {
     'author.surname': (source, target) => ({
