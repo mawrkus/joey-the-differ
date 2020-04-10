@@ -164,7 +164,7 @@ describe('JoeyTheDiffer', () => {
               title: 'The Prince',
               author: 'Niccolò Machiavelli',
               publishedOn: '1532',
-              viewsCount: 9614,
+              reviewsCount: 9614,
             };
 
             const target = {
@@ -195,7 +195,7 @@ describe('JoeyTheDiffer', () => {
                 },
               },
               {
-                path: 'viewsCount',
+                path: 'reviewsCount',
                 source: 9614,
                 target: undefined,
                 meta: {
@@ -270,7 +270,7 @@ describe('JoeyTheDiffer', () => {
                 },
               },
               publishedOn: '1532',
-              viewsCount: 9614,
+              reviewsCount: 9614,
             };
 
             const target = {
@@ -332,7 +332,7 @@ describe('JoeyTheDiffer', () => {
                 },
               },
               {
-                path: 'viewsCount',
+                path: 'reviewsCount',
                 source: 9614,
                 target: undefined,
                 meta: {
@@ -353,7 +353,7 @@ describe('JoeyTheDiffer', () => {
       });
     });
 
-    describe('when source and target objects are arrays', () => {
+    describe('when source and target are arrays', () => {
       describe('for flat arrays', () => {
         describe('when all their elements are equal', () => {
           it('should return an empty array', () => {
@@ -491,6 +491,210 @@ describe('JoeyTheDiffer', () => {
               },
             ]);
           });
+        });
+      });
+    });
+
+    describe('for a mix of complex objects and arrays', () => {
+      describe('when all their properties are equal', () => {
+        it('should return an empty array', () => {
+          const joey = new JoeyTheDiffer();
+
+          const source = {
+            id: 42,
+            title: 'The Prince',
+            author: {
+              name: 'Niccolò',
+              surname: 'Machiavelli',
+              life: {
+                bornOn: '3 May 1469',
+                diedOn: '21 June 1527',
+              },
+            },
+            publishedOn: '1532',
+            reviewsCount: 9614,
+            starsCount: 8562,
+            genres: [{
+              id: 4,
+              name: 'classics',
+            }, {
+              id: 93,
+              name: 'philosophy',
+            }],
+          };
+
+          const target = {
+            id: 42,
+            title: 'The Prince',
+            author: {
+              name: 'Niccolò',
+              surname: 'Machiavelli',
+              life: {
+                bornOn: '3 May 1469',
+                diedOn: '21 June 1527',
+              },
+            },
+            publishedOn: '1532',
+            reviewsCount: 9614,
+            starsCount: 8562,
+            genres: [{
+              id: 4,
+              name: 'classics',
+            }, {
+              id: 93,
+              name: 'philosophy',
+            }],
+          };
+
+          const results = joey.diff(source, target);
+
+          expect(results).toEqual([]);
+        });
+      });
+
+      describe('when some of their properties are different', () => {
+        it('should return the proper array of differences', () => {
+          const joey = new JoeyTheDiffer();
+
+          const source = {
+            id: 42,
+            title: 'The Prince',
+            author: {
+              name: 'Niccolò',
+              surname: 'Machiavelli',
+              life: {
+                bornOn: '3 May 1469',
+                diedOn: '21 June 1527',
+              },
+            },
+            publishedOn: '1532',
+            reviewsCount: 9614,
+            genres: [{
+              id: 4,
+              name: 'classics',
+            }, {
+              id: 93,
+              name: 'philosophy',
+            }],
+          };
+
+          const target = {
+            id: 42,
+            title: 'The Prince',
+            author: {
+              name: 'Nicolas',
+              surname: 'Machiavelli',
+              life: {
+                diedOn: '21 June 1532',
+                bornIn: 'Firenze',
+              },
+            },
+            publishedOn: 1532,
+            starsCount: 8562,
+            genres: [{
+              id: 4,
+              name: 'classic',
+            }, {
+              name: 'philosophy',
+              booksCount: 843942,
+            }, {
+              id: 1,
+              name: 'history',
+            }],
+          };
+
+          const results = joey.diff(source, target);
+
+          expect(results).toEqual([
+            {
+              path: 'author.name',
+              source: 'Niccolò',
+              target: 'Nicolas',
+              meta: {
+                reason: 'different strings',
+              },
+            },
+            {
+              path: 'author.life.bornOn',
+              source: '3 May 1469',
+              target: undefined,
+              meta: {
+                reason: 'value disappeared',
+              },
+            },
+            {
+              path: 'author.life.diedOn',
+              source: '21 June 1527',
+              target: '21 June 1532',
+              meta: {
+                reason: 'different strings',
+              },
+            },
+            {
+              path: 'author.life.bornIn',
+              source: undefined,
+              target: 'Firenze',
+              meta: {
+                reason: 'value appeared',
+              },
+            },
+            {
+              path: 'publishedOn',
+              source: '1532',
+              target: 1532,
+              meta: {
+                reason: 'type changed from "string" to "number"',
+              },
+            },
+            {
+              path: 'reviewsCount',
+              source: 9614,
+              target: undefined,
+              meta: {
+                reason: 'value disappeared',
+              },
+            },
+            {
+              path: 'genres.0.name',
+              source: 'classics',
+              target: 'classic',
+              meta: {
+                reason: 'different strings',
+              },
+            },
+            {
+              path: 'genres.1.id',
+              source: 93,
+              target: undefined,
+              meta: {
+                reason: 'value disappeared',
+              },
+            },
+            {
+              path: 'genres.1.booksCount',
+              source: undefined,
+              target: 843942,
+              meta: {
+                reason: 'value appeared',
+              },
+            },
+            {
+              path: 'genres.2',
+              source: undefined,
+              target: { id: 1, name: 'history' },
+              meta: {
+                reason: 'value appeared',
+              },
+            },
+            {
+              path: 'starsCount',
+              source: undefined,
+              target: 8562,
+              meta: {
+                reason: 'value appeared',
+              },
+            },
+          ]);
         });
       });
     });

@@ -19,21 +19,20 @@ const currentBookData = {
   author: {
     name: 'Niccolò',
     surname: 'Machiavelli',
+    life: {
+      bornOn: '3 May 1469',
+      diedOn: '21 June 1527',
+    },
   },
   publishedOn: '1532',
-  viewsCount: 9614,
-  starsCount: 8562,
-  genres: ['classics', 'philosophy'],
-  merchants: [{
-    id: 93,
-    name: 'Lola\'s Books',
-    certified: false,
+  reviewsCount: 9614,
+  genres: [{
+    id: 4,
+    name: 'classics',
   }, {
-    id: 144,
-    name: 'Pedro\'s Corner',
-    certified: true,
+    id: 93,
+    name: 'philosophy',
   }],
-  reviewsCount: 7733,
 };
 
 const newBookData = {
@@ -41,22 +40,24 @@ const newBookData = {
   title: 'The Prince',
   author: {
     name: 'Nicolas',
-    surname: 'machiavelli',
+    surname: 'Machiavelli',
+    life: {
+      diedOn: '21 June 1532',
+      bornIn: 'Firenze',
+    },
   },
   publishedOn: 1532,
-  viewsCount: 8500,
-  genres: ['history', 'politics', 'classic', 'philosophy'],
-  merchants: [{
-    id: 93,
-    name: 'Lola\'s Books',
-    certified: true,
+  starsCount: 8562,
+  genres: [{
+    id: 4,
+    name: 'classic',
   }, {
-    id: 144,
-    name: 'Pedro\'s Cornershop',
-    location: 'Portofino',
-    certified: 1,
+    name: 'philosophy',
+    booksCount: 843942,
+  }, {
+    id: 1,
+    name: 'history',
   }],
-  reviewsCount: 9999,
 };
 
 const options = {
@@ -100,85 +101,83 @@ console.log(results);
     },
   },
   {
-    path: 'publishedOn',
-    source: '1532',
-    target: 1532,
-    meta: {
-      reason: 'different types',
-    },
-  },
-  {
-    path: 'viewsCount',
-    source: 9614,
-    target: 8500,
-    meta: {
-      reason: 'value decreased',
-      diff: -1114,
-    },
-  },
-  {
-    path: 'starsCount',
-    source: 8562,
+    path: 'author.life.bornOn',
+    source: '3 May 1469',
     target: undefined,
     meta: {
       reason: 'value disappeared',
     },
   },
   {
-    path: 'genres',
-    source: ['classics', 'philosophy'],
-    target: ['history', 'politics', 'classic', 'philosophy'],
+    path: 'author.life.diedOn',
+    source: '21 June 1527',
+    target: '21 June 1532',
     meta: {
-      reason: 'different array elements',
-      removed: ['classics'],
-      added: ['history', 'politics', 'classic'],
+      reason: 'different strings',
     },
   },
   {
-    path: 'merchants',
-    source: [{
-      id: 93,
-      name: 'Lola\'s Books',
-      certified: false,
-    }, {
-      id: 144,
-      name: 'Pedro\'s Corner',
-      certified: true,
-    }],
-    target: [{
-      id: 93,
-      name: 'Lola\'s Books',
-      certified: true,
-    }, {
-      id: 144,
-      name: 'Pedro\'s Cornershop',
-      location: 'Portofino',
-      certified: 1,
-    }],
+    path: 'author.life.bornIn',
+    source: undefined,
+    target: 'Firenze',
     meta: {
-      reason: 'array elements differs',
-      diffs: [{
-        path: '0.certified',
-        source: false,
-        target: true,
-        meta: {
-          reason: 'different values after loose comparison',
-        },
-      }, {
-        path: '1.name',
-        source: 'Pedro\'s Corner',
-        target: 'Pedro\'s Cornershop',
-        meta: {
-          reason: 'different strings',
-        },
-      }, {
-        path: '1.location',
-        source: undefined,
-        target: 'Portofino',
-        meta: {
-          reason: 'value appeared',
-        },
-      }],
+      reason: 'value appeared',
+    },
+  },
+  {
+    path: 'publishedOn',
+    source: '1532',
+    target: 1532,
+    meta: {
+      reason: 'type changed from "string" to "number"',
+    },
+  },
+  {
+    path: 'reviewsCount',
+    source: 9614,
+    target: undefined,
+    meta: {
+      reason: 'value disappeared',
+    },
+  },
+  {
+    path: 'genres.0.name',
+    source: 'classics',
+    target: 'classic',
+    meta: {
+      reason: 'different strings',
+    },
+  },
+  {
+    path: 'genres.1.id',
+    source: 93,
+    target: undefined,
+    meta: {
+      reason: 'value disappeared',
+    },
+  },
+  {
+    path: 'genres.1.booksCount',
+    source: undefined,
+    target: 843942,
+    meta: {
+      reason: 'value appeared',
+    },
+  },
+  {
+    path: 'genres.2',
+    source: undefined,
+    target: { id: 1, name: 'history' },
+    meta: {
+      reason: 'value appeared',
+    },
+  },
+  {
+    path: 'starsCount',
+    source: undefined,
+    target: 8562,
+    meta: {
+      reason: 'value appeared',
     },
   },
 ]
