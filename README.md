@@ -94,7 +94,6 @@ const joey = new JoeyTheDiffer(options);
 const results = joey.diff(currentBookData, newBookData);
 
 console.log(results);
-
 /*
 [
   {
@@ -168,7 +167,7 @@ console.log(results);
 | ---   | ---   | ---     | ---         | ---     |
 | `blacklist` | String[] | [] | An array of regular expressions used to match specific `source` properties identified by their path | `'genres\\.(\\d+)\\.booksCount'` will prevent diffing the `booksCount` property of all the `genres` array elements (objects) |
 | `allowNewTargetProperties` | Boolean | false | To allow or not diffing properties that exist in `target` but not in `source` | |
-| `differs` | Object | {} | Custom differs, associating a regular expression to a diffing function  | `starsCount: (source, target) => ({ areEqual: source <= target, meta: { reason: 'number of stars decreased' } })` |
+| `differs` | Object | {} | Custom differs, associating a regular expression to a diffing function  | See "Usage" above |
 
 ### diff(source, target)
 
@@ -177,6 +176,8 @@ Compares `source` to `target` by recursively visiting all `source` properties an
 If `allowNewTargetProperties` was set to `true`, properties that exist in `target` but not in `source`will not appear in the results.
 
 If custom differs were passed, they will be used to compare the `source` and `target` properties matched by the regular expressions provided.
+
+All JSON primitive values will be compared using strict equality (`===`).
 
 ```js
 const results = joey.diff(source, target);
