@@ -699,8 +699,8 @@ describe('JoeyTheDiffer', () => {
       });
     });
 
-    describe('when using custom differs', () => {
-      fit('should use them properly for diffing', () => {
+    describe('when passing custom differs as option', () => {
+      it('should use them properly for diffing', () => {
         const joey = new JoeyTheDiffer({
           differs: {
             'publishedOn': (source, target) => ({
@@ -780,6 +780,64 @@ describe('JoeyTheDiffer', () => {
             },
           },
         ]);
+      });
+    });
+
+    describe('when passing a blacklist as option', () => {
+      it('should not diff the corresponding values ', () => {
+        const joey = new JoeyTheDiffer({
+          blacklist: [
+            'publishedOn',
+            'reviewsCount',
+            'starsCount',
+            'genres\\.(\\d+)\\.booksCount',
+          ],
+        });
+
+        const source = {
+          id: 42,
+          title: 'The Prince',
+          author: {
+            name: 'Niccolò',
+            surname: 'Machiavelli',
+          },
+          publishedOn: '1532',
+          reviewsCount: 9614,
+          starsCount: 8562,
+          genres: [{
+            id: 4,
+            name: 'classics',
+            booksCount: 191811,
+          }, {
+            id: 93,
+            name: 'philosophy',
+          }],
+        };
+
+        const target = {
+          id: 42,
+          title: 'The Prince',
+          author: {
+            name: 'Niccolò',
+            surname: 'Machiavelli',
+          },
+          publishedOn: 1532,
+          reviewsCount: 10000,
+          starsCount: 1,
+          genres: [{
+            id: 4,
+            name: 'classics',
+            booksCount: 191811,
+          }, {
+            id: 93,
+            name: 'philosophy',
+            booksCount: 843942,
+          }],
+        };
+
+        const results = joey.diff(source, target);
+
+        expect(results).toEqual([]);
       });
     });
   });

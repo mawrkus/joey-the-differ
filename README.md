@@ -62,7 +62,10 @@ const newBookData = {
 };
 
 const options = {
-  blacklist: ['reviewsCount', 'merchants.name'],
+  blacklist: [
+    'reviewsCount',
+    'genres\\.(\\d+)\\.booksCount',
+  ],
   diffs: {
     'starsCount': (source, target) => ({
       areEqual: source <= target,
@@ -120,14 +123,6 @@ console.log(results);
     },
   },
   {
-    path: 'reviewsCount',
-    source: 9614,
-    target: undefined,
-    meta: {
-      reason: 'value disappeared',
-    },
-  },
-  {
     path: 'starsCount',
     source: 8562,
     target: 1,
@@ -149,14 +144,6 @@ console.log(results);
     target: undefined,
     meta: {
       reason: 'value disappeared',
-    },
-  },
-  {
-    path: 'genres.1.booksCount',
-    source: undefined,
-    target: 843942,
-    meta: {
-      reason: 'value appeared',
     },
   },
   {

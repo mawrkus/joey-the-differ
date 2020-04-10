@@ -7,17 +7,22 @@ class JoeyTheDiffer {
    * @param {Object} options
    * @param {Object} [options.primitiveEquality=(s, t) => s === t]
    * @param {Object} [options.differs={}]
+   * @param {string[]} [options.blacklist=[]]
    */
   constructor({
     primitiveEquality = (source, target) => source === target,
     differs = {},
+    blacklist = [],
   } = {}) {
     this.primitiveEquality = primitiveEquality;
+
     this.customDiffers = Object.entries(differs)
       .map(([regex, differ]) => ({
         regex,
         differ,
       }));
+
+    this.blacklistRegexes = blacklist;
   }
 
   /**
@@ -27,6 +32,10 @@ class JoeyTheDiffer {
    * @return {Array}
    */
   diff(source, target, path = []) {
+    if (this.isBlacklisted(path)) {
+      return [];
+    }
+
     const customDiffer = this.findCustomDiffer(path);
 
     if (customDiffer) {
@@ -41,6 +50,16 @@ class JoeyTheDiffer {
     }
 
     return this.compareObjects(source, target, path);
+  }
+
+  /**
+   * @param {Array} path
+   * @return {boolean}
+   */
+  isBlacklisted(path) {
+    const pathAsString = path.join('.');
+    const result = this.blacklistRegexes.find((regex) => (new RegExp(regex)).test(pathAsString));
+    return Boolean(result);
   }
 
   /**
@@ -159,16 +178,10 @@ class JoeyTheDiffer {
       .map(([key, sourceValue]) => {
         const targetValue = target[key];
         const newPath = [...path, key];
+        const existenceResult = this.compareValueExistence(sourceValue, targetValue, newPath, 'disappearance');
 
-        if (typeof targetValue === 'undefined') {
-          return {
-            path: newPath.join('.'),
-            source: sourceValue,
-            target: targetValue,
-            meta: {
-              reason: 'value disappeared',
-            },
-          };
+        if (existenceResult) {
+          return existenceResult;
         }
 
         return this.diff(sourceValue, targetValue, newPath);
@@ -180,22 +193,48 @@ class JoeyTheDiffer {
         const sourceValue = source[key];
         const newPath = [...path, key];
 
-        if (typeof sourceValue === 'undefined') {
-          return {
-            path: newPath.join('.'),
-            source: sourceValue,
-            target: targetValue,
-            meta: {
-              reason: 'value appeared',
-            },
-          };
-        }
-
-        return null;
+        return this.compareValueExistence(sourceValue, targetValue, newPath, 'appearance');
       })
       .filter(Boolean);
 
     return flattenDeep([sourceResults, targetResults]);
+  }
+
+  /**
+   * @param {*} sourceValue
+   * @param {*} targetValue
+   * @param {Array} path
+   * @param {string} checkFor 'appearance' or 'disappearance'
+   * @return {Null|Object}
+   */
+  compareValueExistence(sourceValue, targetValue, path, checkFor) {
+    if (this.isBlacklisted(path)) {
+      return null;
+    }
+
+    if (checkFor === 'appearance' && typeof sourceValue === 'undefined') {
+      return {
+        path: path.join('.'),
+        source: sourceValue,
+        target: targetValue,
+        meta: {
+          reason: 'value appeared',
+        },
+      };
+    }
+
+    if (checkFor === 'disappearance' && typeof targetValue === 'undefined') {
+      return {
+        path: path.join('.'),
+        source: sourceValue,
+        target: targetValue,
+        meta: {
+          reason: 'value disappeared',
+        },
+      };
+    }
+
+    return null;
   }
 }
 
