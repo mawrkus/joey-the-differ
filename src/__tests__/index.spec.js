@@ -214,6 +214,143 @@ describe('JoeyTheDiffer', () => {
           });
         });
       });
+
+      describe('for deep objects', () => {
+        describe('when all their properties are equal', () => {
+          it('should return an empty array', () => {
+            const joey = new JoeyTheDiffer();
+
+            const source = {
+              id: 42,
+              title: 'The Prince',
+              author: {
+                name: 'Niccolò',
+                surname: 'Machiavelli',
+                life: {
+                  bornOn: '3 May 1469',
+                  diedOn: '21 June 1527',
+                },
+              },
+              publishedOn: '1532',
+            };
+
+            const target = {
+              id: 42,
+              title: 'The Prince',
+              author: {
+                name: 'Niccolò',
+                surname: 'Machiavelli',
+                life: {
+                  bornOn: '3 May 1469',
+                  diedOn: '21 June 1527',
+                },
+              },
+              publishedOn: '1532',
+            };
+
+            const results = joey.diff(source, target);
+
+            expect(results).toEqual([]);
+          });
+        });
+
+        describe('when some of their properties are different', () => {
+          it('should return the proper array of differences', () => {
+            const joey = new JoeyTheDiffer();
+
+            const source = {
+              id: 42,
+              title: 'The Prince',
+              author: {
+                name: 'Niccolò',
+                surname: 'Machiavelli',
+                life: {
+                  bornOn: '3 May 1469',
+                  diedOn: '21 June 1527',
+                },
+              },
+              publishedOn: '1532',
+              viewsCount: 9614,
+            };
+
+            const target = {
+              id: 42,
+              title: 'The Prince',
+              author: {
+                name: 'Nicolas',
+                surname: 'Machiavelli',
+                life: {
+                  diedOn: '21 June 1532',
+                  bornIn: 'Firenze',
+                },
+              },
+              publishedOn: 1532,
+              starsCount: 8562,
+            };
+
+            const results = joey.diff(source, target);
+
+            expect(results).toEqual([
+              {
+                path: 'author.name',
+                source: 'Niccolò',
+                target: 'Nicolas',
+                meta: {
+                  reason: 'different strings',
+                },
+              },
+              {
+                path: 'author.life.bornOn',
+                source: '3 May 1469',
+                target: undefined,
+                meta: {
+                  reason: 'value disappeared',
+                },
+              },
+              {
+                path: 'author.life.diedOn',
+                source: '21 June 1527',
+                target: '21 June 1532',
+                meta: {
+                  reason: 'different strings',
+                },
+              },
+              {
+                path: 'author.life.bornIn',
+                source: undefined,
+                target: 'Firenze',
+                meta: {
+                  reason: 'value appeared',
+                },
+              },
+              {
+                path: 'publishedOn',
+                source: '1532',
+                target: 1532,
+                meta: {
+                  reason: 'type changed from "string" to "number"',
+                },
+              },
+              {
+                path: 'viewsCount',
+                source: 9614,
+                target: undefined,
+                meta: {
+                  reason: 'value disappeared',
+                },
+              },
+              {
+                path: 'starsCount',
+                source: undefined,
+                target: 8562,
+                meta: {
+                  reason: 'value appeared',
+                },
+              },
+            ]);
+          });
+        });
+      });
     });
   });
 });

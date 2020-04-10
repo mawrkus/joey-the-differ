@@ -1,3 +1,5 @@
+import flattenDeep from 'lodash.flattendeep';
+
 const { toString } = Object.prototype;
 
 class JoeyTheDiffer {
@@ -125,13 +127,7 @@ class JoeyTheDiffer {
           };
         }
 
-        const sourceValueType = JoeyTheDiffer.getType(sourceValue);
-
-        if (sourceValueType.isPrimitive) {
-          return this.comparePrimitiveTypes(sourceValue, targetValue, newPath, sourceValueType);
-        }
-
-        return null;
+        return this.diff(sourceValue, targetValue, newPath);
       })
       .filter(Boolean);
 
@@ -155,7 +151,7 @@ class JoeyTheDiffer {
       })
       .filter(Boolean);
 
-    return [...sourceResults, ...targetResults];
+    return flattenDeep([sourceResults, targetResults]);
   }
 
   /**
