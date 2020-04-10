@@ -68,12 +68,6 @@ const options = {
   ],
   allowNewTargetProperties: false,
   differs: {
-    'publishedOn': (source, target) => ({
-      areEqual: source == target,
-      meta: {
-        reason: 'different publish years after loose comparison',
-      },
-    }),
     'starsCount': (source, target) => ({
       areEqual: source <= target,
       meta: {
@@ -118,6 +112,14 @@ console.log(results);
     target: 'Firenze',
     meta: {
       reason: 'value appeared',
+    },
+  },
+  {
+    path: 'publishedOn',
+    source: '1532',
+    target: 1532,
+    meta: {
+      reason: 'type changed from "string" to "number"',
     },
   },
   {

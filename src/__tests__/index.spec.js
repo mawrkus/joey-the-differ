@@ -852,12 +852,6 @@ describe('JoeyTheDiffer', () => {
             'genres\\.(\\d+)\\.booksCount',
           ],
           differs: {
-            'publishedOn': (source, target) => ({
-              areEqual: source == target, // eslint-disable-line eqeqeq
-              meta: {
-                reason: 'different publish years after loose comparison',
-              },
-            }),
             'starsCount': (source, target) => ({
               areEqual: source <= target,
               meta: {
@@ -946,6 +940,14 @@ describe('JoeyTheDiffer', () => {
             target: 'Firenze',
             meta: {
               reason: 'value appeared',
+            },
+          },
+          {
+            path: 'publishedOn',
+            source: '1532',
+            target: 1532,
+            meta: {
+              reason: 'type changed from "string" to "number"',
             },
           },
           {
