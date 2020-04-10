@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+rm -rf ./node_modules
+yarn add -D jest eslint eslint-config-airbnb-base eslint-plugin-import eslint-plugin-jest @babel/core @babel/preset-env babel-jest

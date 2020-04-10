@@ -1,0 +1,43 @@
+{
+  "name": "joey-the-differ",
+  "version": "1.0.0",
+  "description": "JSON diffing on steroids",
+  "author": "mawrkus <web@sparring-partner.be>",
+  "license": "MIT",
+  "homepage": "https://github.com/mawrkus/joey-the-differ",
+  "bugs": {
+    "url": "https://github.com/mawrkus/joey-the-differ/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mawrkus/joey-the-differ.git"
+  },
+  "engines": {
+    "node": ">= 10"
+  },
+  "files": [
+    "bin",
+    "src/index",
+    "README.md"
+  ],
+  "main": "src/index.js",
+  "scripts": {
+    "lint": "eslint ./src",
+    "pretest": "yarn lint",
+    "test": "jest ./src --config ./jest.json --coverage",
+    "tdd": "jest ./src --config ./jest.json --watch --notify"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.8.4",
+    "@babel/preset-env": "^7.8.4",
+    "babel-jest": "^25.1.0",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.20.1",
+    "eslint-plugin-jest": "^23.7.0",
+    "jest": "^25.1.0"
+  },
+  "dependencies": {
+    "lodash.flattendeep": "^4.4.0"
+  }
+}
