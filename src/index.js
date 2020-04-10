@@ -104,7 +104,9 @@ class JoeyTheDiffer {
    * @return {boolean} type.isPrimitive
    */
   static getType(value) {
+    // eslint-disable-next-line valid-typeof
     const typeName = ['string', 'number', 'boolean'].find((name) => typeof value === name);
+
     if (typeName) {
       return {
         name: typeName,
