@@ -27,11 +27,7 @@ class JoeyTheDiffer {
       return results === null ? [] : [results];
     }
 
-    if (sourceType.name === 'object') {
-      return this.compareObjects(source, target, path);
-    }
-
-    return this.compareArrays(source, target, path);
+    return this.compareObjects(source, target, path);
   }
 
   /**
@@ -152,16 +148,6 @@ class JoeyTheDiffer {
       .filter(Boolean);
 
     return flattenDeep([sourceResults, targetResults]);
-  }
-
-  /**
-   * @param {*} source
-   * @param {*} target
-   * @param {Array} path
-   * @return {Array}
-   */
-  compareArrays(source, target, path) {
-    return [];
   }
 }
 

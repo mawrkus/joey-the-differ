@@ -352,5 +352,147 @@ describe('JoeyTheDiffer', () => {
         });
       });
     });
+
+    describe('when source and target objects are arrays', () => {
+      describe('for flat arrays', () => {
+        describe('when all their elements are equal', () => {
+          it('should return an empty array', () => {
+            const joey = new JoeyTheDiffer();
+
+            const source = ['classics', 'philosophy'];
+
+            const target = ['classics', 'philosophy'];
+
+            const results = joey.diff(source, target);
+
+            expect(results).toEqual([]);
+          });
+        });
+
+        describe('when some of their elements are different', () => {
+          it('should return the proper array of differences', () => {
+            const joey = new JoeyTheDiffer();
+
+            const source = ['classics', 'philosophy'];
+
+            const target = ['classic', 'philosophy', 'history', 'politics'];
+
+            const results = joey.diff(source, target);
+
+            expect(results).toEqual([
+              {
+                path: '0',
+                source: 'classics',
+                target: 'classic',
+                meta: {
+                  reason: 'different strings',
+                },
+              },
+              {
+                path: '2',
+                source: undefined,
+                target: 'history',
+                meta: {
+                  reason: 'value appeared',
+                },
+              },
+              {
+                path: '3',
+                source: undefined,
+                target: 'politics',
+                meta: {
+                  reason: 'value appeared',
+                },
+              },
+            ]);
+          });
+        });
+      });
+
+      describe('for deep arrays', () => {
+        describe('when all their elements are equal', () => {
+          it('should return an empty array', () => {
+            const joey = new JoeyTheDiffer();
+
+            const source = [
+              [7, 'classics'],
+              [93, 'philosophy', ['so', true]],
+            ];
+
+            const target = [
+              [7, 'classics'],
+              [93, 'philosophy', ['so', true]],
+            ];
+
+            const results = joey.diff(source, target);
+
+            expect(results).toEqual([]);
+          });
+        });
+
+        describe('when some of their elements are different', () => {
+          it('should return the proper array of differences', () => {
+            const joey = new JoeyTheDiffer();
+
+            const source = [
+              [7, 'classics'],
+              [93, 'philosophy', ['so', true]],
+            ];
+
+            const target = [
+              [7, 'classic'],
+              [93],
+              [4, 'history'],
+              [null, null],
+            ];
+
+            const results = joey.diff(source, target);
+
+            expect(results).toEqual([
+              {
+                path: '0.1',
+                source: 'classics',
+                target: 'classic',
+                meta: {
+                  reason: 'different strings',
+                },
+              },
+              {
+                path: '1.1',
+                source: 'philosophy',
+                target: undefined,
+                meta: {
+                  reason: 'value disappeared',
+                },
+              },
+              {
+                path: '1.2',
+                source: ['so', true],
+                target: undefined,
+                meta: {
+                  reason: 'value disappeared',
+                },
+              },
+              {
+                path: '2',
+                source: undefined,
+                target: [4, 'history'],
+                meta: {
+                  reason: 'value appeared',
+                },
+              },
+              {
+                path: '3',
+                source: undefined,
+                target: [null, null],
+                meta: {
+                  reason: 'value appeared',
+                },
+              },
+            ]);
+          });
+        });
+      });
+    });
   });
 });
