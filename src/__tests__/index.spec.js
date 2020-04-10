@@ -982,10 +982,10 @@ describe('JoeyTheDiffer', () => {
       });
     });
 
-    describe('when allowing new values on target object', () => {
+    describe('when allowing new properties on target object', () => {
       it('should return the proper array of differences', () => {
         const options = {
-          allowNewTargetValues: true,
+          allowNewTargetProperties: true,
           blacklist: [
             'reviewsCount',
             'genres\\.(\\d+)\\.booksCount',
