@@ -61,8 +61,8 @@ class JoeyTheDiffer {
    */
   isBlacklisted(path) {
     const pathAsString = path.join('.');
-    const result = this.blacklistRegexes.find((regex) => (new RegExp(regex)).test(pathAsString));
-    return Boolean(result);
+    const found = this.blacklistRegexes.find((regex) => (new RegExp(regex)).test(pathAsString));
+    return Boolean(found);
   }
 
   /**
@@ -71,10 +71,10 @@ class JoeyTheDiffer {
    */
   findCustomDiffer(path) {
     const pathAsString = path.join('.');
-    const result = this.customDiffers.find(({ regex }) => (new RegExp(regex)).test(pathAsString));
+    const found = this.customDiffers.find(({ regex }) => (new RegExp(regex)).test(pathAsString));
 
-    return result
-      ? result.differ
+    return found
+      ? found.differ
       : null;
   }
 
@@ -181,10 +181,10 @@ class JoeyTheDiffer {
       .map(([key, sourceValue]) => {
         const targetValue = target[key];
         const newPath = [...path, key];
-        const existenceResult = this.comparePropertyExistence(sourceValue, targetValue, newPath, 'disappearance');
+        const change = this.comparePropertyExistence(sourceValue, targetValue, newPath, 'disappearance');
 
-        if (existenceResult) {
-          return existenceResult;
+        if (change) {
+          return change;
         }
 
         return this.diff(sourceValue, targetValue, newPath);
