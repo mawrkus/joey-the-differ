@@ -1,0 +1,12 @@
+{
+  "extends": [
+    "airbnb-base"
+  ],
+  "env": {
+    "node": true,
+    "jest": true
+  },
+  "rules": {
+    "quote-props": ["error", "consistent-as-needed"]
+  }
+}
