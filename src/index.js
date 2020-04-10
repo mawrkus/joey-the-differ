@@ -48,8 +48,8 @@ class JoeyTheDiffer {
     const sourceType = JoeyTheDiffer.getType(source);
 
     if (sourceType.isPrimitive) {
-      const results = this.comparePrimitiveTypes(source, target, path, sourceType);
-      return results === null ? [] : [results];
+      const change = this.comparePrimitiveTypes(source, target, path, sourceType);
+      return change === null ? [] : [change];
     }
 
     return this.compareObjects(source, target, path);
@@ -88,16 +88,14 @@ class JoeyTheDiffer {
   static customCompare(source, target, path, customDiffer) {
     const { areEqual, meta } = customDiffer(source, target, path);
 
-    if (areEqual) {
-      return [];
-    }
-
-    return [{
-      path: path.join('.'),
-      source,
-      target,
-      meta,
-    }];
+    return areEqual
+      ? []
+      : [{
+        path: path.join('.'),
+        source,
+        target,
+        meta,
+      }];
   }
 
   /**
@@ -179,7 +177,7 @@ class JoeyTheDiffer {
    * @return {Array}
    */
   compareObjects(source, target, path) {
-    const sourceResults = Object.entries(source)
+    const sourceChanges = Object.entries(source)
       .map(([key, sourceValue]) => {
         const targetValue = target[key];
         const newPath = [...path, key];
@@ -194,10 +192,10 @@ class JoeyTheDiffer {
       .filter(Boolean);
 
     if (this.allowNewTargetProperties) {
-      return flattenDeep(sourceResults);
+      return flattenDeep(sourceChanges);
     }
 
-    const targetResults = Object.entries(target)
+    const targetChanges = Object.entries(target)
       .map(([key, targetValue]) => {
         const sourceValue = source[key];
         const newPath = [...path, key];
@@ -206,7 +204,7 @@ class JoeyTheDiffer {
       })
       .filter(Boolean);
 
-    return flattenDeep([sourceResults, targetResults]);
+    return flattenDeep([sourceChanges, targetChanges]);
   }
 
   /**

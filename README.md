@@ -85,9 +85,9 @@ const options = {
 
 const joey = new JoeyTheDiffer(options);
 
-const results = joey.diff(currentBookData, newBookData);
+const changes = joey.diff(currentBookData, newBookData);
 
-console.log(results);
+console.log(changes);
 /*
 [
   {
