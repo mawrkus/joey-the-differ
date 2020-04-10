@@ -31,7 +31,7 @@ const currentBookData = {
     name: 'Lola\'s Books',
     certified: false,
   }, {
-    id: 4,
+    id: 144,
     name: 'Pedro\'s Corner',
     certified: true,
   }],
@@ -47,9 +47,13 @@ const newBookData = {
   },
   publishedOn: 1532,
   viewsCount: 8500,
-  genres: ['history', 'politics', 'classics', 'philosophy'],
+  genres: ['history', 'politics', 'classic', 'philosophy'],
   merchants: [{
-    id: 4,
+    id: 93,
+    name: 'Lola\'s Books',
+    certified: true,
+  }, {
+    id: 144,
     name: 'Pedro\'s Cornershop',
     location: 'Portofino',
     certified: 1,
@@ -58,17 +62,33 @@ const newBookData = {
 };
 
 const options = {
-  strictTypes: true,
+  primitiveEquality: (source, target) => source === target,
+  verifySameTypes: true,
   blacklist: ['reviewsCount', 'merchants.name'],
   diffs: {
-    'author.surname': (source, target) => source.toLowercase() === target.toLowercase(),
-    'viewsCount': (source, target) => source <= target,
-    'merchants.certified': (source, target) => source == target,
+    'author.surname': (source, target) => ({
+      areEqual: source.toLowercase() === target.toLowercase(),
+      meta: {
+        reason: 'different lowercase strings',
+      },
+    }),
+    'viewsCount': (source, target) => ({
+      areEqual: source <= target,
+      meta: {
+        reason: 'value decreased',
+      },
+    }),
+    'merchants.certified': (source, target) => ({
+      areEqual: source == target,
+      meta: {
+        reason: 'different values after loose comparison',
+      },
+    }),
   },
 };
 
-const result = joey.diff(currentBookData, newBookData, options);
-console.log(result);
+const results = joey.diff(currentBookData, newBookData, options);
+console.log(results);
 
 /*
 [
@@ -79,7 +99,89 @@ console.log(result);
     meta: {
       reason: 'different strings',
     },
-  }
+  },
+  {
+    path: 'publishedOn',
+    source: '1532',
+    target: 1532,
+    meta: {
+      reason: 'different types',
+    },
+  },
+  {
+    path: 'viewsCount',
+    source: 9614,
+    target: 8500,
+    meta: {
+      reason: 'value decreased',
+      diff: -1114,
+    },
+  },
+  {
+    path: 'starsCount',
+    source: 8562,
+    target: undefined,
+    meta: {
+      reason: 'value disappeared',
+    },
+  },
+  {
+    path: 'genres',
+    source: ['classics', 'philosophy'],
+    target: ['history', 'politics', 'classic', 'philosophy'],
+    meta: {
+      reason: 'different array elements',
+      removed: ['classics'],
+      added: ['history', 'politics', 'classic'],
+    },
+  },
+  {
+    path: 'merchants',
+    source: [{
+      id: 93,
+      name: 'Lola\'s Books',
+      certified: false,
+    }, {
+      id: 144,
+      name: 'Pedro\'s Corner',
+      certified: true,
+    }],
+    target: [{
+      id: 93,
+      name: 'Lola\'s Books',
+      certified: true,
+    }, {
+      id: 144,
+      name: 'Pedro\'s Cornershop',
+      location: 'Portofino',
+      certified: 1,
+    }],
+    meta: {
+      reason: 'array elements differs',
+      diffs: [{
+        path: '0.certified',
+        source: false,
+        target: true,
+        meta: {
+          reason: 'different values after loose comparison',
+        },
+      }, {
+        path: '1.name',
+        source: 'Pedro\'s Corner',
+        target: 'Pedro\'s Cornershop',
+        meta: {
+          reason: 'different strings',
+        },
+      }, {
+        path: '1.location',
+        source: undefined,
+        target: 'Portofino',
+        meta: {
+          reason: 'value appeared',
+        },
+      }],
+    },
+  },
 ]
 */
 ```
