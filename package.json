@@ -33,7 +33,11 @@
     "lint": "eslint ./src",
     "pretest": "yarn lint",
     "test": "jest ./src --config ./jest.json --coverage",
-    "tdd": "jest ./src --config ./jest.json --watch --notify"
+    "tdd": "jest ./src --config ./jest.json --watch --notify",
+    "prerelease": "npm run test",
+    "release": "npm version -m \"New version: %s\"",
+    "postrelease": "npm run push && npm publish",
+    "push": "git push origin master && git push origin --tags"
   },
   "devDependencies": {
     "@babel/core": "^7.8.4",
