@@ -71,12 +71,15 @@ const options = {
     'starsCount': (source, target) => ({
       areEqual: source <= target,
       meta: {
+        op: 'update',
         reason: 'number of stars decreased',
+        delta: target - source,
       },
     }),
     'genres\\.(\\d+)\\.name': (source, target) => ({
       areEqual: source.toLowerCase() === target.toLowerCase(),
       meta: {
+        op: 'update',
         reason: 'different genre names in lower case',
       },
     }),
@@ -94,72 +97,77 @@ console.log(changes);
 /*
 [
   {
-    path: 'author.life.bornOn',
-    source: '3 May 1469',
-    target: undefined,
-    meta: {
-      reason: 'value disappeared',
-    },
+    "path": "author.life.bornOn",
+    "source": "3 May 1469",
+    "meta": {
+      "op": "delete",
+      "reason": "value disappeared"
+    }
   },
   {
-    path: 'author.life.diedOn',
-    source: '21 June 1527',
-    target: '21 June 1532',
-    meta: {
-      reason: 'different strings',
-    },
+    "path": "author.life.diedOn",
+    "source": "21 June 1527",
+    "target": "21 June 1532",
+    "meta": {
+      "op": "update",
+      "reason": "different strings"
+    }
   },
   {
-    path: 'author.life.bornIn',
-    source: undefined,
-    target: 'Firenze',
-    meta: {
-      reason: 'value appeared',
-    },
+    "path": "author.life.bornIn",
+    "target": "Firenze",
+    "meta": {
+      "op": "add",
+      "reason": "value appeared"
+    }
   },
   {
-    path: 'publishedOn',
-    source: '1532',
-    target: 1532,
-    meta: {
-      reason: 'type changed from "string" to "number"',
-    },
+    "path": "publishedOn",
+    "source": "1532",
+    "target": 1532,
+    "meta": {
+      "op": "type-change",
+      "reason": "type changed from \"string\" to \"number\""
+    }
   },
   {
-    path: 'starsCount',
-    source: 8562,
-    target: 1,
-    meta: {
-      reason: 'number of stars decreased',
-    },
+    "path": "starsCount",
+    "source": 8562,
+    "target": 1,
+    "meta": {
+      "op": "update",
+      "reason": "number of stars decreased",
+      "delta": -8561
+    }
   },
   {
-    path: 'genres.0.name',
-    source: 'classics',
-    target: 'CLASSIC',
-    meta: {
-      reason: 'different genre names in lower case',
-    },
+    "path": "genres.0.name",
+    "source": "classics",
+    "target": "CLASSIC",
+    "meta": {
+      "op": "update",
+      "reason": "different genre names in lower case"
+    }
   },
   {
-    path: 'genres.1.id',
-    source: 93,
-    target: undefined,
-    meta: {
-      reason: 'value disappeared',
-    },
+    "path": "genres.1.id",
+    "source": 93,
+    "meta": {
+      "op": "delete",
+      "reason": "value disappeared"
+    }
   },
   {
-    path: 'genres.2',
-    source: undefined,
-    target: {
-      id: 1,
-      name: 'HISTORY',
+    "path": "genres.2",
+    "target": {
+      "id": 1,
+      "name": "HISTORY"
     },
-    meta: {
-      reason: 'value appeared',
-    },
-  },
+    "meta": {
+      "op": "add",
+      "reason": "value appeared"
+    }
+  }
 ]
 */
 ```
@@ -196,10 +204,19 @@ const changes = joey.diff(source, target);
   source: 'source value',
   target: 'target value',
   meta: {
+    op: 'the operation that happened on the value: add, delete, update or type-change',
     reason: 'an explanation of why the source and target values are not equal',
-    // any other value returned by your custom differs or by Joey the Differ in the future
+    // any other value returned by your custom differs or by Joey in the future
   },
 }
+```
+
+### diffFiles(sourcePath, targetPath)
+
+A helper method to work with files.
+
+```js
+const changes = await joey.diff(sourcePath, targetPath);
 ```
 
 ## 🧬 Contribute

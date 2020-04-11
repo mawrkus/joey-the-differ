@@ -1,7 +1,9 @@
-[{
+[
+  {
     "path": "author.life.bornOn",
     "source": "3 May 1469",
     "meta": {
+      "op": "delete",
       "reason": "value disappeared"
     }
   },
@@ -10,6 +12,7 @@
     "source": "21 June 1527",
     "target": "21 June 1532",
     "meta": {
+      "op": "update",
       "reason": "different strings"
     }
   },
@@ -17,6 +20,7 @@
     "path": "author.life.bornIn",
     "target": "Firenze",
     "meta": {
+      "op": "add",
       "reason": "value appeared"
     }
   },
@@ -25,14 +29,8 @@
     "source": "1532",
     "target": 1532,
     "meta": {
+      "op": "type-change",
       "reason": "type changed from \"string\" to \"number\""
-    }
-  },
-  {
-    "path": "reviewsCount",
-    "source": 9614,
-    "meta": {
-      "reason": "value disappeared"
     }
   },
   {
@@ -40,7 +38,9 @@
     "source": 8562,
     "target": 1,
     "meta": {
-      "reason": "different numbers"
+      "op": "update",
+      "reason": "number of stars decreased",
+      "delta": -8561
     }
   },
   {
@@ -48,29 +48,16 @@
     "source": "classics",
     "target": "CLASSIC",
     "meta": {
-      "reason": "different strings"
+      "op": "update",
+      "reason": "different genre names in lower case"
     }
   },
   {
     "path": "genres.1.id",
     "source": 93,
     "meta": {
+      "op": "delete",
       "reason": "value disappeared"
-    }
-  },
-  {
-    "path": "genres.1.name",
-    "source": "philosophy",
-    "target": "PHILOSOPHY",
-    "meta": {
-      "reason": "different strings"
-    }
-  },
-  {
-    "path": "genres.1.booksCount",
-    "target": 843942,
-    "meta": {
-      "reason": "value appeared"
     }
   },
   {
@@ -80,6 +67,7 @@
       "name": "HISTORY"
     },
     "meta": {
+      "op": "add",
       "reason": "value appeared"
     }
   }

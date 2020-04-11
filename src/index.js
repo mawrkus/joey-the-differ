@@ -170,17 +170,27 @@ class JoeyTheDiffer {
     }
 
     const targetType = JoeyTheDiffer.getType(target);
+    const areSameType = sourceType.name === targetType.name;
 
-    const reason = sourceType.name === targetType.name
-      ? `different ${sourceType.name}s`
-      : `type changed from "${sourceType.name}" to "${targetType.name}"`;
+    if (areSameType) {
+      return {
+        path: path.join('.'),
+        source,
+        target,
+        meta: {
+          op: 'update',
+          reason: `different ${sourceType.name}s`,
+        },
+      };
+    }
 
     return {
       path: path.join('.'),
       source,
       target,
       meta: {
-        reason,
+        op: 'type-change',
+        reason: `type changed from "${sourceType.name}" to "${targetType.name}"`,
       },
     };
   }
@@ -234,24 +244,26 @@ class JoeyTheDiffer {
       return null;
     }
 
-    if (checkFor === 'appearance' && typeof sourceValue === 'undefined') {
-      return {
-        path: path.join('.'),
-        source: sourceValue,
-        target: targetValue,
-        meta: {
-          reason: 'value appeared',
-        },
-      };
-    }
-
     if (checkFor === 'disappearance' && typeof targetValue === 'undefined') {
       return {
         path: path.join('.'),
         source: sourceValue,
         target: targetValue,
         meta: {
+          op: 'delete',
           reason: 'value disappeared',
+        },
+      };
+    }
+
+    if (checkFor === 'appearance' && typeof sourceValue === 'undefined') {
+      return {
+        path: path.join('.'),
+        source: sourceValue,
+        target: targetValue,
+        meta: {
+          op: 'add',
+          reason: 'value appeared',
         },
       };
     }
