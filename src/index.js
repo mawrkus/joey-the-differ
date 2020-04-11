@@ -1,3 +1,4 @@
+import { promises as fsPromises } from 'fs';
 import flattenDeep from 'lodash.flattendeep';
 
 const { toString } = Object.prototype;
@@ -5,19 +6,15 @@ const { toString } = Object.prototype;
 class JoeyTheDiffer {
   /**
    * @param {Object} options
-   * @param {Object} [options.primitiveEquality=(s, t) => s === t]
    * @param {Object} [options.differs={}]
    * @param {string[]} [options.blacklist=[]]
    * @param {boolean} [options.allowNewTargetProperties=false
    */
   constructor({
-    primitiveEquality = (source, target) => source === target,
     differs = {},
     blacklist = [],
     allowNewTargetProperties = false,
   } = {}) {
-    this.primitiveEquality = primitiveEquality;
-
     this.customDiffers = Object.entries(differs)
       .map(([regex, differ]) => ({
         regex,
@@ -26,6 +23,23 @@ class JoeyTheDiffer {
 
     this.blacklistRegexes = blacklist;
     this.allowNewTargetProperties = allowNewTargetProperties;
+  }
+
+  /**
+   * @param {string} sourcePath
+   * @param {string} targetPath
+   * @return {Promis.<Array>}
+   */
+  async diffFiles(sourcePath, targetPath) {
+    const [sourceJson, targetJson] = await Promise.all([
+      fsPromises.readFile(sourcePath, { encoding: 'utf8' }),
+      fsPromises.readFile(targetPath, { encoding: 'utf8' }),
+    ]);
+
+    const source = JSON.parse(sourceJson);
+    const target = JSON.parse(targetJson);
+
+    return this.diff(source, target);
   }
 
   /**
@@ -48,7 +62,7 @@ class JoeyTheDiffer {
     const sourceType = JoeyTheDiffer.getType(source);
 
     if (sourceType.isPrimitive) {
-      const change = this.comparePrimitiveTypes(source, target, path, sourceType);
+      const change = JoeyTheDiffer.comparePrimitiveTypes(source, target, path, sourceType);
       return change === null ? [] : [change];
     }
 
@@ -148,14 +162,15 @@ class JoeyTheDiffer {
    * @param {Object} types
    * @return {Null|Object}
    */
-  comparePrimitiveTypes(source, target, path, sourceType) {
-    const areEqual = this.primitiveEquality(source, target);
+  static comparePrimitiveTypes(source, target, path, sourceType) {
+    const areEqual = source === target;
 
     if (areEqual) {
       return null;
     }
 
     const targetType = JoeyTheDiffer.getType(target);
+
     const reason = sourceType.name === targetType.name
       ? `different ${sourceType.name}s`
       : `type changed from "${sourceType.name}" to "${targetType.name}"`;

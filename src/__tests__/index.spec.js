@@ -1,12 +1,33 @@
 import JoeyTheDiffer from '..';
 
-describe('JoeyTheDiffer', () => {
-  it('should be a class with the following API: diff()', () => {
+describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () => {
+  it('should be a class with the following API: diff(), diffFiles()', () => {
     expect(JoeyTheDiffer).toBeInstanceOf(Function);
     expect(JoeyTheDiffer.prototype.diff).toBeInstanceOf(Function);
+    expect(JoeyTheDiffer.prototype.diffFiles).toBeInstanceOf(Function);
   });
 
-  describe('#diff(source, target, [options])', () => {
+  describe('#diffFiles(sourcePath, targetPath)', () => {
+    it('should call diff() with the content of the files passed as parameters', async () => {
+      const joey = new JoeyTheDiffer();
+
+      jest.spyOn(joey, 'diff');
+
+      /* const changes = */ await joey.diffFiles(
+        `${__dirname}/fixtures/source.json`,
+        `${__dirname}/fixtures/target.json`,
+      );
+
+      const source = require('./fixtures/source'); // eslint-disable-line global-require
+      const target = require('./fixtures/target'); // eslint-disable-line global-require
+      // const expected = require('./fixtures/expected'); // eslint-disable-line global-require
+
+      expect(joey.diff).toHaveBeenCalledWith(source, target);
+      // expect(changes).toEqual(expected);
+    });
+  });
+
+  describe('#diff(source, target)', () => {
     it('should return an array', () => {
       const joey = new JoeyTheDiffer();
 
@@ -149,9 +170,9 @@ describe('JoeyTheDiffer', () => {
               publishedOn: '1532',
             };
 
-            const results = joey.diff(source, target);
+            const changes = joey.diff(source, target);
 
-            expect(results).toEqual([]);
+            expect(changes).toEqual([]);
           });
         });
 
@@ -175,9 +196,9 @@ describe('JoeyTheDiffer', () => {
               starsCount: 8562,
             };
 
-            const results = joey.diff(source, target);
+            const changes = joey.diff(source, target);
 
-            expect(results).toEqual([
+            expect(changes).toEqual([
               {
                 path: 'author',
                 source: 'Niccolò Machiavelli',
@@ -248,9 +269,9 @@ describe('JoeyTheDiffer', () => {
               publishedOn: '1532',
             };
 
-            const results = joey.diff(source, target);
+            const changes = joey.diff(source, target);
 
-            expect(results).toEqual([]);
+            expect(changes).toEqual([]);
           });
         });
 
@@ -288,9 +309,9 @@ describe('JoeyTheDiffer', () => {
               starsCount: 8562,
             };
 
-            const results = joey.diff(source, target);
+            const changes = joey.diff(source, target);
 
-            expect(results).toEqual([
+            expect(changes).toEqual([
               {
                 path: 'author.name',
                 source: 'Niccolò',
@@ -363,9 +384,9 @@ describe('JoeyTheDiffer', () => {
 
             const target = ['classics', 'philosophy'];
 
-            const results = joey.diff(source, target);
+            const changes = joey.diff(source, target);
 
-            expect(results).toEqual([]);
+            expect(changes).toEqual([]);
           });
         });
 
@@ -377,9 +398,9 @@ describe('JoeyTheDiffer', () => {
 
             const target = ['classic', 'philosophy', 'history', 'politics'];
 
-            const results = joey.diff(source, target);
+            const changes = joey.diff(source, target);
 
-            expect(results).toEqual([
+            expect(changes).toEqual([
               {
                 path: '0',
                 source: 'classics',
@@ -424,9 +445,9 @@ describe('JoeyTheDiffer', () => {
               [93, 'philosophy', ['so', true]],
             ];
 
-            const results = joey.diff(source, target);
+            const changes = joey.diff(source, target);
 
-            expect(results).toEqual([]);
+            expect(changes).toEqual([]);
           });
         });
 
@@ -446,9 +467,9 @@ describe('JoeyTheDiffer', () => {
               [null, null],
             ];
 
-            const results = joey.diff(source, target);
+            const changes = joey.diff(source, target);
 
-            expect(results).toEqual([
+            expect(changes).toEqual([
               {
                 path: '0.1',
                 source: 'classics',
@@ -546,9 +567,9 @@ describe('JoeyTheDiffer', () => {
             }],
           };
 
-          const results = joey.diff(source, target);
+          const changes = joey.diff(source, target);
 
-          expect(results).toEqual([]);
+          expect(changes).toEqual([]);
         });
       });
 
@@ -603,9 +624,9 @@ describe('JoeyTheDiffer', () => {
             }],
           };
 
-          const results = joey.diff(source, target);
+          const changes = joey.diff(source, target);
 
-          expect(results).toEqual([
+          expect(changes).toEqual([
             {
               path: 'author.name',
               source: 'Niccolò',
@@ -770,9 +791,9 @@ describe('JoeyTheDiffer', () => {
           }],
         };
 
-        const results = joey.diff(source, target);
+        const changes = joey.diff(source, target);
 
-        expect(results).toEqual([
+        expect(changes).toEqual([
           {
             path: 'starsCount',
             source: 8562,
@@ -838,9 +859,9 @@ describe('JoeyTheDiffer', () => {
           }],
         };
 
-        const results = joey.diff(source, target);
+        const changes = joey.diff(source, target);
 
-        expect(results).toEqual([]);
+        expect(changes).toEqual([]);
       });
     });
 
@@ -917,9 +938,9 @@ describe('JoeyTheDiffer', () => {
           }],
         };
 
-        const results = joey.diff(source, target);
+        const changes = joey.diff(source, target);
 
-        expect(results).toEqual([
+        expect(changes).toEqual([
           {
             path: 'author.life.bornOn',
             source: '3 May 1469',
@@ -1071,9 +1092,9 @@ describe('JoeyTheDiffer', () => {
           }],
         };
 
-        const results = joey.diff(source, target);
+        const changes = joey.diff(source, target);
 
-        expect(results).toEqual([
+        expect(changes).toEqual([
           {
             path: 'author.life.bornOn',
             source: '3 May 1469',

@@ -87,6 +87,9 @@ const joey = new JoeyTheDiffer(options);
 
 const changes = joey.diff(currentBookData, newBookData);
 
+// or with files:
+// const changes = await joey.diffFiles('/books/currentData.json', '/books/newData.json');
+
 console.log(changes);
 /*
 [
