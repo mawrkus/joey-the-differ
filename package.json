@@ -23,7 +23,7 @@
     "node": ">= 10"
   },
   "files": [
-    "bin",
+    "bin/joey-the-differ.js",
     "src/index",
     "README.md"
   ],
