@@ -24,7 +24,7 @@
   },
   "files": [
     "bin/joey-the-differ.js",
-    "src/index",
+    "src/index.js",
     "README.md"
   ],
   "bin": "bin/joey-the-differ.js",
