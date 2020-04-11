@@ -31,13 +31,10 @@ class JoeyTheDiffer {
    * @return {Promis.<Array>}
    */
   async diffFiles(sourcePath, targetPath) {
-    const [sourceJson, targetJson] = await Promise.all([
-      fsPromises.readFile(sourcePath, { encoding: 'utf8' }),
-      fsPromises.readFile(targetPath, { encoding: 'utf8' }),
+    const [source, target] = await Promise.all([
+      fsPromises.readFile(sourcePath, { encoding: 'utf8' }).then((json) => JSON.parse(json)),
+      fsPromises.readFile(targetPath, { encoding: 'utf8' }).then((json) => JSON.parse(json)),
     ]);
-
-    const source = JSON.parse(sourceJson);
-    const target = JSON.parse(targetJson);
 
     return this.diff(source, target);
   }
