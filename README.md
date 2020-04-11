@@ -206,7 +206,8 @@ const changes = joey.diff(source, target);
   meta: {
     op: 'the operation that happened on the value: add, delete, update or type-change',
     reason: 'an explanation of why the source and target values are not equal',
-    // any other value returned by your custom differs or by Joey in the future
+    // ...
+    // and any other value returned by your custom differs or by Joey in the future
   },
 }
 ```
