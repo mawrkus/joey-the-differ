@@ -27,6 +27,7 @@
     "src/index",
     "README.md"
   ],
+  "bin": "bin/joey-the-differ.js",
   "main": "src/index.js",
   "scripts": {
     "lint": "eslint ./src",
@@ -45,6 +46,8 @@
     "jest": "^25.1.0"
   },
   "dependencies": {
-    "lodash.flattendeep": "^4.4.0"
+    "commander": "^5.0.0",
+    "lodash.flattendeep": "^4.4.0",
+    "ora": "^4.0.3"
   }
 }

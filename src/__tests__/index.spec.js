@@ -1,4 +1,4 @@
-import JoeyTheDiffer from '..';
+const JoeyTheDiffer = require('..');
 
 describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () => {
   it('should be a class with the following API: diff(), diffFiles()', () => {

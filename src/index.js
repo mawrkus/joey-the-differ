@@ -1,5 +1,5 @@
-import { promises as fsPromises } from 'fs';
-import flattenDeep from 'lodash.flattendeep';
+const { promises: fsPromises } = require('fs');
+const flattenDeep = require('lodash.flattendeep');
 
 const { toString } = Object.prototype;
 
@@ -269,4 +269,4 @@ class JoeyTheDiffer {
   }
 }
 
-export default JoeyTheDiffer;
+module.exports = JoeyTheDiffer;
