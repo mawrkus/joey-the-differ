@@ -56,7 +56,7 @@ class JoeyTheDiffer {
       return JoeyTheDiffer.customCompare(source, target, path, customDiffer);
     }
 
-    const sourceType = JoeyTheDiffer.getType(source);
+    const sourceType = JoeyTheDiffer.getType(source, path);
 
     if (sourceType.isPrimitive) {
       const change = JoeyTheDiffer.comparePrimitiveTypes(source, target, path, sourceType);
@@ -111,13 +111,18 @@ class JoeyTheDiffer {
 
   /**
    * @param {*} value
+   * @param {string} path
    * @return {Object} type
    * @return {string} type.name
    * @return {boolean} type.isPrimitive
    */
-  static getType(value) {
-    // eslint-disable-next-line valid-typeof
-    const typeName = ['string', 'number', 'boolean'].find((name) => typeof value === name);
+  static getType(value, path) {
+    const typeName = [
+      'string',
+      'number',
+      'boolean',
+      'undefined',
+    ].find((name) => typeof value === name); // eslint-disable-line valid-typeof
 
     if (typeName) {
       return {
@@ -149,7 +154,7 @@ class JoeyTheDiffer {
       };
     }
 
-    throw new TypeError(`Unknown type "${typeString}"!`);
+    throw new TypeError(`Unknown type "${typeString}" at path "${path}"!`);
   }
 
   /**
@@ -166,28 +171,18 @@ class JoeyTheDiffer {
       return null;
     }
 
-    const targetType = JoeyTheDiffer.getType(target);
+    const targetType = JoeyTheDiffer.getType(target, path);
     const areSameType = sourceType.name === targetType.name;
-
-    if (areSameType) {
-      return {
-        path: path.join('.'),
-        source,
-        target,
-        meta: {
-          op: 'update',
-          reason: `different ${sourceType.name}s`,
-        },
-      };
-    }
 
     return {
       path: path.join('.'),
       source,
       target,
       meta: {
-        op: 'type-change',
-        reason: `type changed from "${sourceType.name}" to "${targetType.name}"`,
+        op: 'replace',
+        reason: areSameType
+          ? `different ${sourceType.name}s`
+          : `type changed from "${sourceType.name}" to "${targetType.name}"`,
       },
     };
   }
@@ -203,6 +198,13 @@ class JoeyTheDiffer {
       .map(([key, sourceValue]) => {
         const targetValue = target[key];
         const newPath = [...path, key];
+
+        const customDiffer = this.findCustomDiffer(newPath);
+
+        if (customDiffer) {
+          return JoeyTheDiffer.customCompare(sourceValue, targetValue, newPath, customDiffer);
+        }
+
         const change = this.comparePropertyExistence(sourceValue, targetValue, newPath, 'disappearance');
 
         if (change) {
@@ -241,19 +243,25 @@ class JoeyTheDiffer {
       return null;
     }
 
-    if (checkFor === 'disappearance' && typeof targetValue === 'undefined') {
+    if (checkFor === 'disappearance'
+      && typeof sourceValue !== 'undefined'
+      && typeof targetValue === 'undefined'
+    ) {
       return {
         path: path.join('.'),
         source: sourceValue,
         target: targetValue,
         meta: {
-          op: 'delete',
+          op: 'remove',
           reason: 'value disappeared',
         },
       };
     }
 
-    if (checkFor === 'appearance' && typeof sourceValue === 'undefined') {
+    if (checkFor === 'appearance'
+      && typeof sourceValue === 'undefined'
+      && typeof targetValue !== 'undefined'
+    ) {
       return {
         path: path.join('.'),
         source: sourceValue,

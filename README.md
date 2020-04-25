@@ -71,7 +71,7 @@ const options = {
     'starsCount': (source, target) => ({
       areEqual: source <= target,
       meta: {
-        op: 'update',
+        op: 'replace',
         reason: 'number of stars decreased',
         delta: target - source,
       },
@@ -79,7 +79,7 @@ const options = {
     'genres\\.(\\d+)\\.name': (source, target) => ({
       areEqual: source.toLowerCase() === target.toLowerCase(),
       meta: {
-        op: 'update',
+        op: 'replace',
         reason: 'different genre names in lower case',
       },
     }),
@@ -100,7 +100,7 @@ console.log(changes);
     "path": "author.life.bornOn",
     "source": "3 May 1469",
     "meta": {
-      "op": "delete",
+      "op": "remove",
       "reason": "value disappeared"
     }
   },
@@ -109,7 +109,7 @@ console.log(changes);
     "source": "21 June 1527",
     "target": "21 June 1532",
     "meta": {
-      "op": "update",
+      "op": "replace",
       "reason": "different strings"
     }
   },
@@ -126,7 +126,7 @@ console.log(changes);
     "source": "1532",
     "target": 1532,
     "meta": {
-      "op": "type-change",
+      "op": "replace",
       "reason": "type changed from \"string\" to \"number\""
     }
   },
@@ -135,7 +135,7 @@ console.log(changes);
     "source": 8562,
     "target": 1,
     "meta": {
-      "op": "update",
+      "op": "replace",
       "reason": "number of stars decreased",
       "delta": -8561
     }
@@ -145,7 +145,7 @@ console.log(changes);
     "source": "classics",
     "target": "CLASSIC",
     "meta": {
-      "op": "update",
+      "op": "replace",
       "reason": "different genre names in lower case"
     }
   },
@@ -153,7 +153,7 @@ console.log(changes);
     "path": "genres.1.id",
     "source": 93,
     "meta": {
-      "op": "delete",
+      "op": "remove",
       "reason": "value disappeared"
     }
   },
@@ -204,7 +204,7 @@ const changes = joey.diff(source, target);
   source: 'source value',
   target: 'target value',
   meta: {
-    op: 'the operation that happened on the value: add, delete, update or type-change',
+    op: 'the operation that happened on the value: add, remove, or replace',
     reason: 'an explanation of why the source and target values are not equal',
     // ...
     // and any other value returned by your custom differs or by Joey in the future

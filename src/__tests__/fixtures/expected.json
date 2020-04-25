@@ -3,7 +3,7 @@
     "path": "author.life.bornOn",
     "source": "3 May 1469",
     "meta": {
-      "op": "delete",
+      "op": "remove",
       "reason": "value disappeared"
     }
   },
@@ -12,7 +12,7 @@
     "source": "21 June 1527",
     "target": "21 June 1532",
     "meta": {
-      "op": "update",
+      "op": "replace",
       "reason": "different strings"
     }
   },
@@ -29,7 +29,7 @@
     "source": "1532",
     "target": 1532,
     "meta": {
-      "op": "type-change",
+      "op": "replace",
       "reason": "type changed from \"string\" to \"number\""
     }
   },
@@ -38,7 +38,7 @@
     "source": 8562,
     "target": 1,
     "meta": {
-      "op": "update",
+      "op": "replace",
       "reason": "number of stars decreased",
       "delta": -8561
     }
@@ -48,7 +48,7 @@
     "source": "classics",
     "target": "CLASSIC",
     "meta": {
-      "op": "update",
+      "op": "replace",
       "reason": "different genre names in lower case"
     }
   },
@@ -56,7 +56,7 @@
     "path": "genres.1.id",
     "source": 93,
     "meta": {
-      "op": "delete",
+      "op": "remove",
       "reason": "value disappeared"
     }
   },
