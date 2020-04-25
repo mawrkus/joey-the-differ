@@ -107,6 +107,15 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
         });
       });
 
+      // relax: it's not JSON, but it's useful!
+      describe('undefined diffing', () => {
+        it('should return an empty array', () => {
+          const joey = new JoeyTheDiffer();
+
+          expect(joey.diff(undefined, undefined)).toEqual([]);
+        });
+      });
+
       describe('different types diffing', () => {
         it('should return the proper array of differences', () => {
           const joey = new JoeyTheDiffer();

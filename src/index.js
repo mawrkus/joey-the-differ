@@ -56,7 +56,7 @@ class JoeyTheDiffer {
       return JoeyTheDiffer.customCompare(source, target, path, customDiffer);
     }
 
-    const sourceType = JoeyTheDiffer.getType(source);
+    const sourceType = JoeyTheDiffer.getType(source, path);
 
     if (sourceType.isPrimitive) {
       const change = JoeyTheDiffer.comparePrimitiveTypes(source, target, path, sourceType);
@@ -111,13 +111,18 @@ class JoeyTheDiffer {
 
   /**
    * @param {*} value
+   * @param {string} path
    * @return {Object} type
    * @return {string} type.name
    * @return {boolean} type.isPrimitive
    */
-  static getType(value) {
-    // eslint-disable-next-line valid-typeof
-    const typeName = ['string', 'number', 'boolean'].find((name) => typeof value === name);
+  static getType(value, path) {
+    const typeName = [
+      'string',
+      'number',
+      'boolean',
+      'undefined',
+    ].find((name) => typeof value === name); // eslint-disable-line valid-typeof
 
     if (typeName) {
       return {
@@ -149,7 +154,7 @@ class JoeyTheDiffer {
       };
     }
 
-    throw new TypeError(`Unknown type "${typeString}"!`);
+    throw new TypeError(`Unknown type "${typeString}" at path "${path}"!`);
   }
 
   /**
@@ -166,7 +171,7 @@ class JoeyTheDiffer {
       return null;
     }
 
-    const targetType = JoeyTheDiffer.getType(target);
+    const targetType = JoeyTheDiffer.getType(target, path);
     const areSameType = sourceType.name === targetType.name;
 
     if (areSameType) {
