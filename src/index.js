@@ -174,25 +174,15 @@ class JoeyTheDiffer {
     const targetType = JoeyTheDiffer.getType(target, path);
     const areSameType = sourceType.name === targetType.name;
 
-    if (areSameType) {
-      return {
-        path: path.join('.'),
-        source,
-        target,
-        meta: {
-          op: 'update',
-          reason: `different ${sourceType.name}s`,
-        },
-      };
-    }
-
     return {
       path: path.join('.'),
       source,
       target,
       meta: {
-        op: 'type-change',
-        reason: `type changed from "${sourceType.name}" to "${targetType.name}"`,
+        op: 'replace',
+        reason: areSameType
+          ? `different ${sourceType.name}s`
+          : `type changed from "${sourceType.name}" to "${targetType.name}"`,
       },
     };
   }
@@ -262,7 +252,7 @@ class JoeyTheDiffer {
         source: sourceValue,
         target: targetValue,
         meta: {
-          op: 'delete',
+          op: 'remove',
           reason: 'value disappeared',
         },
       };

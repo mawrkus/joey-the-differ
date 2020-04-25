@@ -34,7 +34,7 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
                 source: '41',
                 target: '42',
                 meta: {
-                  op: 'update',
+                  op: 'replace',
                   reason: 'different strings',
                 },
               },
@@ -62,7 +62,7 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
                 source: 41,
                 target: 42,
                 meta: {
-                  op: 'update',
+                  op: 'replace',
                   reason: 'different numbers',
                 },
               },
@@ -90,7 +90,7 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
                 source: false,
                 target: true,
                 meta: {
-                  op: 'update',
+                  op: 'replace',
                   reason: 'different booleans',
                 },
               },
@@ -126,7 +126,7 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
               source: 42,
               target: '42',
               meta: {
-                op: 'type-change',
+                op: 'replace',
                 reason: 'type changed from "number" to "string"',
               },
             },
@@ -198,7 +198,7 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
                 source: 'Niccolò Machiavelli',
                 target: 'Nicolas Machiavelli',
                 meta: {
-                  op: 'update',
+                  op: 'replace',
                   reason: 'different strings',
                 },
               },
@@ -207,7 +207,7 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
                 source: '1532',
                 target: 1532,
                 meta: {
-                  op: 'type-change',
+                  op: 'replace',
                   reason: 'type changed from "string" to "number"',
                 },
               },
@@ -216,7 +216,7 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
                 source: 9614,
                 target: undefined,
                 meta: {
-                  op: 'delete',
+                  op: 'remove',
                   reason: 'value disappeared',
                 },
               },
@@ -315,7 +315,7 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
                 source: 'Niccolò',
                 target: 'Nicolas',
                 meta: {
-                  op: 'update',
+                  op: 'replace',
                   reason: 'different strings',
                 },
               },
@@ -324,7 +324,7 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
                 source: '3 May 1469',
                 target: undefined,
                 meta: {
-                  op: 'delete',
+                  op: 'remove',
                   reason: 'value disappeared',
                 },
               },
@@ -333,7 +333,7 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
                 source: '21 June 1527',
                 target: '21 June 1532',
                 meta: {
-                  op: 'update',
+                  op: 'replace',
                   reason: 'different strings',
                 },
               },
@@ -351,7 +351,7 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
                 source: '1532',
                 target: 1532,
                 meta: {
-                  op: 'type-change',
+                  op: 'replace',
                   reason: 'type changed from "string" to "number"',
                 },
               },
@@ -360,7 +360,7 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
                 source: 9614,
                 target: undefined,
                 meta: {
-                  op: 'delete',
+                  op: 'remove',
                   reason: 'value disappeared',
                 },
               },
@@ -411,7 +411,7 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
                 source: 'classics',
                 target: 'classic',
                 meta: {
-                  op: 'update',
+                  op: 'replace',
                   reason: 'different strings',
                 },
               },
@@ -483,7 +483,7 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
                 source: 'classics',
                 target: 'classic',
                 meta: {
-                  op: 'update',
+                  op: 'replace',
                   reason: 'different strings',
                 },
               },
@@ -492,7 +492,7 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
                 source: 'philosophy',
                 target: undefined,
                 meta: {
-                  op: 'delete',
+                  op: 'remove',
                   reason: 'value disappeared',
                 },
               },
@@ -501,7 +501,7 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
                 source: ['so', true],
                 target: undefined,
                 meta: {
-                  op: 'delete',
+                  op: 'remove',
                   reason: 'value disappeared',
                 },
               },
@@ -645,7 +645,7 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
               source: 'Niccolò',
               target: 'Nicolas',
               meta: {
-                op: 'update',
+                op: 'replace',
                 reason: 'different strings',
               },
             },
@@ -654,7 +654,7 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
               source: '3 May 1469',
               target: undefined,
               meta: {
-                op: 'delete',
+                op: 'remove',
                 reason: 'value disappeared',
               },
             },
@@ -663,7 +663,7 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
               source: '21 June 1527',
               target: '21 June 1532',
               meta: {
-                op: 'update',
+                op: 'replace',
                 reason: 'different strings',
               },
             },
@@ -681,7 +681,7 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
               source: '1532',
               target: 1532,
               meta: {
-                op: 'type-change',
+                op: 'replace',
                 reason: 'type changed from "string" to "number"',
               },
             },
@@ -690,7 +690,7 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
               source: 9614,
               target: undefined,
               meta: {
-                op: 'delete',
+                op: 'remove',
                 reason: 'value disappeared',
               },
             },
@@ -699,7 +699,7 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
               source: 'classics',
               target: 'classic',
               meta: {
-                op: 'update',
+                op: 'replace',
                 reason: 'different strings',
               },
             },
@@ -708,7 +708,7 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
               source: 93,
               target: undefined,
               meta: {
-                op: 'delete',
+                op: 'remove',
                 reason: 'value disappeared',
               },
             },
@@ -751,14 +751,14 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
             'publishedOn': (source, target) => ({
               areEqual: source == target, // eslint-disable-line eqeqeq
               meta: {
-                op: 'update',
+                op: 'replace',
                 reason: 'different publish year after loose comparison',
               },
             }),
             'reviewsCount': (source, target) => ({
               areEqual: source <= target,
               meta: {
-                op: 'update',
+                op: 'replace',
                 reason: 'number of reviews decreased',
                 delta: target - source,
               },
@@ -766,7 +766,7 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
             'starsCount': (source, target) => ({
               areEqual: source <= target,
               meta: {
-                op: 'update',
+                op: 'replace',
                 reason: 'number of stars decreased',
                 delta: target - source,
               },
@@ -774,14 +774,14 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
             'genres\\.(\\d+)\\.name': (source, target) => ({
               areEqual: source.toLowerCase() === target.toLowerCase(),
               meta: {
-                op: 'update',
+                op: 'replace',
                 reason: 'different genre names in lower case',
               },
             }),
             'isbn': (source, target) => ({
               areEqual: !source === !target,
               meta: {
-                op: 'update',
+                op: 'replace',
                 reason: 'different falsy values',
               },
             }),
@@ -835,7 +835,7 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
             source: 8562,
             target: 1,
             meta: {
-              op: 'update',
+              op: 'replace',
               reason: 'number of stars decreased',
               delta: -8561,
             },
@@ -913,7 +913,7 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
             'starsCount': (source, target) => ({
               areEqual: source <= target,
               meta: {
-                op: 'update',
+                op: 'replace',
                 reason: 'number of stars decreased',
                 delta: target - source,
               },
@@ -921,7 +921,7 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
             'genres\\.(\\d+)\\.name': (source, target) => ({
               areEqual: source.toLowerCase() === target.toLowerCase(),
               meta: {
-                op: 'update',
+                op: 'replace',
                 reason: 'different genre names in lower case',
               },
             }),
@@ -986,7 +986,7 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
             source: '3 May 1469',
             target: undefined,
             meta: {
-              op: 'delete',
+              op: 'remove',
               reason: 'value disappeared',
             },
           },
@@ -995,7 +995,7 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
             source: '21 June 1527',
             target: '21 June 1532',
             meta: {
-              op: 'update',
+              op: 'replace',
               reason: 'different strings',
             },
           },
@@ -1013,7 +1013,7 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
             source: '1532',
             target: 1532,
             meta: {
-              op: 'type-change',
+              op: 'replace',
               reason: 'type changed from "string" to "number"',
             },
           },
@@ -1022,7 +1022,7 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
             source: 8562,
             target: 1,
             meta: {
-              op: 'update',
+              op: 'replace',
               reason: 'number of stars decreased',
               delta: -8561,
             },
@@ -1032,7 +1032,7 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
             source: 'classics',
             target: 'CLASSIC',
             meta: {
-              op: 'update',
+              op: 'replace',
               reason: 'different genre names in lower case',
             },
           },
@@ -1041,7 +1041,7 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
             source: 93,
             target: undefined,
             meta: {
-              op: 'delete',
+              op: 'remove',
               reason: 'value disappeared',
             },
           },
@@ -1073,14 +1073,14 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
             'publishedOn': (source, target) => ({
               areEqual: source == target, // eslint-disable-line eqeqeq
               meta: {
-                op: 'update',
+                op: 'replace',
                 reason: 'different publish years after loose comparison',
               },
             }),
             'starsCount': (source, target) => ({
               areEqual: source <= target,
               meta: {
-                op: 'update',
+                op: 'replace',
                 reason: 'number of stars decreased',
                 delta: target - source,
               },
@@ -1088,7 +1088,7 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
             'genres\\.(\\d+)\\.name': (source, target) => ({
               areEqual: source.toLowerCase() === target.toLowerCase(),
               meta: {
-                op: 'update',
+                op: 'replace',
                 reason: 'different genre names in lower case',
               },
             }),
@@ -1152,7 +1152,7 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
             path: 'author.life.bornOn',
             source: '3 May 1469',
             meta: {
-              op: 'delete',
+              op: 'remove',
               reason: 'value disappeared',
             },
           },
@@ -1161,7 +1161,7 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
             source: '21 June 1527',
             target: '21 June 1532',
             meta: {
-              op: 'update',
+              op: 'replace',
               reason: 'different strings',
             },
           },
@@ -1170,7 +1170,7 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
             source: 8562,
             target: 1,
             meta: {
-              op: 'update',
+              op: 'replace',
               reason: 'number of stars decreased',
               delta: -8561,
             },
@@ -1180,7 +1180,7 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
             source: 'classics',
             target: 'CLASSIC',
             meta: {
-              op: 'update',
+              op: 'replace',
               reason: 'different genre names in lower case',
             },
           },
@@ -1188,7 +1188,7 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
             path: 'genres.1.id',
             source: 93,
             meta: {
-              op: 'delete',
+              op: 'remove',
               reason: 'value disappeared',
             },
           },
@@ -1209,7 +1209,7 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
           'starsCount': (source, target) => ({
             areEqual: source <= target,
             meta: {
-              op: 'update',
+              op: 'replace',
               reason: 'number of stars decreased',
               delta: target - source,
             },
@@ -1217,7 +1217,7 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
           'genres\\.(\\d+)\\.name': (source, target) => ({
             areEqual: source.toLowerCase() === target.toLowerCase(),
             meta: {
-              op: 'update',
+              op: 'replace',
               reason: 'different genre names in lower case',
             },
           }),
