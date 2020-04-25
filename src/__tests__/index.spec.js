@@ -778,6 +778,13 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
                 reason: 'different genre names in lower case',
               },
             }),
+            'isbn': (source, target) => ({
+              areEqual: !source === !target,
+              meta: {
+                op: 'update',
+                reason: 'different falsy values',
+              },
+            }),
           },
         });
 
@@ -798,6 +805,7 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
             id: 93,
             name: 'philosophy',
           }],
+          isbn: null,
         };
 
         const target = {

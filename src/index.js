@@ -208,6 +208,13 @@ class JoeyTheDiffer {
       .map(([key, sourceValue]) => {
         const targetValue = target[key];
         const newPath = [...path, key];
+
+        const customDiffer = this.findCustomDiffer(newPath);
+
+        if (customDiffer) {
+          return JoeyTheDiffer.customCompare(sourceValue, targetValue, newPath, customDiffer);
+        }
+
         const change = this.comparePropertyExistence(sourceValue, targetValue, newPath, 'disappearance');
 
         if (change) {
