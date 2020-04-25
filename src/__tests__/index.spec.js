@@ -179,6 +179,7 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
               author: 'Niccolò Machiavelli',
               publishedOn: '1532',
               reviewsCount: 9614,
+              isbn: undefined,
             };
 
             const target = {

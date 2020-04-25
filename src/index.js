@@ -246,7 +246,10 @@ class JoeyTheDiffer {
       return null;
     }
 
-    if (checkFor === 'disappearance' && typeof targetValue === 'undefined') {
+    if (checkFor === 'disappearance'
+      && typeof sourceValue !== 'undefined'
+      && typeof targetValue === 'undefined'
+    ) {
       return {
         path: path.join('.'),
         source: sourceValue,
@@ -258,7 +261,10 @@ class JoeyTheDiffer {
       };
     }
 
-    if (checkFor === 'appearance' && typeof sourceValue === 'undefined') {
+    if (checkFor === 'appearance'
+      && typeof sourceValue === 'undefined'
+      && typeof targetValue !== 'undefined'
+    ) {
       return {
         path: path.join('.'),
         source: sourceValue,
