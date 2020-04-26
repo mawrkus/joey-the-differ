@@ -205,7 +205,7 @@ class JoeyTheDiffer {
           return JoeyTheDiffer.customCompare(sourceValue, targetValue, newPath, customDiffer);
         }
 
-        const change = this.comparePropertyExistence(sourceValue, targetValue, newPath, 'disappearance');
+        const change = this.comparePropertyExistence(sourceValue, targetValue, newPath, 'remove');
 
         if (change) {
           return change;
@@ -224,7 +224,7 @@ class JoeyTheDiffer {
         const sourceValue = source[key];
         const newPath = [...path, key];
 
-        return this.comparePropertyExistence(sourceValue, targetValue, newPath, 'appearance');
+        return this.comparePropertyExistence(sourceValue, targetValue, newPath, 'add');
       })
       .filter(Boolean);
 
@@ -235,15 +235,15 @@ class JoeyTheDiffer {
    * @param {*} sourceValue
    * @param {*} targetValue
    * @param {Array} path
-   * @param {string} checkFor 'appearance' or 'disappearance'
+   * @param {string} op 'remove' or 'add'
    * @return {Null|Object}
    */
-  comparePropertyExistence(sourceValue, targetValue, path, checkFor) {
+  comparePropertyExistence(sourceValue, targetValue, path, op) {
     if (this.isBlacklisted(path)) {
       return null;
     }
 
-    if (checkFor === 'disappearance'
+    if (op === 'remove'
       && typeof sourceValue !== 'undefined'
       && typeof targetValue === 'undefined'
     ) {
@@ -252,13 +252,13 @@ class JoeyTheDiffer {
         source: sourceValue,
         target: targetValue,
         meta: {
-          op: 'remove',
+          op,
           reason: 'value disappeared',
         },
       };
     }
 
-    if (checkFor === 'appearance'
+    if (op === 'add'
       && typeof sourceValue === 'undefined'
       && typeof targetValue !== 'undefined'
     ) {
@@ -267,7 +267,7 @@ class JoeyTheDiffer {
         source: sourceValue,
         target: targetValue,
         meta: {
-          op: 'add',
+          op,
           reason: 'value appeared',
         },
       };
