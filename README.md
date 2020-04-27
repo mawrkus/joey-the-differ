@@ -10,6 +10,10 @@ npm install joey-the-differ
 
 ## 🧬 Usage
 
+### Command-line
+`docker run joey-the-differ --help`
+
+### Library
 ```js
 import JoeyTheDiffer from 'joey-the-differ';
 
