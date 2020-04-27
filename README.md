@@ -10,6 +10,28 @@ npm install joey-the-differ
 
 ## 🧬 Usage
 
+### Command line
+
+```text
+Usage: joey-the-differ [options]
+
+Options:
+  -V, --version        output the version number
+  -s, --source [file]  source file (JSON), required
+  -t, --target [file]  target file (JSON), required
+  -c, --config [file]  config file (JS), optional
+```
+
+For instance, using [npx](https://github.com/npm/npx):
+
+```shell
+npx joey-the-differ -s demo/source.json -t demo/target.json -c demo/options.js
+```
+
+Have a look at the [demo folder](./demo) to see the content of the files.
+
+### Node.js module
+
 ```js
 import JoeyTheDiffer from 'joey-the-differ';
 
@@ -91,7 +113,7 @@ const joey = new JoeyTheDiffer(options);
 const changes = joey.diff(currentBookData, newBookData);
 
 // or with files:
-// const changes = await joey.diffFiles('/books/currentData.json', '/books/newData.json');
+// const changes = await joey.diffFiles('./demo/source.json', '.demo/target.json');
 
 console.log(changes);
 /*
