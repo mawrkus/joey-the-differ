@@ -34,7 +34,7 @@ if (configFile) {
     // eslint-disable-next-line import/no-dynamic-require, global-require
     options = require(path.resolve(configFile));
   } catch (error) {
-    console.error(`Error while loading the JS config file "${program.config}"!`);
+    console.error(`Error while loading the JS config file "${configFile}"!`);
     console.error(error);
     process.exit(1);
   }
