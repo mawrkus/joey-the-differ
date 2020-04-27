@@ -11,7 +11,12 @@ npm install mawrkus/joey-the-differ
 ## 🧬 Usage
 
 ### Command-line
+
+Checking help
 `docker run joey-the-differ --help`
+
+Running a diff
+`docker run -v ${PWD}:/tmp joey-the-differ -s source.json -t target.json`
 
 ### Library
 ```js
