@@ -5,7 +5,7 @@ JSON diffing on steroids.
 ## 🧬 Installation
 
 ```shell
-npm install joey-the-differ
+npm install mawrkus/joey-the-differ
 ```
 
 ## 🧬 Usage
