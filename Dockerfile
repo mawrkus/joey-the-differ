@@ -1,8 +1,8 @@
-FROM node:14
+FROM node:14.16-alpine
 
 WORKDIR "/app"
 
-RUN git clone https://github.com/mawrkus/docker .git . \
-    && yarn install
+COPY . /app
+RUN yarn install
 
 ENTRYPOINT ["node", "bin/joey-the-differ.js"]

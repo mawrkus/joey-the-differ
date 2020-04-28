@@ -5,20 +5,17 @@ JSON diffing on steroids.
 ## 🧬 Installation
 
 ```shell
-npm install mawrkus/joey-the-differ
+npm install joey-the-differ
 ```
 
 ## 🧬 Usage
 
-### Command-line
+### Command line
 
-Checking help
-`docker run joey-the-differ --help`
+Docker
+`docker run -v ${PWD}:/tmp joey-the-differ -s source.json -t target.json -c config.js`
 
-Running a diff
-`docker run -v ${PWD}:/tmp joey-the-differ -s source.json -t target.json`
-
-### Library
+### Node.js module
 ```js
 import JoeyTheDiffer from 'joey-the-differ';
 
