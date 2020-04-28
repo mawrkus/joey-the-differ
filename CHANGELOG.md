@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.2.0] - 2020-04-28
+
+### Added
+
+- `-c` CLI option: it's now possible to specify a config file that will be passed as options to Joey
+- Added demo files
+
 ## [1.1.0] - 2020-04-25
 
 ### Changed
