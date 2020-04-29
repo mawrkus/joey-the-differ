@@ -28,7 +28,7 @@ For instance, using [npx](https://github.com/npm/npx):
 npx joey-the-differ -s demo/source.json -t demo/target.json -c demo/options.js
 ```
 
-os using [Docker](https://www.docker.com/why-docker)
+or using [Docker](https://www.docker.com/why-docker)
 ```shell
 docker run -v ${PWD}:/tmp mawrkus/joey-the-differ -s /tmp/demo/source.json -t /tmp/demo/target.json -c /tmp/demo/options.js
 ```
