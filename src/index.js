@@ -57,9 +57,12 @@ class JoeyTheDiffer {
     }
 
     const sourceType = JoeyTheDiffer.getType(source, path);
+    const targetType = JoeyTheDiffer.getType(target, path);
 
-    if (sourceType.isPrimitive) {
-      const change = JoeyTheDiffer.comparePrimitiveTypes(source, target, path, sourceType);
+    if (sourceType.isPrimitive || targetType.isPrimitive) {
+      const change = JoeyTheDiffer.comparePrimitiveTypes(
+        source, target, path, sourceType, targetType,
+      );
       return change === null ? [] : [change];
     }
 
@@ -161,28 +164,58 @@ class JoeyTheDiffer {
    * @param {*} source
    * @param {*} target
    * @param {Array} path
-   * @param {Object} types
+   * @param {Object} sourceType
+   * @param {Object} targetType
    * @return {Null|Object}
    */
-  static comparePrimitiveTypes(source, target, path, sourceType) {
+  static comparePrimitiveTypes(source, target, path, sourceType, targetType) {
     const areEqual = source === target;
 
     if (areEqual) {
       return null;
     }
 
-    const targetType = JoeyTheDiffer.getType(target, path);
-    const areSameType = sourceType.name === targetType.name;
-
-    return {
+    const partialResult = {
       path: path.join('.'),
       source,
       target,
+    };
+
+    if (sourceType.name === targetType.name) {
+      return {
+        ...partialResult,
+        meta: {
+          op: 'replace',
+          reason: `different ${sourceType.name}s`,
+        },
+      };
+    }
+
+    if (!this.allowNewTargetProperties && sourceType.name === 'undefined') {
+      return {
+        ...partialResult,
+        meta: {
+          op: 'add',
+          reason: 'value appeared',
+        },
+      };
+    }
+
+    if (targetType.name === 'undefined') {
+      return {
+        ...partialResult,
+        meta: {
+          op: 'remove',
+          reason: 'value disappeared',
+        },
+      };
+    }
+
+    return {
+      ...partialResult,
       meta: {
         op: 'replace',
-        reason: areSameType
-          ? `different ${sourceType.name}s`
-          : `type changed from "${sourceType.name}" to "${targetType.name}"`,
+        reason: `type changed from "${sourceType.name}" to "${targetType.name}"`,
       },
     };
   }
@@ -205,12 +238,6 @@ class JoeyTheDiffer {
           return JoeyTheDiffer.customCompare(sourceValue, targetValue, newPath, customDiffer);
         }
 
-        const change = this.comparePropertyExistence(sourceValue, targetValue, newPath, 'remove');
-
-        if (change) {
-          return change;
-        }
-
         return this.diff(sourceValue, targetValue, newPath);
       })
       .filter(Boolean);
@@ -220,60 +247,25 @@ class JoeyTheDiffer {
     }
 
     const targetChanges = Object.entries(target)
+      .filter(([key]) => !(key in source) && !this.isBlacklisted([...path, key]))
       .map(([key, targetValue]) => {
-        const sourceValue = source[key];
-        const newPath = [...path, key];
+        if (typeof targetValue !== 'undefined') {
+          return {
+            path: [...path, key].join('.'),
+            source: source[key],
+            target: targetValue,
+            meta: {
+              op: 'add',
+              reason: 'value appeared',
+            },
+          };
+        }
 
-        return this.comparePropertyExistence(sourceValue, targetValue, newPath, 'add');
+        return null;
       })
       .filter(Boolean);
 
     return flattenDeep([sourceChanges, targetChanges]);
-  }
-
-  /**
-   * @param {*} sourceValue
-   * @param {*} targetValue
-   * @param {Array} path
-   * @param {string} op 'remove' or 'add'
-   * @return {Null|Object}
-   */
-  comparePropertyExistence(sourceValue, targetValue, path, op) {
-    if (this.isBlacklisted(path)) {
-      return null;
-    }
-
-    if (op === 'remove'
-      && typeof sourceValue !== 'undefined'
-      && typeof targetValue === 'undefined'
-    ) {
-      return {
-        path: path.join('.'),
-        source: sourceValue,
-        target: targetValue,
-        meta: {
-          op,
-          reason: 'value disappeared',
-        },
-      };
-    }
-
-    if (op === 'add'
-      && typeof sourceValue === 'undefined'
-      && typeof targetValue !== 'undefined'
-    ) {
-      return {
-        path: path.join('.'),
-        source: sourceValue,
-        target: targetValue,
-        meta: {
-          op,
-          reason: 'value appeared',
-        },
-      };
-    }
-
-    return null;
   }
 }
 

@@ -12,10 +12,31 @@ npm install joey-the-differ
 
 ### Command line
 
-Docker
-`docker run -v ${PWD}:/tmp joey-the-differ -s source.json -t target.json -c config.js`
+```text
+Usage: joey-the-differ [options]
+
+Options:
+  -V, --version        output the version number
+  -s, --source [file]  source file (JSON), required
+  -t, --target [file]  target file (JSON), required
+  -c, --config [file]  config file (JS), optional
+```
+
+For instance, using [npx](https://github.com/npm/npx):
+
+```shell
+npx joey-the-differ -s demo/source.json -t demo/target.json -c demo/options.js
+```
+
+os using [Docker](https://www.docker.com/why-docker)
+```shell
+docker run -v ${PWD}:/tmp mawrkus/joey-the-differ -s /tmp/demo/source.json -t /tmp/demo/target.json -c /tmp/demo/options.js
+```
+
+Have a look at the [demo folder](./demo) to see the content of the files.
 
 ### Node.js module
+
 ```js
 import JoeyTheDiffer from 'joey-the-differ';
 
@@ -97,7 +118,7 @@ const joey = new JoeyTheDiffer(options);
 const changes = joey.diff(currentBookData, newBookData);
 
 // or with files:
-// const changes = await joey.diffFiles('/books/currentData.json', '/books/newData.json');
+// const changes = await joey.diffFiles('./demo/source.json', '.demo/target.json');
 
 console.log(changes);
 /*

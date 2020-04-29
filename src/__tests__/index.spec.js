@@ -132,6 +132,110 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
             },
           ]);
         });
+
+        describe('when diffing undefined to null', () => {
+          it('should detect that a new value appeared', () => {
+            const joey = new JoeyTheDiffer();
+
+            const diffs = joey.diff(undefined, null);
+
+            expect(diffs).toEqual([
+              {
+                path: '',
+                source: undefined,
+                target: null,
+                meta: {
+                  op: 'add',
+                  reason: 'value appeared',
+                },
+              },
+            ]);
+          });
+
+          describe('within objects', () => {
+            it('should detect that new values appeared', () => {
+              const joey = new JoeyTheDiffer();
+
+              const diffs = joey.diff(
+                { reviewType: undefined },
+                { reviewType: { type: null }, isbn: null },
+              );
+
+              expect(diffs).toEqual([
+                {
+                  path: 'reviewType',
+                  source: undefined,
+                  target: { type: null },
+                  meta: {
+                    op: 'add',
+                    reason: 'value appeared',
+                  },
+                },
+                {
+                  path: 'isbn',
+                  source: undefined,
+                  target: null,
+                  meta: {
+                    op: 'add',
+                    reason: 'value appeared',
+                  },
+                },
+              ]);
+            });
+          });
+        });
+
+        describe('when diffing null to undefined', () => {
+          it('should detect that a value disappeared', () => {
+            const joey = new JoeyTheDiffer();
+
+            const diffs = joey.diff(null, undefined);
+
+            expect(diffs).toEqual([
+              {
+                path: '',
+                source: null,
+                target: undefined,
+                meta: {
+                  op: 'remove',
+                  reason: 'value disappeared',
+                },
+              },
+            ]);
+          });
+
+          describe('within objects', () => {
+            it('should detect that values disappeared', () => {
+              const joey = new JoeyTheDiffer();
+
+              const diffs = joey.diff(
+                { reviewType: { type: null }, isbn: null },
+                { reviewType: undefined },
+              );
+
+              expect(diffs).toEqual([
+                {
+                  path: 'reviewType',
+                  source: { type: null },
+                  target: undefined,
+                  meta: {
+                    op: 'remove',
+                    reason: 'value disappeared',
+                  },
+                },
+                {
+                  path: 'isbn',
+                  source: null,
+                  target: undefined,
+                  meta: {
+                    op: 'remove',
+                    reason: 'value disappeared',
+                  },
+                },
+              ]);
+            });
+          });
+        });
       });
 
       describe('unknown types diffing', () => {
