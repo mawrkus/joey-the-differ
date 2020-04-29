@@ -1,0 +1,21 @@
+# Node
+node_modules
+npm-debug.log
+yarn-error.log
+
+# Git
+.git
+.gitattributes
+.gitignore
+
+# Docker
+.dockerignore
+docker-compose.*
+Dockerfile
+
+# Build
+coverage
+
+# Misc
+.DS_Store
+.vscode
