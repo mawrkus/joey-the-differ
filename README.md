@@ -207,13 +207,13 @@ console.log(changes);
 
 | Name  | Type  | Default | Description | Example |
 | ---   | ---   | ---     | ---         | ---     |
-| `blacklist` | String[] | [] | An array of regular expressions used to match specific `source` properties identified by their path | `'genres\\.(\\d+)\\.booksCount'` will prevent diffing the `booksCount` property of all the `genres` array elements (objects) |
+| `blacklist` | String[] | [] | An array of regular expressions used to match specific properties identified by their path | `'genres\\.(\\d+)\\.booksCount'` will prevent diffing the `booksCount` property of all the `genres` array elements (objects) |
 | `allowNewTargetProperties` | Boolean | false | To allow or not diffing properties that exist in `target` but not in `source` | |
 | `differs` | Object | {} | Custom differs, associating a regular expression to a diffing function  | See "Usage" above |
 
 ### diff(source, target)
 
-Compares `source` to `target` by recursively visiting all `source` properties and diffing them with the corresponding properties in `target`. If a `blacklist` option was passed, it is used to prevent diffing specific `source` properties identified by their path.
+Compares `source` to `target` by recursively visiting all `source` properties and diffing them with the corresponding properties in `target`. If a `blacklist` option was passed, it is used to prevent diffing specific roperties identified by their path.
 
 If `allowNewTargetProperties` is set to `true`, the properties that exist in `target` but not in `source` don't appear in the changes.
 

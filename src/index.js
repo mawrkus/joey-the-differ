@@ -247,21 +247,24 @@ class JoeyTheDiffer {
     }
 
     const targetChanges = Object.entries(target)
-      .filter(([key]) => !(key in source) && !this.isBlacklisted([...path, key]))
       .map(([key, targetValue]) => {
-        if (typeof targetValue !== 'undefined') {
-          return {
-            path: [...path, key].join('.'),
-            source: source[key],
-            target: targetValue,
-            meta: {
-              op: 'add',
-              reason: 'value appeared',
-            },
-          };
+        if (
+          (key in source)
+          || (typeof targetValue === 'undefined')
+          || this.isBlacklisted([...path, key])
+        ) {
+          return null;
         }
 
-        return null;
+        return {
+          path: [...path, key].join('.'),
+          source: source[key],
+          target: targetValue,
+          meta: {
+            op: 'add',
+            reason: 'value appeared',
+          },
+        };
       })
       .filter(Boolean);
 
