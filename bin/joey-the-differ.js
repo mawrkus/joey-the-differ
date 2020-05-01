@@ -8,10 +8,10 @@ const { version } = require('../package');
 
 program
   .version(version)
-  .option('-s, --source [file]', 'source file (JSON), required', String)
-  .option('-t, --target [file]', 'target file (JSON), required', String)
+  .option('-s, --source [file]', 'source file or directory, required', String)
+  .option('-t, --target [file]', 'target file or directory, required', String)
+  .option('-o, --output [file]', 'output file or directory, optional', String)
   .option('-c, --config [file]', 'config file (JS), optional', String)
-  .option('-o, --output [file]', 'output file (JSON), optional', String)
   .option('-v, --verbose', 'verbose mode, optional')
   .parse(process.argv);
 
