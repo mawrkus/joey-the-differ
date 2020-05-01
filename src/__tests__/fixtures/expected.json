@@ -36,11 +36,15 @@
   {
     "path": "starsCount",
     "source": 8562,
-    "target": 1,
+    "target": null,
     "meta": {
       "op": "replace",
       "reason": "number of stars decreased",
-      "delta": -8561
+      "delta": -8562,
+      "preprocessor": {
+        "source": 8562,
+        "target": 0
+      }
     }
   },
   {
