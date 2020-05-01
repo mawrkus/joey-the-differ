@@ -2,6 +2,8 @@ const { promises: fsPromises } = require('fs');
 const nodePath = require('path');
 const EventEmitter = require('events');
 
+const intersectionBy = require('lodash.intersectionby');
+
 class FilesDiffer extends EventEmitter {
   /**
    * @param {Function} diffFn
@@ -63,12 +65,10 @@ class FilesDiffer extends EventEmitter {
       return this.diffCombination(
         (await fsPromises.readdir(source)).map((fileName) => ({
           fileName,
-          filePath: nodePath.resolve(source, fileName),
+          source: nodePath.resolve(source, fileName),
+          target: nodePath.resolve(target, fileName),
         })),
-        (await fsPromises.readdir(target)).map((fileName) => ({
-          fileName,
-          filePath: nodePath.resolve(target, fileName),
-        })),
+        (await fsPromises.readdir(target)).map((fileName) => ({ fileName })),
         output,
         isOutputADirectory,
       );
@@ -108,18 +108,13 @@ class FilesDiffer extends EventEmitter {
         sourcesCount,
       ));
     } else if (sourcesCount > 1 && targetsCount > 1) {
-      const targetsObj = targets.reduce((acc, { fileName, filePath }) => ({
-        ...acc,
-        [fileName]: filePath,
-      }), {});
+      const pairs = intersectionBy(sources, targets, 'fileName');
+      const pairsCount = pairs.length;
 
-      const filteredSources = sources.filter(({ fileName }) => targetsObj[fileName]);
-      const filteredSourcesCount = filteredSources.length;
-
-      diffsP = filteredSources.map(({ fileName, filePath: source }, index) => this.diffFiles(
-        { source, target: targetsObj[fileName], output: getOuputFilePath(fileName) },
+      diffsP = pairs.map(({ fileName, source, target }, index) => this.diffFiles(
+        { source, target, output: getOuputFilePath(fileName) },
         index,
-        filteredSourcesCount,
+        pairsCount,
       ));
     }
 
