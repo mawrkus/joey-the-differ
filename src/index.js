@@ -258,7 +258,7 @@ class JoeyTheDiffer {
           || (typeof targetValue === 'undefined')
           || this.isBlacklisted([...path, key])
         ) {
-          return null;
+          return [];
         }
 
         return {
@@ -270,8 +270,7 @@ class JoeyTheDiffer {
             reason: 'value appeared',
           },
         };
-      })
-      .filter(Boolean);
+      });
 
     return flattenDeep([sourceChanges, targetChanges]);
   }
