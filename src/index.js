@@ -43,7 +43,7 @@ class JoeyTheDiffer {
     this.blacklistRegexes = blacklist;
     this.allowNewTargetProperties = allowNewTargetProperties;
 
-    this.filesDiffer = new FilesDiffer({ joey: this });
+    this.filesDiffer = new FilesDiffer({ diffFn: this.diff.bind(this) });
   }
 
   /**

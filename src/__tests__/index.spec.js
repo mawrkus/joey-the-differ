@@ -1460,9 +1460,9 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
         },
       };
 
-      const joey = new JoeyTheDiffer(options);
+      jest.spyOn(JoeyTheDiffer.prototype, 'diff');
 
-      jest.spyOn(joey, 'diff');
+      const joey = new JoeyTheDiffer(options);
 
       const [results] = await joey.diffFiles(
         `${__dirname}/fixtures/source.json`,

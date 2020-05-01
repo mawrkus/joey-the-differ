@@ -3,9 +3,12 @@ const nodePath = require('path');
 const EventEmitter = require('events');
 
 class FilesDiffer extends EventEmitter {
-  constructor({ joey }) {
+  /**
+   * @param {Function} diffFn
+   */
+  constructor({ diffFn }) {
     super();
-    this.joey = joey;
+    this.diffFn = diffFn;
   }
 
   /**
@@ -72,6 +75,9 @@ class FilesDiffer extends EventEmitter {
     const sourcesCount = sources.length;
     const targetsCount = targets.length;
 
+    // if output = file -> write at end
+    // if output = dir -> pass a new output at each iteration
+
     if (sourcesCount === 1) {
       const [source] = sources;
       diffsP = targets.map((target, index) => this.diffFiles(
@@ -130,7 +136,7 @@ class FilesDiffer extends EventEmitter {
       fsPromises.readFile(filePaths.target, readWriteOptions).then((json) => JSON.parse(json)),
     ]);
 
-    const changes = this.joey.diff(source, target);
+    const changes = this.diffFn(source, target);
     const results = { source: filePaths.source, target: filePaths.target, changes };
 
     this.emit('diff:file:end', { ...diffEvent, changes });
