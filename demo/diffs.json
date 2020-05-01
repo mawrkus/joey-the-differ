@@ -1,6 +1,6 @@
 {
-  "source": "/Users/mawrkus/_/dev/packages/joey-the-differ/demo/source.json",
-  "target": "/Users/mawrkus/_/dev/packages/joey-the-differ/demo/target.json",
+  "source": "./demo/source.json",
+  "target": "./demo/target.json",
   "changes": [
     {
       "path": "author.life.bornOn",
