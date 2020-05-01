@@ -17,9 +17,12 @@ Usage: joey-the-differ [options]
 
 Options:
   -V, --version        output the version number
-  -s, --source [file]  source file (JSON), required
-  -t, --target [file]  target file (JSON), required
+  -s, --source [file]  source file or directory, required
+  -t, --target [file]  target file or directory, required
+  -o, --output [file]  output file or directory, optional
   -c, --config [file]  config file (JS), optional
+  -v, --verbose        verbose mode, optional
+  -h, --help           display help for command
 ```
 
 For instance, using [npx](https://github.com/npm/npx):
@@ -36,6 +39,28 @@ docker run -v ${PWD}:/tmp mawrkus/joey-the-differ -s /tmp/demo/source.json -t /t
 ```
 
 Have a look at the [demo folder](./demo) to see the content of the files.
+
+#### Bulk diffing
+
+You can diff a `source` file against many, if `target` is a directory:
+
+```shell
+npx joey-the-differ -s demo/bulk/sources/1.json -t demo/bulk/targets -c demo/options.js
+```
+
+or if `source` is a directory and `target` is a file:
+
+```shell
+npx joey-the-differ -s demo/bulk/sources -t demo/bulk/targets/1.json -c demo/options.js
+```
+
+or matching pairs of files if `source` and `target` are directories:
+
+```shell
+npx joey-the-differ -s demo/bulk/sources -t demo/bulk/targets -c demo/options.js
+```
+
+In this case, the pairs with the same file names in both `source` and `target` will be diffed.
 
 ### Node.js module
 
@@ -260,15 +285,13 @@ const changes = joey.diff(source, target);
 }
 ```
 
-### async diffFiles(sourceFilePath, targetFilePath, optionalOutputFilePath)
-
-A method to work with files.
+### async diffFiles(sourcePath, targetPath, optionalOutputPath)
 
 ```js
-const results = await joey.diffFiles(sourceFilePath, targetFilePath, optionalOutputFilePath);
+const results = await joey.diffFiles(sourcePath, targetPath, optionalOutputPath);
 ```
 
-`results` is an array of objects like:
+Depending on the parameters, `results` will be either an object (if `sourcePath` and `targetPath` are both files) or an array of objects like:
 
 ```js
 [
@@ -279,8 +302,13 @@ const results = await joey.diffFiles(sourceFilePath, targetFilePath, optionalOut
       // see above
     ],
   },
+  {
+    // ...
+  },
 ]
 ```
+
+`optionalOutputPath` can be either a file or a directory. In case of a directory, for each source file, a file with the same name will be created in it.
 
 ## 🧬 Contribute
 
