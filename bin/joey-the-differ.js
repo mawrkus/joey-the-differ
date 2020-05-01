@@ -49,20 +49,28 @@ const JoeyTheDiffer = require('..');
 const joey = new JoeyTheDiffer(options);
 
 if (verbose) {
+  joey.filesDiffer.on('diff:files:start', ({ total }) => {
+    console.info('%d file(s) to diff.', total);
+  });
+
   joey.filesDiffer.on('diff:file:start', ({ source, target, current, total }) => {
-    console.info('[%d/%d] Diffing "%s" -> "%s"...', current, total, source, target);
+    console.info('[%d/%d] Diffing...\n  %s\n  %s', current, total, source, target);
   });
 
   joey.filesDiffer.on('diff:file:end', ({ source, target, current, total, changes }) => {
-    console.info('[%d/%d] "%s" -> "%s": %d change(s).', current, total, source, target, changes.length);
+    console.info('[%d/%d] Diffed: %d change(s).\n  %s\n  %s', current, total, changes.length, source, target);
   });
 
   joey.filesDiffer.on('save:file:start', ({ output, current, total }) => {
-    console.info('[%d/%d] Saving "%s"...', current, total, output);
+    console.info('[%d/%d] Saving...\n  %s...', current, total, output);
   });
 
   joey.filesDiffer.on('save:file:end', ({ output, current, total }) => {
-    console.info('[%d/%d] "%s" saved.', current, total, output);
+    console.info('[%d/%d] Saved.\n  %s', current, total, output);
+  });
+
+  joey.filesDiffer.on('diff:files:end', ({ total }) => {
+    console.info('Done diffing %d file(s).', total);
   });
 }
 

@@ -95,6 +95,9 @@ class FilesDiffer extends EventEmitter {
 
     if (sourcesCount === 1) {
       const [source] = sources;
+
+      this.emit('diff:files:start', { total: targetsCount });
+
       diffsP = targets.map((target, index) => this.diffFiles(
         { source, target, output: getOuputFilePath(target) },
         index,
@@ -102,6 +105,9 @@ class FilesDiffer extends EventEmitter {
       ));
     } else if (targetsCount === 1) {
       const [target] = targets;
+
+      this.emit('diff:files:start', { total: sourcesCount });
+
       diffsP = sources.map((source, index) => this.diffFiles(
         { source, target, output: getOuputFilePath(source) },
         index,
@@ -110,6 +116,8 @@ class FilesDiffer extends EventEmitter {
     } else if (sourcesCount > 1 && targetsCount > 1) {
       const pairs = intersectionBy(sources, targets, 'fileName');
       const pairsCount = pairs.length;
+
+      this.emit('diff:files:start', { total: pairsCount });
 
       diffsP = pairs.map(({ fileName, source, target }, index) => this.diffFiles(
         { source, target, output: getOuputFilePath(fileName) },
@@ -121,10 +129,10 @@ class FilesDiffer extends EventEmitter {
     const allResults = await Promise.all(diffsP);
 
     if (!isOutputADirectory && output) {
-      const outputFilePath = nodePath.resolve(output);
-      const diffEvent = { output, current: 1, total: 1 };
-      await this.saveResults(outputFilePath, allResults, diffEvent);
+      await this.saveResults(nodePath.resolve(output), allResults);
     }
+
+    this.emit('diff:files:end', { total: allResults.length });
 
     return allResults;
   }
@@ -169,9 +177,9 @@ class FilesDiffer extends EventEmitter {
   /**
    * @param {string} output
    * @param {Object|Array} results
-   * @param {Object} diffEvent
+   * @param {Object} [diffEvent={ current: 1, total: 1 }]
    */
-  async saveResults(output, results, diffEvent) {
+  async saveResults(output, results, diffEvent = { current: 1, total: 1 }) {
     const saveEvent = { ...diffEvent, output };
 
     this.emit('save:file:start', saveEvent);
