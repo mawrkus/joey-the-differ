@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-/* eslint-disable no-console */
+/* eslint-disable no-console, object-curly-newline */
 
 const path = require('path');
 const program = require('commander');
@@ -12,6 +12,7 @@ program
   .option('-t, --target [file]', 'target file (JSON), required', String)
   .option('-c, --config [file]', 'config file (JS), optional', String)
   .option('-o, --output [file]', 'output file (JSON), optional', String)
+  .option('-v, --verbose', 'verbose mode, optional')
   .parse(process.argv);
 
 ['source', 'target'].forEach((f) => {
@@ -26,7 +27,9 @@ const {
   target: targetFile,
   config: configFile,
   output: outputFile,
+  verbose,
 } = program;
+
 
 let options = {};
 
@@ -45,13 +48,29 @@ const JoeyTheDiffer = require('..');
 
 const joey = new JoeyTheDiffer(options);
 
+if (verbose) {
+  joey.on('diff:file:start', ({ source, target, current, total }) => {
+    console.info('[%d/%d] Diffing "%s" vs "%s"...', current, total, source, target);
+  });
+
+  joey.on('diff:file:end', ({ source, target, current, total, changes }) => {
+    console.info('[%d/%d] "%s" vs "%s": %d change(s).', current, total, source, target, changes.length);
+  });
+
+  joey.on('save:file:start', ({ output, current, total }) => {
+    console.info('[%d/%d] Saving "%s"...', current, total, output);
+  });
+
+  joey.on('save:file:end', ({ output, current, total }) => {
+    console.info('[%d/%d] "%s" saved.', current, total, output);
+  });
+}
+
 joey
   .diffFiles(sourceFile, targetFile, outputFile)
-  .then((changes) => {
-    if (outputFile) {
-      console.log('All good! Results saved in "%s".', outputFile);
-    } else {
-      console.log(JSON.stringify(changes, null, 2));
+  .then((results) => {
+    if (!outputFile) {
+      console.log(JSON.stringify(results, null, 2));
     }
   })
   .catch((error) => {

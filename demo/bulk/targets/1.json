@@ -1,0 +1,22 @@
+{
+  "id": 42,
+  "title": "The Prince",
+  "author": {
+    "name": "Niccolò",
+    "surname": "Machiavelli",
+    "life": {
+      "bornOn": "3 May 1469",
+      "diedOn": "21 June 1527",
+      "bornIn": "Firenze"
+    }
+  },
+  "publishedOn": "1532",
+  "starsCount": null,
+  "genres": [{
+    "id": 4,
+    "name": "classics"
+  }, {
+    "name": "PHILOSOPHY",
+    "booksCount": 843942
+  }]
+}

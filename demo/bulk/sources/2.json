@@ -1,0 +1,16 @@
+{
+  "id": 42,
+  "title": "The Prince",
+  "author": {
+    "name": "Niccolò",
+    "surname": "Machiavelli"
+  },
+  "publishedOn": "?",
+  "genres": [{
+    "id": 4,
+    "name": "classic"
+  }, {
+    "id": 93,
+    "name": "philosophy"
+  }]
+}

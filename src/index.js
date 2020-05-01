@@ -1,9 +1,12 @@
 const { promises: fsPromises } = require('fs');
+const nodePath = require('path');
+const EventEmitter = require('events');
+
 const flattenDeep = require('lodash.flattendeep');
 
 const { toString } = Object.prototype;
 
-class JoeyTheDiffer {
+class JoeyTheDiffer extends EventEmitter {
   /**
    * @param {Object} options
    * @param {Object} [options.preprocessors={}]
@@ -17,6 +20,8 @@ class JoeyTheDiffer {
     blacklist = [],
     allowNewTargetProperties = false,
   } = {}) {
+    super();
+
     const processors = blacklist.reduce((acc, regex) => ({
       ...acc,
       [regex]: { isBlackListed: true },
@@ -45,23 +50,126 @@ class JoeyTheDiffer {
   }
 
   /**
-   * @param {string} sourceFilePath
-   * @param {string} targetFilePath
-   * @param {string} [outputFilePath]
-   * @return {Promis.<Array>}
+   * @param {string} source
+   * @param {string} target
+   * @param {string} [output]
+   * @return {Promise.<Array>}
    */
-  async diffFiles(sourceFilePath, targetFilePath, outputFilePath) {
+  async diffFiles(source, target, output) {
+    const [sourceStats, targetStats] = await Promise.all([
+      fsPromises.stat(source),
+      fsPromises.stat(target),
+    ]);
+
+    if (sourceStats.isFile() && targetStats.isFile()) {
+      return this.diffFilesCombination(
+        [nodePath.resolve(source)],
+        [nodePath.resolve(target)],
+        output,
+      );
+    }
+
+    if (sourceStats.isFile() && targetStats.isDirectory()) {
+      return this.diffFilesCombination(
+        [nodePath.resolve(source)],
+        (await fsPromises.readdir(target)).map((fileName) => nodePath.resolve(target, fileName)),
+        output,
+      );
+    }
+
+    if (sourceStats.isDirectory() && targetStats.isFile()) {
+      return this.diffFilesCombination(
+        (await fsPromises.readdir(source)).map((fileName) => nodePath.resolve(source, fileName)),
+        [nodePath.resolve(target)],
+        output,
+      );
+    }
+
+    if (sourceStats.isDirectory() && targetStats.isDirectory()) {
+      return this.diffFilesCombination(
+        (await fsPromises.readdir(source)).map((fileName) => nodePath.resolve(source, fileName)),
+        (await fsPromises.readdir(target)).map((fileName) => nodePath.resolve(target, fileName)),
+        output,
+      );
+    }
+
+    throw TypeError('Source and target must be either files or directories!');
+  }
+
+  /**
+   * @param {string[]} sources
+   * @param {string[]} targets
+   * @param {string} [output]
+   * @return {Promise.<Array>}
+   */
+  async diffFilesCombination(sources, targets, output) {
+    let diffsP = [];
+    const sourcesCount = sources.length;
+    const targetsCount = targets.length;
+
+    if (sourcesCount === 1) {
+      const [source] = sources;
+
+      diffsP = targets.map(async (target, index) => {
+        const filePaths = { source, target, output };
+        const changes = await this.diffBothFiles(filePaths, index, targetsCount);
+        return { source, target, changes };
+      });
+    } else if (targetsCount === 1) {
+      const [target] = targets;
+
+      diffsP = sources.map(async (source, index) => {
+        const filePaths = { source, target, output };
+        const changes = await this.diffBothFiles(filePaths, index, sourcesCount);
+        return { source, target, changes };
+      });
+    } else if (sourcesCount > 1 && targetsCount > 1) {
+      throw new Error('TODO!');
+    }
+
+    return Promise.all(diffsP);
+  }
+
+  /**
+   * @param {Object} filePaths
+   * @param {Object} filePaths.source
+   * @param {Object} filePaths.target
+   * @param {Object} [filePaths.output]
+   * @param {number} [index=0]
+   * @param {number} [total=1]
+   * @return {Promise.<Array>}
+   */
+  async diffBothFiles(filePaths, index = 0, total = 1) {
+    const filesData = {
+      source: filePaths.source,
+      target: filePaths.target,
+      current: index + 1,
+      total,
+    };
+    this.emit('diff:file:start', filesData);
+
     const options = { encoding: 'utf8' };
 
     const [source, target] = await Promise.all([
-      fsPromises.readFile(sourceFilePath, options).then((json) => JSON.parse(json)),
-      fsPromises.readFile(targetFilePath, options).then((json) => JSON.parse(json)),
+      fsPromises.readFile(filePaths.source, options).then((json) => JSON.parse(json)),
+      fsPromises.readFile(filePaths.target, options).then((json) => JSON.parse(json)),
     ]);
 
     const changes = this.diff(source, target);
 
-    if (outputFilePath) {
-      await fsPromises.writeFile(outputFilePath, JSON.stringify(changes, null, 2), options);
+    this.emit('diff:file:end', { ...filesData, changes });
+
+    if (filePaths.output) {
+      const output = nodePath.resolve(filePaths.output);
+      const event = { ...filesData, output };
+
+      this.emit('save:file:start', event);
+
+      const results = { source: filePaths.source, target: filePaths.target, changes };
+
+      await fsPromises.writeFile(output, JSON.stringify(results, null, 2), options);
+
+      this.emit('save:file:end', event);
     }
 
     return changes;

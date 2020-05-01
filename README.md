@@ -126,7 +126,7 @@ const joey = new JoeyTheDiffer(options);
 const changes = joey.diff(currentBookData, newBookData);
 
 // or with files:
-// const changes = await joey.diffFiles('./demo/source.json', '.demo/target.json');
+// const { changes } = await joey.diffFiles('./demo/source.json', '.demo/target.json');
 
 console.log(changes);
 /*
@@ -265,7 +265,7 @@ const changes = joey.diff(source, target);
 A helper method to work with files.
 
 ```js
-const changes = await joey.diffFiles(sourceFilePath, targetFilePath, optionalOutputFilePath);
+const results = await joey.diffFiles(sourceFilePath, targetFilePath, optionalOutputFilePath);
 ```
 
 ## 🧬 Contribute
