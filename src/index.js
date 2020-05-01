@@ -65,7 +65,7 @@ class JoeyTheDiffer {
       return [];
     }
 
-    const { preprocessor, customDiffer } = this.findPreprocessors(path);
+    const { preprocessor, customDiffer } = this.findProcessors(path);
 
     const { source, target } = preprocessor
       ? preprocessor(rawSource, rawTarget)
@@ -103,7 +103,7 @@ class JoeyTheDiffer {
    * @param {Array} path
    * @return {Object|Null}
    */
-  findPreprocessors(path) {
+  findProcessors(path) {
     const pathAsString = path.join('.');
     const found = this.processors.find(({ regex }) => (new RegExp(regex)).test(pathAsString));
     return found || {};
