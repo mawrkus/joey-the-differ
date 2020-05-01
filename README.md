@@ -42,25 +42,25 @@ Have a look at the [demo folder](./demo) to see the content of the files.
 
 #### Bulk diffing
 
-You can diff a `source` file against many, if `target` is a directory:
+You can diff one `source` file against many, if `target` is a directory:
 
 ```shell
 npx joey-the-differ -s demo/bulk/sources/1.json -t demo/bulk/targets -c demo/options.js
 ```
 
-or if `source` is a directory and `target` is a file:
+or many files against one `target` file, if `source` is a directory:
 
 ```shell
 npx joey-the-differ -s demo/bulk/sources -t demo/bulk/targets/1.json -c demo/options.js
 ```
 
-or matching pairs of files if `source` and `target` are directories:
+or you can diff matching pairs of files if `source` and `target` are directories:
 
 ```shell
 npx joey-the-differ -s demo/bulk/sources -t demo/bulk/targets -c demo/options.js
 ```
 
-In this case, the pairs with the same file names in both `source` and `target` will be diffed.
+In this case, the files with the same name in both `source` and `target` directories will be diffed.
 
 ### Node.js module
 
@@ -308,7 +308,13 @@ const results = await joey.diffFiles(sourcePath, targetPath, optionalOutputPath)
 ]
 ```
 
-`optionalOutputPath` can be either a file or a directory. In case of a directory, for each source file, a file with the same name will be created in it.
+You can diff:
+
+- one `source` file against many, if `target` is a directory
+- many source files against one `target`, if `source` is a directory
+- matching pairs of files if `source` and `target` are directories (the files with the same names in both `source` and `target` will be diffed)
+
+`optionalOutputPath` can be either a file or a directory. In case of a directory, for each file matched, a file with the same name will be created in it.
 
 ## 🧬 Contribute
 
