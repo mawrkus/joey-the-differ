@@ -251,7 +251,7 @@ console.log(changes);
 
 Compares `source` to `target` by recursively visiting all `source` properties and diffing them with the corresponding properties in `target`.
 
-If a `blacklist` option is passed, it is used to prevent diffing specific properties identified by their path, in `source` and in `target`.
+If a `blacklist` option is passed, it is used to prevent diffing specific properties identified by their path, in `source` and in `target`.
 
 If `allowNewTargetProperties` is set to `true`, the properties that exist in `target` but not in `source` won't appear in the changes.
 
