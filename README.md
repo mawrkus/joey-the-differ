@@ -77,7 +77,7 @@ const newBookData = {
     },
   },
   publishedOn: 1532,
-  starsCount: 1,
+  starsCount: null,
   genres: [{
     id: 4,
     name: 'CLASSIC',
@@ -91,11 +91,17 @@ const newBookData = {
 };
 
 const options = {
+  allowNewTargetProperties: false,
   blacklist: [
     'reviewsCount',
     'genres\\.(\\d+)\\.booksCount',
   ],
-  allowNewTargetProperties: false,
+  preprocessors: {
+    starsCount: (source, target) => ({
+      source: source || 0,
+      target: target || 0,
+    }),
+  },
   differs: {
     'starsCount': (source, target) => ({
       areEqual: source <= target,
@@ -162,11 +168,11 @@ console.log(changes);
   {
     "path": "starsCount",
     "source": 8562,
-    "target": 1,
+    "target": 0,
     "meta": {
       "op": "replace",
       "reason": "number of stars decreased",
-      "delta": -8561
+      "delta": -8562
     }
   },
   {
@@ -207,17 +213,22 @@ console.log(changes);
 
 | Name  | Type  | Default | Description | Example |
 | ---   | ---   | ---     | ---         | ---     |
-| `blacklist` | String[] | [] | An array of regular expressions used to match specific properties identified by their path | `'genres\\.(\\d+)\\.booksCount'` will prevent diffing the `booksCount` property of all the `genres` array elements (objects) |
 | `allowNewTargetProperties` | Boolean | false | To allow or not diffing properties that exist in `target` but not in `source` | |
+| `blacklist` | String[] | [] | An array of regular expressions used to match specific properties identified by their path | `'genres\\.(\\d+)\\.booksCount'` will prevent diffing the `booksCount` property of all the `genres` array elements (objects) |
+| `preprocessors` | Object | {} | Preprocessors, associating a regular expression to a transform function  | See "Usage" above |
 | `differs` | Object | {} | Custom differs, associating a regular expression to a diffing function  | See "Usage" above |
 
 ### diff(source, target)
 
-Compares `source` to `target` by recursively visiting all `source` properties and diffing them with the corresponding properties in `target`. If a `blacklist` option was passed, it is used to prevent diffing specific roperties identified by their path.
+Compares `source` to `target` by recursively visiting all `source` properties and diffing them with the corresponding properties in `target`.
 
-If `allowNewTargetProperties` is set to `true`, the properties that exist in `target` but not in `source` don't appear in the changes.
+If a `blacklist` option was passed, it is used to prevent diffing specific properties identified by their path, in `source` and in `target`.
+
+If `allowNewTargetProperties` is set to `true`, the properties that exist in `target` but not in `source` won't appear in the changes.
 
 If custom differs are passed, they are used to compare the `source` and `target` properties matched by the regular expressions provided.
+
+If preprocessors are passed, they act prior to diffing, to transform the `source` and `target` values matched by the regular expressions provided.
 
 All JSON primitive values will be compared using strict equality (`===`).
 

@@ -6,19 +6,34 @@ const { toString } = Object.prototype;
 class JoeyTheDiffer {
   /**
    * @param {Object} options
+   * @param {Object} [options.preprocessors={}]
    * @param {Object} [options.differs={}]
    * @param {string[]} [options.blacklist=[]]
    * @param {boolean} [options.allowNewTargetProperties=false
    */
   constructor({
     differs = {},
+    preprocessors = {},
     blacklist = [],
     allowNewTargetProperties = false,
   } = {}) {
-    this.customDiffers = Object.entries(differs)
-      .map(([regex, differ]) => ({
+    const processors = {};
+
+    Object.entries(preprocessors)
+      .forEach(([regex, preprocessor]) => {
+        processors[regex] = { preprocessor };
+      });
+
+    Object.entries(differs)
+      .forEach(([regex, customDiffer]) => {
+        processors[regex] = { ...processors[regex], customDiffer };
+      });
+
+    this.processors = Object.entries(processors)
+      .map(([regex, { preprocessor, customDiffer }]) => ({
         regex,
-        differ,
+        preprocessor,
+        customDiffer,
       }));
 
     this.blacklistRegexes = blacklist;
@@ -40,17 +55,21 @@ class JoeyTheDiffer {
   }
 
   /**
-   * @param {*} source
-   * @param {*} target
+   * @param {*} rawSource
+   * @param {*} rawTarget
    * @param {Array} [path=[]] current path
    * @return {Array}
    */
-  diff(source, target, path = []) {
+  diff(rawSource, rawTarget, path = []) {
     if (this.isBlacklisted(path)) {
       return [];
     }
 
-    const customDiffer = this.findCustomDiffer(path);
+    const { preprocessor, customDiffer } = this.findPreprocessors(path);
+
+    const { source, target } = preprocessor
+      ? preprocessor(rawSource, rawTarget)
+      : { source: rawSource, target: rawTarget };
 
     if (customDiffer) {
       return JoeyTheDiffer.customCompare(source, target, path, customDiffer);
@@ -63,6 +82,7 @@ class JoeyTheDiffer {
       const change = JoeyTheDiffer.comparePrimitiveTypes(
         source, target, path, sourceType, targetType,
       );
+
       return change === null ? [] : [change];
     }
 
@@ -81,15 +101,12 @@ class JoeyTheDiffer {
 
   /**
    * @param {Array} path
-   * @return {Function|Null}
+   * @return {Object|Null}
    */
-  findCustomDiffer(path) {
+  findPreprocessors(path) {
     const pathAsString = path.join('.');
-    const found = this.customDiffers.find(({ regex }) => (new RegExp(regex)).test(pathAsString));
-
-    return found
-      ? found.differ
-      : null;
+    const found = this.processors.find(({ regex }) => (new RegExp(regex)).test(pathAsString));
+    return found || {};
   }
 
   /**
@@ -228,19 +245,7 @@ class JoeyTheDiffer {
    */
   compareObjects(source, target, path) {
     const sourceChanges = Object.entries(source)
-      .map(([key, sourceValue]) => {
-        const targetValue = target[key];
-        const newPath = [...path, key];
-
-        const customDiffer = this.findCustomDiffer(newPath);
-
-        if (customDiffer) {
-          return JoeyTheDiffer.customCompare(sourceValue, targetValue, newPath, customDiffer);
-        }
-
-        return this.diff(sourceValue, targetValue, newPath);
-      })
-      .filter(Boolean);
+      .map(([key, sourceValue]) => this.diff(sourceValue, target[key], [...path, key]));
 
     if (this.allowNewTargetProperties) {
       return flattenDeep(sourceChanges);

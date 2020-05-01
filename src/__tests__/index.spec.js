@@ -1,5 +1,15 @@
 const JoeyTheDiffer = require('..');
 
+const sortById = (a, b) => {
+  if (a.id < b.id) {
+    return -1;
+  }
+  if (a.id > b.id) {
+    return +1;
+  }
+  return 0;
+};
+
 describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () => {
   it('should be a class with the following API: diff(), diffFiles()', () => {
     expect(JoeyTheDiffer).toBeInstanceOf(Function);
@@ -1006,13 +1016,117 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
       });
     });
 
-    describe('when mixing objects, arrays, custom differs and blacklist', () => {
+    describe('when passing preprocessors as option', () => {
+      describe('when preprocessing primitive values', () => {
+        it('should properly preprocess the corresponding values before diffing', () => {
+          const joey = new JoeyTheDiffer({
+            preprocessors: {
+              '': (source, target) => ({
+                source: String(source),
+                target: String(target),
+              }),
+            },
+          });
+
+          expect(joey.diff(42, '42')).toEqual([]);
+
+          expect(joey.diff(null, undefined)).toEqual([{
+            path: '',
+            source: 'null',
+            target: 'undefined',
+            meta: {
+              op: 'replace',
+              reason: 'different strings',
+            },
+          }]);
+        });
+      });
+
+      describe('when diffing objects', () => {
+        it('should properly preprocess the corresponding values before diffing', () => {
+          const joey = new JoeyTheDiffer({
+            preprocessors: {
+              'publishedOn': (source, target) => ({
+                source: String(source),
+                target: String(target),
+              }),
+              'genres$': (source, target) => ({
+                source: source.sort(sortById),
+                target: target.sort(sortById),
+              }),
+              'genres\\.(\\d+)\\.name': (source, target) => ({
+                source: source.toLowerCase(),
+                target: target.toLowerCase(),
+              }),
+              'relatedBookIds': (source, target) => ({
+                source: source || [],
+                target: target || [],
+              }),
+            },
+          });
+
+          const source = {
+            id: 42,
+            title: 'The Prince',
+            publishedOn: '1532',
+            genres: [{
+              id: 4,
+              name: 'classics',
+            }, {
+              id: 93,
+              name: 'philosophy',
+            }],
+            relatedBookIds: null,
+          };
+
+          const target = {
+            id: 42,
+            title: 'The Prince',
+            publishedOn: 1532,
+            genres: [{
+              id: 93,
+              name: 'PHILOSOPHY',
+            }, {
+              id: 4,
+              name: 'CLASSIC',
+            }],
+            relatedBookIds: [],
+          };
+
+          const changes = joey.diff(source, target);
+
+          expect(changes).toEqual([
+            {
+              path: 'genres.0.name',
+              source: 'classics',
+              target: 'classic',
+              meta: {
+                op: 'replace',
+                reason: 'different strings',
+              },
+            },
+          ]);
+        });
+      });
+    });
+
+    describe('when mixing objects, arrays, preprocessors, custom differs and blacklist', () => {
       it('should return the proper array of differences', () => {
         const options = {
           blacklist: [
             'reviewsCount',
             'genres\\.(\\d+)\\.booksCount',
           ],
+          preprocessors: {
+            starsCount: (source, target) => ({
+              source: Number(source || 0),
+              target: Number(target || 0),
+            }),
+            genres$: (source, target) => ({
+              source: source.sort(sortById),
+              target: target.sort(sortById),
+            }),
+          },
           differs: {
             'starsCount': (source, target) => ({
               areEqual: source <= target,
@@ -1047,13 +1161,13 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
           },
           publishedOn: '1532',
           reviewsCount: 9614,
-          starsCount: 8562,
+          starsCount: '8562',
           genres: [{
-            id: 4,
-            name: 'classics',
-          }, {
             id: 93,
             name: 'philosophy',
+          }, {
+            id: 4,
+            name: 'classics',
           }],
         };
 
@@ -1069,7 +1183,7 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
             },
           },
           publishedOn: 1532,
-          starsCount: 1,
+          starsCount: null,
           genres: [{
             id: 4,
             name: 'CLASSIC',
@@ -1124,11 +1238,11 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
           {
             path: 'starsCount',
             source: 8562,
-            target: 1,
+            target: 0,
             meta: {
               op: 'replace',
               reason: 'number of stars decreased',
-              delta: -8561,
+              delta: -8562,
             },
           },
           {
@@ -1304,11 +1418,17 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
   describe('#diffFiles(sourcePath, targetPath)', () => {
     it('should call diff() with the content of the files passed as parameters', async () => {
       const options = {
+        allowNewTargetProperties: false,
         blacklist: [
           'reviewsCount',
           'genres\\.(\\d+)\\.booksCount',
         ],
-        allowNewTargetProperties: false,
+        preprocessors: {
+          starsCount: (source, target) => ({
+            source: source || 0,
+            target: target || 0,
+          }),
+        },
         differs: {
           'starsCount': (source, target) => ({
             areEqual: source <= target,
