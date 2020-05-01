@@ -45,17 +45,26 @@ class JoeyTheDiffer {
   }
 
   /**
-   * @param {string} sourcePath
-   * @param {string} targetPath
+   * @param {string} sourceFilePath
+   * @param {string} targetFilePath
+   * @param {string} [outputFilePath]
    * @return {Promis.<Array>}
    */
-  async diffFiles(sourcePath, targetPath) {
+  async diffFiles(sourceFilePath, targetFilePath, outputFilePath) {
+    const options = { encoding: 'utf8' };
+
     const [source, target] = await Promise.all([
-      fsPromises.readFile(sourcePath, { encoding: 'utf8' }).then((json) => JSON.parse(json)),
-      fsPromises.readFile(targetPath, { encoding: 'utf8' }).then((json) => JSON.parse(json)),
+      fsPromises.readFile(sourceFilePath, options).then((json) => JSON.parse(json)),
+      fsPromises.readFile(targetFilePath, options).then((json) => JSON.parse(json)),
     ]);
 
-    return this.diff(source, target);
+    const changes = this.diff(source, target);
+
+    if (outputFilePath) {
+      await fsPromises.writeFile(outputFilePath, JSON.stringify(changes, null, 2), options);
+    }
+
+    return changes;
   }
 
   /**

@@ -260,12 +260,12 @@ const changes = joey.diff(source, target);
 }
 ```
 
-### diffFiles(sourcePath, targetPath)
+### diffFiles(sourceFilePath, targetFilePath, optionalOutputFilePath)
 
 A helper method to work with files.
 
 ```js
-const changes = await joey.diff(sourcePath, targetPath);
+const changes = await joey.diffFiles(sourceFilePath, targetFilePath, optionalOutputFilePath);
 ```
 
 ## 🧬 Contribute

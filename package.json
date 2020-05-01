@@ -39,7 +39,7 @@
     "release": "npm version -m \"New version: %s\"",
     "postrelease": "npm run push && npm publish",
     "push": "git push origin master && git push origin --tags",
-    "demo": "node bin/joey-the-differ.js -s demo/source.json -t demo/target.json -c demo/options.js"
+    "demo": "node bin/joey-the-differ.js -s demo/source.json -t demo/target.json -c demo/options.js -o demo/diffs.json"
   },
   "devDependencies": {
     "@babel/core": "^7.8.4",
