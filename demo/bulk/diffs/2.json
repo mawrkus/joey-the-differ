@@ -1,6 +1,6 @@
 {
-  "source": "/Users/mawrkus/_/dev/packages/joey-the-differ/demo/bulk/sources/2.json",
-  "target": "/Users/mawrkus/_/dev/packages/joey-the-differ/demo/bulk/targets/2.json",
+  "source": "demo/bulk/sources/2.json",
+  "target": "demo/bulk/targets/2.json",
   "changes": [
     {
       "path": "author.life",
