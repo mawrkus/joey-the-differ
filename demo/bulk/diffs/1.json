@@ -1,0 +1,36 @@
+{
+  "source": "/Users/mawrkus/_/dev/packages/joey-the-differ/demo/bulk/sources/1.json",
+  "target": "/Users/mawrkus/_/dev/packages/joey-the-differ/demo/bulk/targets/1.json",
+  "changes": [
+    {
+      "path": "author.life.bornIn",
+      "target": "Firenze",
+      "meta": {
+        "op": "add",
+        "reason": "value appeared"
+      }
+    },
+    {
+      "path": "starsCount",
+      "source": 8562,
+      "target": null,
+      "meta": {
+        "op": "replace",
+        "reason": "number of stars decreased",
+        "delta": -8562,
+        "preprocessor": {
+          "source": 8562,
+          "target": 0
+        }
+      }
+    },
+    {
+      "path": "genres.1.id",
+      "source": 93,
+      "meta": {
+        "op": "remove",
+        "reason": "value disappeared"
+      }
+    }
+  ]
+}

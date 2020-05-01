@@ -18,9 +18,14 @@ class FilesDiffer extends EventEmitter {
    * @return {Promise.<Array>}
    */
   async diff(source, target, output) {
-    const [sourceStats, targetStats] = await Promise.all([
+    const [
+      sourceStats,
+      targetStats,
+      isOutputADirectory,
+    ] = await Promise.all([
       fsPromises.stat(source),
       fsPromises.stat(target),
+      fsPromises.stat(output).then((stats) => stats.isDirectory()).catch(() => false),
     ]);
 
     if (sourceStats.isFile() && targetStats.isFile()) {
@@ -28,6 +33,7 @@ class FilesDiffer extends EventEmitter {
         [nodePath.resolve(source)],
         [nodePath.resolve(target)],
         output,
+        isOutputADirectory,
       );
     }
 
@@ -36,6 +42,7 @@ class FilesDiffer extends EventEmitter {
         [nodePath.resolve(source)],
         (await fsPromises.readdir(target)).map((fileName) => nodePath.resolve(target, fileName)),
         output,
+        isOutputADirectory,
       );
     }
 
@@ -44,6 +51,7 @@ class FilesDiffer extends EventEmitter {
         (await fsPromises.readdir(source)).map((fileName) => nodePath.resolve(source, fileName)),
         [nodePath.resolve(target)],
         output,
+        isOutputADirectory,
       );
     }
 
@@ -58,6 +66,7 @@ class FilesDiffer extends EventEmitter {
           filePath: nodePath.resolve(target, fileName),
         })),
         output,
+        isOutputADirectory,
       );
     }
 
@@ -68,27 +77,29 @@ class FilesDiffer extends EventEmitter {
    * @param {string[]} sources
    * @param {string[]|Object[]} targets
    * @param {string} [output]
+   * @param {boolean} isOutputADirectory
    * @return {Promise.<Array>}
    */
-  async diffCombination(sources, targets, output) {
+  async diffCombination(sources, targets, output, isOutputADirectory) {
     let diffsP = [];
     const sourcesCount = sources.length;
     const targetsCount = targets.length;
 
-    // if output = file -> write at end
-    // if output = dir -> pass a new output at each iteration
+    const getOuputFilePath = isOutputADirectory
+      ? (fileName) => nodePath.resolve(output, fileName)
+      : () => null;
 
     if (sourcesCount === 1) {
       const [source] = sources;
       diffsP = targets.map((target, index) => this.diffFiles(
-        { source, target, output },
+        { source, target, output: getOuputFilePath(target) },
         index,
         targetsCount,
       ));
     } else if (targetsCount === 1) {
       const [target] = targets;
       diffsP = sources.map((source, index) => this.diffFiles(
-        { source, target, output },
+        { source, target, output: getOuputFilePath(source) },
         index,
         sourcesCount,
       ));
@@ -102,57 +113,73 @@ class FilesDiffer extends EventEmitter {
       const filteredSourcesCount = filteredSources.length;
 
       diffsP = filteredSources.map(({ fileName, filePath: source }, index) => this.diffFiles(
-        { source, target: targetsObj[fileName], output },
+        { source, target: targetsObj[fileName], output: getOuputFilePath(fileName) },
         index,
         filteredSourcesCount,
       ));
     }
 
-    return Promise.all(diffsP);
+    const allResults = await Promise.all(diffsP);
+
+    if (!isOutputADirectory && output) {
+      const outputFilePath = nodePath.resolve(output);
+      const diffEvent = { output, current: 1, total: 1 };
+      await this.saveResults(outputFilePath, allResults, diffEvent);
+    }
+
+    return allResults;
   }
 
   /**
    * @param {Object} filePaths
    * @param {Object} filePaths.source
    * @param {Object} filePaths.target
-   * @param {Object} [filePaths.output]
+   * @param {Object} filePaths.output
    * @param {number} [index=0]
    * @param {number} [total=1]
    * @return {Promise.<Array>}
    */
   async diffFiles(filePaths, index = 0, total = 1) {
+    const { source, target, output } = filePaths;
     const diffEvent = {
-      source: filePaths.source,
-      target: filePaths.target,
+      source,
+      target,
       current: index + 1,
       total,
     };
-    const readWriteOptions = { encoding: 'utf8' };
 
     this.emit('diff:file:start', diffEvent);
 
-    const [source, target] = await Promise.all([
-      fsPromises.readFile(filePaths.source, readWriteOptions).then((json) => JSON.parse(json)),
-      fsPromises.readFile(filePaths.target, readWriteOptions).then((json) => JSON.parse(json)),
+    const [sourceContent, targetContent] = await Promise.all([
+      fsPromises.readFile(source, { encoding: 'utf8' }).then((json) => JSON.parse(json)),
+      fsPromises.readFile(target, { encoding: 'utf8' }).then((json) => JSON.parse(json)),
     ]);
 
-    const changes = this.diffFn(source, target);
-    const results = { source: filePaths.source, target: filePaths.target, changes };
+    const changes = this.diffFn(sourceContent, targetContent);
+    const results = { source, target, changes };
 
     this.emit('diff:file:end', { ...diffEvent, changes });
 
-    if (filePaths.output) {
-      const output = nodePath.resolve(filePaths.output);
-      const saveEvent = { ...diffEvent, output };
-
-      this.emit('save:file:start', saveEvent);
-
-      await fsPromises.writeFile(output, JSON.stringify(results, null, 2), readWriteOptions);
-
-      this.emit('save:file:end', saveEvent);
+    if (output) {
+      await this.saveResults(nodePath.resolve(output), results, diffEvent);
     }
 
     return results;
+  }
+
+  /**
+   * @param {string} output
+   * @param {Object|Array} results
+   * @param {Object} diffEvent
+   */
+  async saveResults(output, results, diffEvent) {
+    const saveEvent = { ...diffEvent, output };
+
+    this.emit('save:file:start', saveEvent);
+
+    await fsPromises.writeFile(output, JSON.stringify(results, null, 2), { encoding: 'utf8' });
+
+    this.emit('save:file:end', saveEvent);
   }
 }
 
