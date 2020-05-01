@@ -1032,11 +1032,15 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
 
           expect(joey.diff(null, undefined)).toEqual([{
             path: '',
-            source: 'null',
-            target: 'undefined',
+            source: null,
+            target: undefined,
             meta: {
               op: 'replace',
               reason: 'different strings',
+              preprocessor: {
+                source: 'null',
+                target: 'undefined',
+              },
             },
           }]);
         });
@@ -1099,10 +1103,14 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
             {
               path: 'genres.0.name',
               source: 'classics',
-              target: 'classic',
+              target: 'CLASSIC',
               meta: {
                 op: 'replace',
                 reason: 'different strings',
+                preprocessor: {
+                  source: 'classics',
+                  target: 'classic',
+                },
               },
             },
           ]);
@@ -1237,12 +1245,16 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
           },
           {
             path: 'starsCount',
-            source: 8562,
-            target: 0,
+            source: '8562',
+            target: null,
             meta: {
               op: 'replace',
               reason: 'number of stars decreased',
               delta: -8562,
+              preprocessor: {
+                source: 8562,
+                target: 0,
+              },
             },
           },
           {

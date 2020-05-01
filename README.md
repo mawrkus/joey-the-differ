@@ -168,11 +168,15 @@ console.log(changes);
   {
     "path": "starsCount",
     "source": 8562,
-    "target": 0,
+    "target": null,
     "meta": {
       "op": "replace",
       "reason": "number of stars decreased",
-      "delta": -8562
+      "delta": -8562,
+      "preprocessor": {
+        "source": 8562,
+        "target": 0
+      }
     }
   },
   {
@@ -246,6 +250,10 @@ const changes = joey.diff(source, target);
   meta: {
     op: 'the operation that happened on the value: add, remove, or replace',
     reason: 'an explanation of why the source and target values are not equal',
+    preprocessor: {
+      source: 'source value after preprocessing',
+      target: 'target value after preprocessing',
+    },
     // ...
     // and any other value returned by your custom differs or by Joey in the future
   },

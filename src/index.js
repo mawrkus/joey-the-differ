@@ -76,7 +76,13 @@ class JoeyTheDiffer {
       : { source, target };
 
     if (customDiffer) {
-      return JoeyTheDiffer.customCompare(processedSource, processedTarget, path, customDiffer);
+      return JoeyTheDiffer.customCompare(
+        { value: source, processedValue: processedSource },
+        { value: target, processedValue: processedTarget },
+        path,
+        customDiffer,
+        Boolean(preprocessor),
+      );
     }
 
     const sourceType = JoeyTheDiffer.getType(processedSource, path);
@@ -84,7 +90,10 @@ class JoeyTheDiffer {
 
     if (sourceType.isPrimitive || targetType.isPrimitive) {
       const change = JoeyTheDiffer.comparePrimitiveTypes(
-        processedSource, processedTarget, path, sourceType, targetType,
+        { value: source, processedValue: processedSource, type: sourceType },
+        { value: target, processedValue: processedTarget, type: targetType },
+        path,
+        Boolean(preprocessor),
       );
 
       return change === null ? [] : [change];
@@ -104,21 +113,29 @@ class JoeyTheDiffer {
   }
 
   /**
-   * @param {*} source
-   * @param {*} target
+   * @param {Object} source
+   * @param {Object} target
    * @param {Array} path
    * @param {Function} customDiffer
+   * @param {boolean} wasProcessed
    * @return {Array}
    */
-  static customCompare(source, target, path, customDiffer) {
-    const { areEqual, meta } = customDiffer(source, target, path);
+  static customCompare(source, target, path, customDiffer, wasProcessed) {
+    const { areEqual, meta } = customDiffer(source.processedValue, target.processedValue, path);
+
+    if (wasProcessed) {
+      meta.preprocessor = {
+        source: source.processedValue,
+        target: target.processedValue,
+      };
+    }
 
     return areEqual
       ? []
       : [{
         path: path.join('.'),
-        source,
-        target,
+        source: source.value,
+        target: target.value,
         meta,
       }];
   }
@@ -172,15 +189,14 @@ class JoeyTheDiffer {
   }
 
   /**
-   * @param {*} source
-   * @param {*} target
+   * @param {Object} source
+   * @param {Object} target
    * @param {Array} path
-   * @param {Object} sourceType
-   * @param {Object} targetType
+   * @param {boolean} wasProcessed
    * @return {Null|Object}
    */
-  static comparePrimitiveTypes(source, target, path, sourceType, targetType) {
-    const areEqual = source === target;
+  static comparePrimitiveTypes(source, target, path, wasProcessed) {
+    const areEqual = source.processedValue === target.processedValue;
 
     if (areEqual) {
       return null;
@@ -188,46 +204,42 @@ class JoeyTheDiffer {
 
     const partialResult = {
       path: path.join('.'),
-      source,
-      target,
+      source: source.value,
+      target: target.value,
     };
 
-    if (sourceType.name === targetType.name) {
-      return {
-        ...partialResult,
-        meta: {
-          op: 'replace',
-          reason: `different ${sourceType.name}s`,
-        },
-      };
-    }
+    let op;
+    let reason;
 
-    if (!this.allowNewTargetProperties && sourceType.name === 'undefined') {
-      return {
-        ...partialResult,
-        meta: {
-          op: 'add',
-          reason: 'value appeared',
-        },
-      };
-    }
-
-    if (targetType.name === 'undefined') {
-      return {
-        ...partialResult,
-        meta: {
-          op: 'remove',
-          reason: 'value disappeared',
-        },
-      };
+    if (source.type.name === target.type.name) {
+      op = 'replace';
+      reason = `different ${source.type.name}s`;
+    } else if (!this.allowNewTargetProperties && source.type.name === 'undefined') {
+      op = 'add';
+      reason = 'value appeared';
+    } else if (target.type.name === 'undefined') {
+      op = 'remove';
+      reason = 'value disappeared';
+    } else {
+      op = 'replace';
+      reason = `type changed from "${source.type.name}" to "${target.type.name}"`;
     }
 
     return {
       ...partialResult,
-      meta: {
-        op: 'replace',
-        reason: `type changed from "${sourceType.name}" to "${targetType.name}"`,
-      },
+      meta: wasProcessed
+        ? {
+          op,
+          reason,
+          preprocessor: {
+            source: source.processedValue,
+            target: target.processedValue,
+          },
+        }
+        : {
+          op,
+          reason,
+        },
     };
   }
 
