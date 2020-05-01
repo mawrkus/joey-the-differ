@@ -47,13 +47,13 @@ class JoeyTheDiffer {
   }
 
   /**
-   * @param {string} sourceFilePath
-   * @param {string} targetFilePath
-   * @param {string} [outputFilePath]
+   * @param {string} sourcePath file or directoy path
+   * @param {string} targetPath file or directoy path
+   * @param {string} [outputPath] file or directoy path
    * @return {Promise.<Array>}
    */
-  async diffFiles(sourceFilePath, targetFilePath, outputFilePath) {
-    return this.filesDiffer.diff(sourceFilePath, targetFilePath, outputFilePath);
+  async diffFiles(sourcePath, targetPath, outputPath) {
+    return this.filesDiffer.diff(sourcePath, targetPath, outputPath);
   }
 
   /**

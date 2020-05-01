@@ -12,9 +12,9 @@ class FilesDiffer extends EventEmitter {
   }
 
   /**
-   * @param {string} source
-   * @param {string} target
-   * @param {string} [output]
+   * @param {string} source file or directoy path
+   * @param {string} target file or directoy path
+   * @param {string} [output] file or directoy path
    * @return {Promise.<Array>}
    */
   async diff(source, target, output) {
