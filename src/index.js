@@ -117,13 +117,13 @@ class JoeyTheDiffer {
    * @param {Object} target
    * @param {Array} path
    * @param {Function} customDiffer
-   * @param {boolean} wasProcessed
+   * @param {boolean} wasPreprocessed
    * @return {Array}
    */
-  static customCompare(source, target, path, customDiffer, wasProcessed) {
+  static customCompare(source, target, path, customDiffer, wasPreprocessed) {
     const { areEqual, meta } = customDiffer(source.processedValue, target.processedValue, path);
 
-    if (wasProcessed) {
+    if (wasPreprocessed) {
       meta.preprocessor = {
         source: source.processedValue,
         target: target.processedValue,
@@ -192,10 +192,10 @@ class JoeyTheDiffer {
    * @param {Object} source
    * @param {Object} target
    * @param {Array} path
-   * @param {boolean} wasProcessed
+   * @param {boolean} wasPreprocessed
    * @return {Null|Object}
    */
-  static comparePrimitiveTypes(source, target, path, wasProcessed) {
+  static comparePrimitiveTypes(source, target, path, wasPreprocessed) {
     const areEqual = source.processedValue === target.processedValue;
 
     if (areEqual) {
@@ -227,7 +227,7 @@ class JoeyTheDiffer {
 
     return {
       ...partialResult,
-      meta: wasProcessed
+      meta: wasPreprocessed
         ? {
           op,
           reason,
