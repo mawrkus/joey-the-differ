@@ -260,12 +260,24 @@ const changes = joey.diff(source, target);
 }
 ```
 
-### diffFiles(sourceFilePath, targetFilePath, optionalOutputFilePath)
+### async diffFiles(sourceFilePath, targetFilePath, optionalOutputFilePath)
 
-A helper method to work with files.
+A method to work with files.
 
 ```js
 const results = await joey.diffFiles(sourceFilePath, targetFilePath, optionalOutputFilePath);
+```
+
+`results` is an object like:
+
+```js
+{
+  source: 'path to the source file',
+  target: 'path to the target file',
+  changes: [
+    // see above
+  ],
+}
 ```
 
 ## 🧬 Contribute
