@@ -46,8 +46,14 @@ class FilesDiffer extends EventEmitter {
 
     if (sourceStats.isDirectory() && targetStats.isDirectory()) {
       return this.diffCombination(
-        (await fsPromises.readdir(source)).map((fileName) => nodePath.resolve(source, fileName)),
-        (await fsPromises.readdir(target)).map((fileName) => nodePath.resolve(target, fileName)),
+        (await fsPromises.readdir(source)).map((fileName) => ({
+          fileName,
+          filePath: nodePath.resolve(source, fileName),
+        })),
+        (await fsPromises.readdir(target)).map((fileName) => ({
+          fileName,
+          filePath: nodePath.resolve(target, fileName),
+        })),
         output,
       );
     }
@@ -57,7 +63,7 @@ class FilesDiffer extends EventEmitter {
 
   /**
    * @param {string[]} sources
-   * @param {string[]} targets
+   * @param {string[]|Object[]} targets
    * @param {string} [output]
    * @return {Promise.<Array>}
    */
@@ -81,7 +87,19 @@ class FilesDiffer extends EventEmitter {
         sourcesCount,
       ));
     } else if (sourcesCount > 1 && targetsCount > 1) {
-      throw new Error('TODO!');
+      const targetsObj = targets.reduce((acc, { fileName, filePath }) => ({
+        ...acc,
+        [fileName]: filePath,
+      }), {});
+
+      const filteredSources = sources.filter(({ fileName }) => targetsObj[fileName]);
+      const filteredSourcesCount = filteredSources.length;
+
+      diffsP = filteredSources.map(({ fileName, filePath: source }, index) => this.diffFiles(
+        { source, target: targetsObj[fileName], output },
+        index,
+        filteredSourcesCount,
+      ));
     }
 
     return Promise.all(diffsP);
