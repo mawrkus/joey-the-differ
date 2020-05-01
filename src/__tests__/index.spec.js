@@ -1,5 +1,3 @@
-const EventEmitter = require('events');
-
 const JoeyTheDiffer = require('..');
 
 const sortById = (a, b) => {
@@ -13,13 +11,10 @@ const sortById = (a, b) => {
 };
 
 describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () => {
-  it('should be a class, with the following API: diff(), diffFiles()', () => {
+  it('should be a class with the following API: diff(), diffFiles()', () => {
+    expect(JoeyTheDiffer).toBeInstanceOf(Function);
     expect(JoeyTheDiffer.prototype.diff).toBeInstanceOf(Function);
     expect(JoeyTheDiffer.prototype.diffFiles).toBeInstanceOf(Function);
-  });
-
-  it('should be a inheriting from the EventEmitter class', () => {
-    expect(Object.getPrototypeOf(JoeyTheDiffer)).toBe(EventEmitter);
   });
 
   describe('#diff(source, target)', () => {
@@ -1433,7 +1428,7 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
   });
 
   describe('#diffFiles(sourceFilePath, targetFilePath, optionalOutputFilePath)', () => {
-    it('should call diff() with the content of the files passed as parameters and return the proper results', async () => {
+    it('should call diff() with the content of the files passed as parameters and save the proper results in the output file', async () => {
       const options = {
         allowNewTargetProperties: false,
         blacklist: [
