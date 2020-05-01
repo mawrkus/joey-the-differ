@@ -4,7 +4,6 @@
 
 const path = require('path');
 const program = require('commander');
-const ora = require('ora');
 const { version } = require('../package');
 
 program
@@ -44,15 +43,12 @@ const JoeyTheDiffer = require('..');
 
 const joey = new JoeyTheDiffer(options);
 
-const spinner = ora({ spinner: 'dots4' }).start('🧬  Diffing...');
-
 joey
   .diffFiles(sourceFile, targetFile)
   .then((changes) => {
-    spinner.succeed('All good! :D');
     console.log(JSON.stringify(changes, null, 2));
   })
   .catch((error) => {
-    spinner.fail('Ooops! Something went wrong. :(');
+    console.error('Ooops! Something went wrong. :(');
     console.error(error);
   });

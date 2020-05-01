@@ -53,7 +53,6 @@
   },
   "dependencies": {
     "commander": "^5.0.0",
-    "lodash.flattendeep": "^4.4.0",
-    "ora": "^4.0.3"
+    "lodash.flattendeep": "^4.4.0"
   }
 }
