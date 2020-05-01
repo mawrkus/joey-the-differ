@@ -259,16 +259,18 @@ class JoeyTheDiffer {
 
     const targetChanges = Object.entries(target)
       .map(([key, targetValue]) => {
+        const newPath = [...path, key];
+
         if (
-          (key in source)
-          || (typeof targetValue === 'undefined')
-          || this.findProcessors([...path, key]).isBlackListed
+          (typeof targetValue === 'undefined')
+          || (key in source)
+          || this.findProcessors(newPath).isBlackListed
         ) {
           return [];
         }
 
         return {
-          path: [...path, key].join('.'),
+          path: newPath.join('.'),
           source: source[key],
           target: targetValue,
           meta: {
