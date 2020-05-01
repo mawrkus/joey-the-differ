@@ -29,6 +29,10 @@ class FilesDiffer extends EventEmitter {
     ]);
 
     if (sourceStats.isFile() && targetStats.isFile()) {
+      if (isOutputADirectory) {
+        throw new TypeError(`"${output}" is a directory, please specifiy an output file!`);
+      }
+
       return this.diffCombination(
         [nodePath.resolve(source)],
         [nodePath.resolve(target)],
