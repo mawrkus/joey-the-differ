@@ -268,16 +268,18 @@ A method to work with files.
 const results = await joey.diffFiles(sourceFilePath, targetFilePath, optionalOutputFilePath);
 ```
 
-`results` is an object like:
+`results` is an array of objects like:
 
 ```js
-{
-  source: 'path to the source file',
-  target: 'path to the target file',
-  changes: [
-    // see above
-  ],
-}
+[
+  {
+    source: 'path to the source file',
+    target: 'path to the target file',
+    changes: [
+      // see above
+    ],
+  },
+]
 ```
 
 ## 🧬 Contribute
