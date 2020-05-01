@@ -291,7 +291,7 @@ const changes = joey.diff(source, target);
 const results = await joey.diffFiles(sourcePath, targetPath, optionalOutputPath);
 ```
 
-Depending on the parameters, `results` will be either an object (if `sourcePath` and `targetPath` are both files) or an array of objects like:
+`results` is an array of objects like:
 
 ```js
 [

@@ -1464,7 +1464,7 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
 
       const joey = new JoeyTheDiffer(options);
 
-      const [results] = await joey.diffFiles(
+      const results = await joey.diffFiles(
         `${__dirname}/fixtures/source.json`,
         `${__dirname}/fixtures/target.json`,
       );
@@ -1475,11 +1475,11 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
 
       expect(joey.diff).toHaveBeenCalledWith(source, target);
 
-      expect(results).toEqual({
+      expect(results).toEqual([{
         source: expect.stringContaining('fixtures/source.json'),
         target: expect.stringContaining('fixtures/target.json'),
         changes: expectedChanges,
-      });
+      }]);
     });
   });
 });
