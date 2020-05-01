@@ -17,11 +17,14 @@ class JoeyTheDiffer {
     blacklist = [],
     allowNewTargetProperties = false,
   } = {}) {
-    const processors = {};
+    const processors = blacklist.reduce((acc, regex) => ({
+      ...acc,
+      [regex]: { isBlackListed: true },
+    }), {});
 
     Object.entries(preprocessors)
       .forEach(([regex, preprocessor]) => {
-        processors[regex] = { preprocessor };
+        processors[regex] = { ...processors[regex], preprocessor };
       });
 
     Object.entries(differs)
@@ -30,8 +33,9 @@ class JoeyTheDiffer {
       });
 
     this.processors = Object.entries(processors)
-      .map(([regex, { preprocessor, customDiffer }]) => ({
+      .map(([regex, { isBlackListed, preprocessor, customDiffer }]) => ({
         regex,
+        isBlackListed,
         preprocessor,
         customDiffer,
       }));
@@ -55,48 +59,38 @@ class JoeyTheDiffer {
   }
 
   /**
-   * @param {*} rawSource
-   * @param {*} rawTarget
+   * @param {*} source
+   * @param {*} target
    * @param {Array} [path=[]] current path
    * @return {Array}
    */
-  diff(rawSource, rawTarget, path = []) {
-    if (this.isBlacklisted(path)) {
+  diff(source, target, path = []) {
+    const { isBlackListed, preprocessor, customDiffer } = this.findProcessors(path);
+
+    if (isBlackListed) {
       return [];
     }
 
-    const { preprocessor, customDiffer } = this.findProcessors(path);
-
-    const { source, target } = preprocessor
-      ? preprocessor(rawSource, rawTarget)
-      : { source: rawSource, target: rawTarget };
+    const { source: processedSource, target: processedTarget } = preprocessor
+      ? preprocessor(source, target)
+      : { source, target };
 
     if (customDiffer) {
-      return JoeyTheDiffer.customCompare(source, target, path, customDiffer);
+      return JoeyTheDiffer.customCompare(processedSource, processedTarget, path, customDiffer);
     }
 
-    const sourceType = JoeyTheDiffer.getType(source, path);
-    const targetType = JoeyTheDiffer.getType(target, path);
+    const sourceType = JoeyTheDiffer.getType(processedSource, path);
+    const targetType = JoeyTheDiffer.getType(processedTarget, path);
 
     if (sourceType.isPrimitive || targetType.isPrimitive) {
       const change = JoeyTheDiffer.comparePrimitiveTypes(
-        source, target, path, sourceType, targetType,
+        processedSource, processedTarget, path, sourceType, targetType,
       );
 
       return change === null ? [] : [change];
     }
 
-    return this.compareObjects(source, target, path);
-  }
-
-  /**
-   * @param {Array} path
-   * @return {boolean}
-   */
-  isBlacklisted(path) {
-    const pathAsString = path.join('.');
-    const found = this.blacklistRegexes.find((regex) => (new RegExp(regex)).test(pathAsString));
-    return Boolean(found);
+    return this.compareObjects(processedSource, processedTarget, path);
   }
 
   /**
@@ -256,7 +250,7 @@ class JoeyTheDiffer {
         if (
           (key in source)
           || (typeof targetValue === 'undefined')
-          || this.isBlacklisted([...path, key])
+          || this.findProcessors([...path, key]).isBlackListed
         ) {
           return [];
         }
