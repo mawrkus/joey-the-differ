@@ -62,7 +62,7 @@ npx joey-the-differ -s demo/bulk/sources -t demo/bulk/targets -c demo/options.js
 
 In this case, the files with the same name in both `source` and `target` directories will be diffed.
 
-`output` can be either a file or a directory. In case of a directory, for each file matched, a file with the same name will be created. For diffing one file against one file, it must be a file.
+`output` can be either a file or a directory. In case of a directory, for each file matched, a file with the same name will be created.
 
 ### Node.js module
 
