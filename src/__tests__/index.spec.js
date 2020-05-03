@@ -1428,7 +1428,7 @@ describe('JoeyTheDiffer({ allowNewTargetProperties, blacklist, preprocessors, di
   });
 
   describe('#diffFiles(sourceFilePath, targetFilePath, optionalOutputFilePath)', () => {
-    it('should call diff() with the content of the files passed as parameters and save the proper results in the output file', async () => {
+    it('should call diff() with the content of the files passed as parameters and return the proper results', async () => {
       const options = {
         allowNewTargetProperties: false,
         blacklist: [
