@@ -1,5 +1,6 @@
-const { promises: fsPromises } = require('fs');
+const fs = require('fs');
 const flattenDeep = require('lodash.flattendeep');
+const FilesDiffer = require('./FilesDiffer');
 
 const { toString } = Object.prototype;
 
@@ -42,20 +43,21 @@ class JoeyTheDiffer {
 
     this.blacklistRegexes = blacklist;
     this.allowNewTargetProperties = allowNewTargetProperties;
+
+    this.filesDiffer = new FilesDiffer({
+      diffFn: this.diff.bind(this),
+      fsPromises: fs.promises,
+    });
   }
 
   /**
-   * @param {string} sourcePath
-   * @param {string} targetPath
-   * @return {Promis.<Array>}
+   * @param {string} sourcePath file or directoy path
+   * @param {string} targetPath file or directoy path
+   * @param {string} [outputPath] file or directoy path
+   * @return {Promise.<Array>}
    */
-  async diffFiles(sourcePath, targetPath) {
-    const [source, target] = await Promise.all([
-      fsPromises.readFile(sourcePath, { encoding: 'utf8' }).then((json) => JSON.parse(json)),
-      fsPromises.readFile(targetPath, { encoding: 'utf8' }).then((json) => JSON.parse(json)),
-    ]);
-
-    return this.diff(source, target);
+  async diffFiles(sourcePath, targetPath, outputPath) {
+    return this.filesDiffer.diff(sourcePath, targetPath, outputPath);
   }
 
   /**

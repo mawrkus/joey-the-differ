@@ -5,20 +5,18 @@
     "name": "Niccolò",
     "surname": "Machiavelli",
     "life": {
-      "diedOn": "21 June 1532",
+      "bornOn": "3 May 1469",
+      "diedOn": "21 June 1527",
       "bornIn": "Firenze"
     }
   },
-  "publishedOn": 1532,
+  "publishedOn": "1532",
   "starsCount": null,
   "genres": [{
     "id": 4,
-    "name": "CLASSIC"
+    "name": "classics"
   }, {
     "name": "PHILOSOPHY",
     "booksCount": 843942
-  }, {
-    "id": 1,
-    "name": "HISTORY"
   }]
 }

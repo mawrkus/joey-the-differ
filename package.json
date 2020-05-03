@@ -39,7 +39,12 @@
     "release": "npm version -m \"New version: %s\"",
     "postrelease": "npm run push && npm publish",
     "push": "git push origin master && git push origin --tags",
-    "demo": "node bin/joey-the-differ.js -s demo/source.json -t demo/target.json -c demo/options.js"
+    "demo": "node bin/joey-the-differ.js -s demo/source.json -t demo/target.json -c demo/options.js -o demo/diffs.json",
+    "demo:stdout": "node bin/joey-the-differ.js -s demo/source.json -t demo/target.json -c demo/options.js",
+    "demo:bulk": "node bin/joey-the-differ.js -s demo/bulk/sources -t demo/bulk/targets -c demo/options.js -o demo/bulk/diffs",
+    "demo:bulk:singleout": "node bin/joey-the-differ.js -s demo/bulk/sources -t demo/bulk/targets -c demo/options.js -o demo/bulk/diffs/1+2.json",
+    "demo:bulk:1tomany": "node bin/joey-the-differ.js -s demo/bulk/sources/1.json -t demo/bulk/targets -c demo/options.js -o demo/bulk/diffs/1tomany.json",
+    "demo:bulk:manyto1": "node bin/joey-the-differ.js -s demo/bulk/sources -t demo/bulk/targets/1.json -c demo/options.js -o demo/bulk/diffs/manyto1.json"
   },
   "devDependencies": {
     "@babel/core": "^7.8.4",
@@ -49,11 +54,12 @@
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.20.1",
     "eslint-plugin-jest": "^23.7.0",
-    "jest": "^25.1.0"
+    "jest": "^25.1.0",
+    "jest-when-xt": "^0.1.4"
   },
   "dependencies": {
     "commander": "^5.0.0",
     "lodash.flattendeep": "^4.4.0",
-    "ora": "^4.0.3"
+    "lodash.intersectionby": "^4.7.0"
   }
 }

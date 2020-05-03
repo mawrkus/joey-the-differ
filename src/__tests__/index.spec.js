@@ -10,7 +10,7 @@ const sortById = (a, b) => {
   return 0;
 };
 
-describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () => {
+describe('JoeyTheDiffer({ allowNewTargetProperties, blacklist, preprocessors, differs })', () => {
   it('should be a class with the following API: diff(), diffFiles()', () => {
     expect(JoeyTheDiffer).toBeInstanceOf(Function);
     expect(JoeyTheDiffer.prototype.diff).toBeInstanceOf(Function);
@@ -1427,8 +1427,8 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
     });
   });
 
-  describe('#diffFiles(sourcePath, targetPath)', () => {
-    it('should call diff() with the content of the files passed as parameters', async () => {
+  describe('#diffFiles(sourceFilePath, targetFilePath, optionalOutputFilePath)', () => {
+    it('should call diff() with the content of the files passed as parameters and save the proper results in the output file', async () => {
       const options = {
         allowNewTargetProperties: false,
         blacklist: [
@@ -1460,24 +1460,26 @@ describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () =
         },
       };
 
+      jest.spyOn(JoeyTheDiffer.prototype, 'diff');
+
       const joey = new JoeyTheDiffer(options);
 
-      jest.spyOn(joey, 'diff');
-
-      const changes = await joey.diffFiles(
+      const results = await joey.diffFiles(
         `${__dirname}/fixtures/source.json`,
         `${__dirname}/fixtures/target.json`,
       );
 
       const source = require('./fixtures/source'); // eslint-disable-line global-require
       const target = require('./fixtures/target'); // eslint-disable-line global-require
-      const expected = require('./fixtures/expected'); // eslint-disable-line global-require
-
-      // eslint-disable-next-line
-      // require('fs').writeFileSync(`${__dirname}/fixtures/e.json`, JSON.stringify(changes, null, 2), 'utf8');
+      const expectedChanges = require('./fixtures/expected'); // eslint-disable-line global-require
 
       expect(joey.diff).toHaveBeenCalledWith(source, target);
-      expect(changes).toEqual(expected);
+
+      expect(results).toEqual([{
+        source: expect.stringContaining('fixtures/source.json'),
+        target: expect.stringContaining('fixtures/target.json'),
+        changes: expectedChanges,
+      }]);
     });
   });
 });

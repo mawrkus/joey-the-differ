@@ -1,9 +1,15 @@
 module.exports = {
+  allowNewTargetProperties: false,
   blacklist: [
     'reviewsCount',
     'genres\\.(\\d+)\\.booksCount',
   ],
-  allowNewTargetProperties: false,
+  preprocessors: {
+    starsCount: (source, target) => ({
+      source: source || 0,
+      target: target || 0,
+    }),
+  },
   differs: {
     'starsCount': (source, target) => ({
       areEqual: source <= target,

@@ -1,0 +1,99 @@
+[
+  {
+    "source": "demo/bulk/sources/1.json",
+    "target": "demo/bulk/targets/1.json",
+    "changes": [
+      {
+        "path": "author.life.bornIn",
+        "target": "Firenze",
+        "meta": {
+          "op": "add",
+          "reason": "value appeared"
+        }
+      },
+      {
+        "path": "starsCount",
+        "source": 8562,
+        "target": null,
+        "meta": {
+          "op": "replace",
+          "reason": "number of stars decreased",
+          "delta": -8562,
+          "preprocessor": {
+            "source": 8562,
+            "target": 0
+          }
+        }
+      },
+      {
+        "path": "genres.1.id",
+        "source": 93,
+        "meta": {
+          "op": "remove",
+          "reason": "value disappeared"
+        }
+      }
+    ]
+  },
+  {
+    "source": "demo/bulk/sources/1.json",
+    "target": "demo/bulk/targets/2.json",
+    "changes": [
+      {
+        "path": "genres.1.name",
+        "source": "philosophy",
+        "target": "WESTERN PHILOSOPHY",
+        "meta": {
+          "op": "replace",
+          "reason": "different genre names in lower case"
+        }
+      }
+    ]
+  },
+  {
+    "source": "demo/bulk/sources/1.json",
+    "target": "demo/bulk/targets/3.json",
+    "changes": [
+      {
+        "path": "author",
+        "source": {
+          "name": "Niccolò",
+          "surname": "Machiavelli",
+          "life": {
+            "bornOn": "3 May 1469",
+            "diedOn": "21 June 1527"
+          }
+        },
+        "meta": {
+          "op": "remove",
+          "reason": "value disappeared"
+        }
+      },
+      {
+        "path": "publishedOn",
+        "source": "1532",
+        "meta": {
+          "op": "remove",
+          "reason": "value disappeared"
+        }
+      },
+      {
+        "path": "genres",
+        "source": [
+          {
+            "id": 4,
+            "name": "classics"
+          },
+          {
+            "id": 93,
+            "name": "philosophy"
+          }
+        ],
+        "meta": {
+          "op": "remove",
+          "reason": "value disappeared"
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,84 @@
+[
+  {
+    "source": "demo/source.json",
+    "target": "demo/target.json",
+    "changes": [
+      {
+        "path": "author.life.bornOn",
+        "source": "3 May 1469",
+        "meta": {
+          "op": "remove",
+          "reason": "value disappeared"
+        }
+      },
+      {
+        "path": "author.life.diedOn",
+        "source": "21 June 1527",
+        "target": "21 June 1532",
+        "meta": {
+          "op": "replace",
+          "reason": "different strings"
+        }
+      },
+      {
+        "path": "author.life.bornIn",
+        "target": "Firenze",
+        "meta": {
+          "op": "add",
+          "reason": "value appeared"
+        }
+      },
+      {
+        "path": "publishedOn",
+        "source": "1532",
+        "target": 1532,
+        "meta": {
+          "op": "replace",
+          "reason": "type changed from \"string\" to \"number\""
+        }
+      },
+      {
+        "path": "starsCount",
+        "source": 8562,
+        "target": null,
+        "meta": {
+          "op": "replace",
+          "reason": "number of stars decreased",
+          "delta": -8562,
+          "preprocessor": {
+            "source": 8562,
+            "target": 0
+          }
+        }
+      },
+      {
+        "path": "genres.0.name",
+        "source": "classics",
+        "target": "CLASSIC",
+        "meta": {
+          "op": "replace",
+          "reason": "different genre names in lower case"
+        }
+      },
+      {
+        "path": "genres.1.id",
+        "source": 93,
+        "meta": {
+          "op": "remove",
+          "reason": "value disappeared"
+        }
+      },
+      {
+        "path": "genres.2",
+        "target": {
+          "id": 1,
+          "name": "HISTORY"
+        },
+        "meta": {
+          "op": "add",
+          "reason": "value appeared"
+        }
+      }
+    ]
+  }
+]

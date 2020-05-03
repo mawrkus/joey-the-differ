@@ -17,9 +17,12 @@ Usage: joey-the-differ [options]
 
 Options:
   -V, --version        output the version number
-  -s, --source [file]  source file (JSON), required
-  -t, --target [file]  target file (JSON), required
+  -s, --source [file]  source file or directory, required
+  -t, --target [file]  target file or directory, required
+  -o, --output [file]  output file or directory, optional
   -c, --config [file]  config file (JS), optional
+  -v, --verbose        verbose mode, optional
+  -h, --help           display help for command
 ```
 
 For instance, using [npx](https://github.com/npm/npx):
@@ -36,6 +39,30 @@ docker run -v ${PWD}:/tmp mawrkus/joey-the-differ -s /tmp/demo/source.json -t /t
 ```
 
 Have a look at the [demo folder](./demo) to see the content of the files.
+
+#### Bulk diffing
+
+You can diff one `source` file against many, if `target` is a directory:
+
+```shell
+npx joey-the-differ -s demo/bulk/sources/1.json -t demo/bulk/targets -c demo/options.js
+```
+
+or many files against one `target` file, if `source` is a directory:
+
+```shell
+npx joey-the-differ -s demo/bulk/sources -t demo/bulk/targets/1.json -c demo/options.js
+```
+
+or you can diff matching pairs of files if `source` and `target` are directories:
+
+```shell
+npx joey-the-differ -s demo/bulk/sources -t demo/bulk/targets -c demo/options.js
+```
+
+In this case, the files with the same name in both `source` and `target` directories will be diffed.
+
+`output` can be either a file or a directory. In case of a directory, for each file matched, a file with the same name will be created.
 
 ### Node.js module
 
@@ -126,7 +153,7 @@ const joey = new JoeyTheDiffer(options);
 const changes = joey.diff(currentBookData, newBookData);
 
 // or with files:
-// const changes = await joey.diffFiles('./demo/source.json', '.demo/target.json');
+// const [{ changes }] = await joey.diffFiles('./demo/source.json', '.demo/target.json');
 
 console.log(changes);
 /*
@@ -226,7 +253,7 @@ console.log(changes);
 
 Compares `source` to `target` by recursively visiting all `source` properties and diffing them with the corresponding properties in `target`.
 
-If a `blacklist` option was passed, it is used to prevent diffing specific properties identified by their path, in `source` and in `target`.
+If a `blacklist` option is passed, it is used to prevent diffing specific properties identified by their path, in `source` and in `target`.
 
 If `allowNewTargetProperties` is set to `true`, the properties that exist in `target` but not in `source` won't appear in the changes.
 
@@ -260,13 +287,36 @@ const changes = joey.diff(source, target);
 }
 ```
 
-### diffFiles(sourcePath, targetPath)
-
-A helper method to work with files.
+### async diffFiles(sourcePath, targetPath, optionalOutputPath)
 
 ```js
-const changes = await joey.diff(sourcePath, targetPath);
+const results = await joey.diffFiles(sourcePath, targetPath, optionalOutputPath);
 ```
+
+`results` is an array of objects like:
+
+```js
+[
+  {
+    source: 'path to the source file',
+    target: 'path to the target file',
+    changes: [
+      // see above
+    ],
+  },
+  {
+    // ...
+  },
+]
+```
+
+You can diff:
+
+- one `source` file against many, if `target` is a directory
+- many source files against one `target`, if `source` is a directory
+- matching pairs of files if `source` and `target` are directories (the files with the same names in both `source` and `target` will be diffed)
+
+`optionalOutputPath` can be either a file or a directory. In case of a directory, for each file matched, a file with the same name will be created. For diffing one file against one file, it must be a file.
 
 ## 🧬 Contribute
 
