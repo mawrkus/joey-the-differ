@@ -375,5 +375,44 @@ describe('FilesDiffer({ diffFn, fsPromises })', () => {
         });
       });
     });
+
+    describe('if "source" does not exist', () => {
+      it('should throw an error', async () => {
+        const { filesDiffer } = buildFilesDiffer();
+
+        const source = `${fixturesDirPath}/xxx.json`;
+        const target = `${fixturesDirPath}/target.json`;
+        const resultsP = filesDiffer.diff(source, target);
+
+        await expect(resultsP).rejects
+          .toThrow(`ENOENT: no such file or directory, stat '${source}'`);
+      });
+    });
+
+    describe('if "target" does not exist', () => {
+      it('should throw an error', async () => {
+        const { filesDiffer } = buildFilesDiffer();
+
+        const source = `${fixturesDirPath}/source.json`;
+        const target = `${fixturesDirPath}/xxx.json`;
+        const resultsP = filesDiffer.diff(source, target);
+
+        await expect(resultsP).rejects
+          .toThrow(`ENOENT: no such file or directory, stat '${target}'`);
+      });
+    });
+
+    describe('if neither "source" nor "target" are files or directories', () => {
+      it('should throw an error', async () => {
+        const { fsPromises, filesDiffer } = buildFilesDiffer();
+
+        fsPromises.stat = jest.fn(async () => ({ isFile: () => false, isDirectory: () => false }));
+
+        const resultsP = filesDiffer.diff('', '');
+
+        await expect(resultsP).rejects
+          .toThrow('Source and target must be either files or directories!');
+      });
+    });
   });
 });
