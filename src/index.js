@@ -79,10 +79,10 @@ class JoeyTheDiffer {
 
     if (customDiffer) {
       return JoeyTheDiffer.customCompare(
+        customDiffer,
         { value: source, processedValue: processedSource },
         { value: target, processedValue: processedTarget },
         path,
-        customDiffer,
         Boolean(preprocessor),
       );
     }
@@ -115,14 +115,14 @@ class JoeyTheDiffer {
   }
 
   /**
+   * @param {Function} customDiffer
    * @param {Object} source
    * @param {Object} target
    * @param {Array} path
-   * @param {Function} customDiffer
    * @param {boolean} wasPreprocessed
    * @return {Array}
    */
-  static customCompare(source, target, path, customDiffer, wasPreprocessed) {
+  static customCompare(customDiffer, source, target, path, wasPreprocessed) {
     const { areEqual, meta } = customDiffer(source.processedValue, target.processedValue, path);
 
     if (wasPreprocessed) {
@@ -204,45 +204,37 @@ class JoeyTheDiffer {
       return null;
     }
 
-    const partialResult = {
+    const change = {
       path: path.join('.'),
       source: source.value,
       target: target.value,
+      meta: {},
     };
 
-    let op;
-    let reason;
+    const { meta } = change;
 
     if (source.type.name === target.type.name) {
-      op = 'replace';
-      reason = `different ${source.type.name}s`;
+      meta.op = 'replace';
+      meta.reason = `different ${source.type.name}s`;
     } else if (!this.allowNewTargetProperties && source.type.name === 'undefined') {
-      op = 'add';
-      reason = 'value appeared';
+      meta.op = 'add';
+      meta.reason = 'value appeared';
     } else if (target.type.name === 'undefined') {
-      op = 'remove';
-      reason = 'value disappeared';
+      meta.op = 'remove';
+      meta.reason = 'value disappeared';
     } else {
-      op = 'replace';
-      reason = `type changed from "${source.type.name}" to "${target.type.name}"`;
+      meta.op = 'replace';
+      meta.reason = `type changed from "${source.type.name}" to "${target.type.name}"`;
     }
 
-    return {
-      ...partialResult,
-      meta: wasPreprocessed
-        ? {
-          op,
-          reason,
-          preprocessor: {
-            source: source.processedValue,
-            target: target.processedValue,
-          },
-        }
-        : {
-          op,
-          reason,
-        },
-    };
+    if (wasPreprocessed) {
+      meta.preprocessor = {
+        source: source.processedValue,
+        target: target.processedValue,
+      };
+    }
+
+    return change;
   }
 
   /**
