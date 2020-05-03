@@ -153,7 +153,7 @@ const joey = new JoeyTheDiffer(options);
 const changes = joey.diff(currentBookData, newBookData);
 
 // or with files:
-// const [{ changes }] = await joey.diffFiles('./demo/source.json', '.demo/target.json');
+// const [{ changes }] = await joey.diffFiles('./demo/source.json', './demo/target.json');
 
 console.log(changes);
 /*
