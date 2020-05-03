@@ -9,12 +9,14 @@ const FilesDiffer = require('../FilesDiffer');
 
 function buildFilesDiffer() {
   const diffFn = jest.fn(() => []);
+
   const fsPromises = {
     stat: fs.promises.stat,
     readdir: fs.promises.readdir,
     readFile: fs.promises.readFile,
     writeFile: jest.fn(async () => {}),
   };
+
   const filesDiffer = new FilesDiffer({ diffFn, fsPromises });
 
   return {
@@ -215,8 +217,8 @@ describe('FilesDiffer({ diffFn, fsPromises })', () => {
 
           const results = await filesDiffer.diff(source, target);
 
-          expect(diffFn).toHaveBeenCalledWith(require(`${source}/1.json`), require(target));
-          expect(diffFn).toHaveBeenCalledWith(require(`${source}/2.json`), require(target));
+          expect(diffFn).toHaveBeenCalledWith(source1Content, targetContent);
+          expect(diffFn).toHaveBeenCalledWith(source2Content, targetContent);
 
           expect(results).toEqual([
             { source: `${fixturesDirPath}/bulk/sources/1.json`, target, changes: [1] },
@@ -259,6 +261,101 @@ describe('FilesDiffer({ diffFn, fsPromises })', () => {
             .mockReturnValue([1]);
           when(diffFn)
             .calledWith(source2Content, targetContent)
+            .mockReturnValue([2]);
+
+          const output = `${fixturesDirPath}/bulk/diffs`;
+          const results = await filesDiffer.diff(source, target, output);
+
+          expect(fsPromises.writeFile).toHaveBeenCalledTimes(2);
+          expect(fsPromises.writeFile).toHaveBeenCalledWith(
+            `${output}/1.json`,
+            JSON.stringify(results[0], null, 2),
+            { encoding: 'utf8' },
+          );
+          expect(fsPromises.writeFile).toHaveBeenCalledWith(
+            `${output}/2.json`,
+            JSON.stringify(results[1], null, 2),
+            { encoding: 'utf8' },
+          );
+        });
+      });
+    });
+
+    describe('diffing 1 source directory against 1 target directory', () => {
+      describe('with no output file', () => {
+        it('should apply the diffing function to the content of each matching file pairs found in the directories and return the proper results', async () => {
+          const { diffFn, filesDiffer } = buildFilesDiffer();
+
+          const source = `${fixturesDirPath}/bulk/sources`;
+          const target = `${fixturesDirPath}/bulk/targets`;
+
+          const source1Content = require(`${source}/1.json`);
+          const source2Content = require(`${source}/2.json`);
+          const target1Content = require(`${target}/1.json`);
+          const target2Content = require(`${target}/2.json`);
+
+          when(diffFn)
+            .calledWith(source1Content, target1Content)
+            .mockReturnValue([1]);
+          when(diffFn)
+            .calledWith(source2Content, target2Content)
+            .mockReturnValue([2]);
+
+          const results = await filesDiffer.diff(source, target);
+
+          expect(diffFn).toHaveBeenCalledWith(source1Content, target1Content);
+          expect(diffFn).toHaveBeenCalledWith(source2Content, target2Content);
+
+          expect(results).toEqual([
+            {
+              source: `${fixturesDirPath}/bulk/sources/1.json`,
+              target: `${fixturesDirPath}/bulk/targets/1.json`,
+              changes: [1],
+            },
+            {
+              source: `${fixturesDirPath}/bulk/sources/2.json`,
+              target: `${fixturesDirPath}/bulk/targets/2.json`,
+              changes: [2],
+            },
+          ]);
+        });
+      });
+
+      describe('with an output file', () => {
+        it('should save the combined results to the output file specified, as JSON', async () => {
+          const { fsPromises, filesDiffer } = buildFilesDiffer();
+
+          const source = `${fixturesDirPath}/bulk/sources`;
+          const target = `${fixturesDirPath}/bulk/targets`;
+          const output = `${fixturesDirPath}/bulk/output.json`;
+          const results = await filesDiffer.diff(source, target, output);
+
+          expect(fsPromises.writeFile).toHaveBeenCalledTimes(1);
+          expect(fsPromises.writeFile).toHaveBeenCalledWith(
+            output,
+            JSON.stringify(results, null, 2),
+            { encoding: 'utf8' },
+          );
+        });
+      });
+
+      describe('with an output directory', () => {
+        it('should save each results to a file in the output directory specified, as JSON', async () => {
+          const { diffFn, fsPromises, filesDiffer } = buildFilesDiffer();
+
+          const source = `${fixturesDirPath}/bulk/sources`;
+          const target = `${fixturesDirPath}/bulk/targets`;
+
+          const source1Content = require(`${source}/1.json`);
+          const source2Content = require(`${source}/2.json`);
+          const target1Content = require(`${target}/1.json`);
+          const target2Content = require(`${target}/2.json`);
+
+          when(diffFn)
+            .calledWith(source1Content, target1Content)
+            .mockReturnValue([1]);
+          when(diffFn)
+            .calledWith(source2Content, target2Content)
             .mockReturnValue([2]);
 
           const output = `${fixturesDirPath}/bulk/diffs`;
