@@ -10,7 +10,7 @@ const sortById = (a, b) => {
   return 0;
 };
 
-describe('JoeyTheDiffer({ differs, blacklist, allowNewTargetProperties })', () => {
+describe('JoeyTheDiffer({ allowNewTargetProperties, blacklist, preprocessors, differs })', () => {
   it('should be a class with the following API: diff(), diffFiles()', () => {
     expect(JoeyTheDiffer).toBeInstanceOf(Function);
     expect(JoeyTheDiffer.prototype.diff).toBeInstanceOf(Function);
