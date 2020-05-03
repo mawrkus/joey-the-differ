@@ -34,7 +34,7 @@ describe('FilesDiffer({ diffFn, fsPromises })', () => {
     expect(filesDiffer.diff).toBeInstanceOf(Function);
   });
 
-  it('should inherit the EventEmitter class', async () => {
+  it('should inherit the EventEmitter class', () => {
     expect(Object.getPrototypeOf(FilesDiffer)).toBe(EventEmitter);
   });
 
