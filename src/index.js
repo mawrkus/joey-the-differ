@@ -91,14 +91,12 @@ class JoeyTheDiffer {
     const targetType = JoeyTheDiffer.getType(processedTarget, path);
 
     if (sourceType.isPrimitive || targetType.isPrimitive) {
-      const change = JoeyTheDiffer.comparePrimitiveTypes(
+      return JoeyTheDiffer.comparePrimitiveTypes(
         { value: source, processedValue: processedSource, type: sourceType },
         { value: target, processedValue: processedTarget, type: targetType },
         path,
         Boolean(preprocessor),
       );
-
-      return change === null ? [] : [change];
     }
 
     return this.compareObjects(processedSource, processedTarget, path);
@@ -120,7 +118,7 @@ class JoeyTheDiffer {
    * @param {Object} target
    * @param {Array} path
    * @param {boolean} wasPreprocessed
-   * @return {Array}
+   * @return {Array} change
    */
   static customCompare(customDiffer, source, target, path, wasPreprocessed) {
     const { areEqual, meta } = customDiffer(source.processedValue, target.processedValue, path);
@@ -195,13 +193,13 @@ class JoeyTheDiffer {
    * @param {Object} target
    * @param {Array} path
    * @param {boolean} wasPreprocessed
-   * @return {Null|Object}
+   * @return {Array} change
    */
   static comparePrimitiveTypes(source, target, path, wasPreprocessed) {
     const areEqual = source.processedValue === target.processedValue;
 
     if (areEqual) {
-      return null;
+      return [];
     }
 
     const change = {
@@ -234,7 +232,7 @@ class JoeyTheDiffer {
       };
     }
 
-    return change;
+    return [change];
   }
 
   /**
