@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.5.0] - 2020-05-03
+
+### Added
+
+- Bulk diffing: diffing all files contained in a directory (one against many or by pairs)
+- Option to save results to file(s)
+
+### Removed
+
+- CLI spinner to allow pipes and redirections
+
 ## [1.4.0] - 2020-05-01
 
 ### Added
