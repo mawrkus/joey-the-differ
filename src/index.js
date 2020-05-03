@@ -1,3 +1,4 @@
+const fs = require('fs');
 const flattenDeep = require('lodash.flattendeep');
 const FilesDiffer = require('./FilesDiffer');
 
@@ -43,7 +44,10 @@ class JoeyTheDiffer {
     this.blacklistRegexes = blacklist;
     this.allowNewTargetProperties = allowNewTargetProperties;
 
-    this.filesDiffer = new FilesDiffer({ diffFn: this.diff.bind(this) });
+    this.filesDiffer = new FilesDiffer({
+      diffFn: this.diff.bind(this),
+      fsPromises: fs.promises,
+    });
   }
 
   /**

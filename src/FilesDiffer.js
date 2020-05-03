@@ -1,4 +1,3 @@
-const { promises: fsPromises } = require('fs');
 const nodePath = require('path');
 const EventEmitter = require('events');
 
@@ -7,10 +6,16 @@ const intersectionBy = require('lodash.intersectionby');
 class FilesDiffer extends EventEmitter {
   /**
    * @param {Function} diffFn
+   * @param {Object} fsPromises
+   * @param {AsyncFunction} fsPromises.stat
+   * @param {AsyncFunction} fsPromises.readdir
+   * @param {AsyncFunction} fsPromises.readFile
+   * @param {AsyncFunction} fsPromises.writeFile
    */
-  constructor({ diffFn }) {
+  constructor({ diffFn, fsPromises }) {
     super();
     this.diffFn = diffFn;
+    this.fsPromises = fsPromises;
   }
 
   /**
@@ -25,9 +30,9 @@ class FilesDiffer extends EventEmitter {
       targetStats,
       isOutputADirectory,
     ] = await Promise.all([
-      fsPromises.stat(source),
-      fsPromises.stat(target),
-      fsPromises.stat(output).then((stats) => stats.isDirectory()).catch(() => false),
+      this.fsPromises.stat(source),
+      this.fsPromises.stat(target),
+      this.fsPromises.stat(output).then((stats) => stats.isDirectory()).catch(() => false),
     ]);
 
     if (sourceStats.isFile() && targetStats.isFile()) {
@@ -46,7 +51,8 @@ class FilesDiffer extends EventEmitter {
     if (sourceStats.isFile() && targetStats.isDirectory()) {
       return this.diffCombination(
         [nodePath.resolve(source)],
-        (await fsPromises.readdir(target)).map((fileName) => nodePath.resolve(target, fileName)),
+        (await this.fsPromises.readdir(target))
+          .map((fileName) => nodePath.resolve(target, fileName)),
         output,
         isOutputADirectory,
       );
@@ -54,7 +60,8 @@ class FilesDiffer extends EventEmitter {
 
     if (sourceStats.isDirectory() && targetStats.isFile()) {
       return this.diffCombination(
-        (await fsPromises.readdir(source)).map((fileName) => nodePath.resolve(source, fileName)),
+        (await this.fsPromises.readdir(source))
+          .map((fileName) => nodePath.resolve(source, fileName)),
         [nodePath.resolve(target)],
         output,
         isOutputADirectory,
@@ -63,12 +70,12 @@ class FilesDiffer extends EventEmitter {
 
     if (sourceStats.isDirectory() && targetStats.isDirectory()) {
       return this.diffCombination(
-        (await fsPromises.readdir(source)).map((fileName) => ({
+        (await this.fsPromises.readdir(source)).map((fileName) => ({
           fileName,
           source: nodePath.resolve(source, fileName),
           target: nodePath.resolve(target, fileName),
         })),
-        (await fsPromises.readdir(target)).map((fileName) => ({ fileName })),
+        (await this.fsPromises.readdir(target)).map((fileName) => ({ fileName })),
         output,
         isOutputADirectory,
       );
@@ -90,7 +97,7 @@ class FilesDiffer extends EventEmitter {
     const targetsCount = targets.length;
 
     const getOuputFilePath = isOutputADirectory
-      ? (fileName) => nodePath.resolve(output, fileName)
+      ? (fileName) => nodePath.resolve(output, nodePath.basename(fileName))
       : () => null;
 
     if (sourcesCount === 1) {
@@ -158,8 +165,8 @@ class FilesDiffer extends EventEmitter {
     this.emit('diff:file:start', diffEvent);
 
     const [sourceContent, targetContent] = await Promise.all([
-      fsPromises.readFile(source, { encoding: 'utf8' }).then((json) => JSON.parse(json)),
-      fsPromises.readFile(target, { encoding: 'utf8' }).then((json) => JSON.parse(json)),
+      this.fsPromises.readFile(source, { encoding: 'utf8' }).then((json) => JSON.parse(json)),
+      this.fsPromises.readFile(target, { encoding: 'utf8' }).then((json) => JSON.parse(json)),
     ]);
 
     const changes = this.diffFn(sourceContent, targetContent);
@@ -184,7 +191,7 @@ class FilesDiffer extends EventEmitter {
 
     this.emit('save:file:start', saveEvent);
 
-    await fsPromises.writeFile(output, JSON.stringify(results, null, 2), { encoding: 'utf8' });
+    await this.fsPromises.writeFile(output, JSON.stringify(results, null, 2), { encoding: 'utf8' });
 
     this.emit('save:file:end', saveEvent);
   }

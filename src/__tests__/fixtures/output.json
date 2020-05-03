@@ -1,0 +1,10 @@
+[
+  {
+    "source": "/Users/mawrkus/_/dev/packages/joey-the-differ/src/__tests__/fixtures/source.json",
+    "target": "/Users/mawrkus/_/dev/packages/joey-the-differ/src/__tests__/fixtures/target.json",
+    "changes": [
+      {},
+      {}
+    ]
+  }
+]
