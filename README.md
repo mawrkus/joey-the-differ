@@ -10,7 +10,6 @@ JSON diffing on steroids.
 - Bulk files processing
 - CLI-friendly
 - Docker-ready
-- [JSON Patch RFC 6902](https://tools.ietf.org/html/rfc6902) compliant
 
 ## 🧬 Installation
 
