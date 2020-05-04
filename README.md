@@ -2,6 +2,16 @@
 
 JSON diffing on steroids.
 
+## 🧬 Features
+
+- Custom differs
+- Blacklist
+- Preprocessors
+- Bulk files processing
+- CLI-friendly
+- Docker-ready
+- [JSON Patch RFC 6902](https://tools.ietf.org/html/rfc6902) compliant
+
 ## 🧬 Installation
 
 ```shell
