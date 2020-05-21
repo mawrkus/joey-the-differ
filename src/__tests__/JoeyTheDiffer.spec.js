@@ -1,4 +1,4 @@
-const JoeyTheDiffer = require('..');
+const JoeyTheDiffer = require('../JoeyTheDiffer');
 
 const sortById = (a, b) => {
   if (a.id < b.id) {

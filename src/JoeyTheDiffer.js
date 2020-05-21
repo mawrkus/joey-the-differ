@@ -41,7 +41,6 @@ class JoeyTheDiffer {
         customDiffer,
       }));
 
-    this.blacklistRegexes = blacklist;
     this.allowNewTargetProperties = allowNewTargetProperties;
 
     this.filesDiffer = new FilesDiffer({
