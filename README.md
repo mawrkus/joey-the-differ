@@ -128,6 +128,7 @@ const newBookData = {
 
 const options = {
   allowNewTargetProperties: false,
+  returnPathAsAnArray: false,
   blacklist: [
     'reviewsCount',
     'genres\\.(\\d+)\\.booksCount',
