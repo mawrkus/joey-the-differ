@@ -24,12 +24,14 @@
   },
   "files": [
     "bin/joey-the-differ.js",
+    "browser/index.js",
     "src/JoeyTheDiffer.js",
+    "src/JoeyTheFilesDiffer.js",
     "CHANGELOG.md",
     "README.md"
   ],
   "bin": "bin/joey-the-differ.js",
-  "main": "src/JoeyTheDiffer.js",
+  "main": "src/index.js",
   "scripts": {
     "lint": "eslint ./src",
     "pretest": "yarn lint",

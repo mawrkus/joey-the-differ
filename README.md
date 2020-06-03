@@ -76,7 +76,7 @@ In this case, the files with the same name in both `source` and `target` directo
 ### Node.js module
 
 ```js
-import JoeyTheDiffer from 'joey-the-differ';
+const JoeyTheDiffer = require('joey-the-differ');
 
 const currentBookData = {
   id: 42,
@@ -162,7 +162,12 @@ const joey = new JoeyTheDiffer(options);
 const changes = joey.diff(currentBookData, newBookData);
 
 // or with files:
-// const [{ changes }] = await joey.diffFiles('./demo/source.json', './demo/target.json');
+
+/*
+  const { JoeyTheFilesDiffer } = JoeyTheDiffer;
+  const joey = new JoeyTheFilesDiffer(options);
+  const [{ changes }] = await joey.diff('./demo/source.json', './demo/target.json');
+*/
 
 console.log(changes);
 /*
@@ -249,7 +254,9 @@ console.log(changes);
 
 ## 🧬 API
 
-### constructor options
+### JoeyTheDiffer
+
+#### constructor options
 
 | Name  | Type  | Default | Description | Example |
 | ---   | ---   | ---     | ---         | ---     |
@@ -258,7 +265,7 @@ console.log(changes);
 | `preprocessors` | Object | {} | Preprocessors, associating a regular expression to a transform function  | See "Usage" above |
 | `differs` | Object | {} | Custom differs, associating a regular expression to a diffing function  | See "Usage" above |
 
-### diff(source, target)
+#### diff(source, target)
 
 Compares `source` to `target` by recursively visiting all `source` properties and diffing them with the corresponding properties in `target`.
 
@@ -296,9 +303,19 @@ const changes = joey.diff(source, target);
 }
 ```
 
-### async diffFiles(sourcePath, targetPath, optionalOutputPath)
+### JoeyTheFilesDiffer
+
+#### constructor options
+
+Same as `JoeyTheDiffer`.
+
+#### async diff(sourcePath, targetPath, optionalOutputPath)
 
 ```js
+const { JoeyTheFilesDiffer } = require('joey-the-differ');
+
+const joey = new JoeyTheFilesDiffer(options);
+
 const results = await joey.diffFiles(sourcePath, targetPath, optionalOutputPath);
 ```
 
