@@ -261,6 +261,7 @@ console.log(changes);
 | Name  | Type  | Default | Description | Example |
 | ---   | ---   | ---     | ---         | ---     |
 | `allowNewTargetProperties` | Boolean | false | To allow or not diffing properties that exist in `target` but not in `source` | |
+| `returnPathAsAnArray` | Boolean | false | To return the path to the change as an array in the results (resolves ambiguity when keys contains dots) | |
 | `blacklist` | String[] | [] | An array of regular expressions used to match specific properties identified by their path | `'genres\\.(\\d+)\\.booksCount'` will prevent diffing the `booksCount` property of all the `genres` array elements (objects) |
 | `preprocessors` | Object | {} | Preprocessors, associating a regular expression to a transform function  | See "Usage" above |
 | `differs` | Object | {} | Custom differs, associating a regular expression to a diffing function  | See "Usage" above |

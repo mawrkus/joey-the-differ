@@ -1424,5 +1424,50 @@ describe('JoeyTheDiffer({ allowNewTargetProperties, blacklist, preprocessors, di
         ]);
       });
     });
+
+    describe('when returning path as an array', () => {
+      it('should return the proper array of differences', () => {
+        const joeyTheDiffer = new JoeyTheDiffer({
+          returnPathAsAnArray: true,
+        });
+
+        const source = {
+          'id': 42,
+          'book.title': 'The Prince',
+          'book': {
+            title: 'The Prince',
+          },
+        };
+
+        const target = {
+          id: 42,
+          book: {
+          },
+        };
+
+        const changes = joeyTheDiffer.diff(source, target);
+
+        expect(changes).toEqual([
+          {
+            path: ['book.title'],
+            source: 'The Prince',
+            target: undefined,
+            meta: {
+              op: 'remove',
+              reason: 'value disappeared',
+            },
+          },
+          {
+            path: ['book', 'title'],
+            source: 'The Prince',
+            target: undefined,
+            meta: {
+              op: 'remove',
+              reason: 'value disappeared',
+            },
+          },
+        ]);
+      });
+    });
   });
 });

@@ -8,13 +8,15 @@ class JoeyTheDiffer {
    * @param {Object} [options.preprocessors={}]
    * @param {Object} [options.differs={}]
    * @param {string[]} [options.blacklist=[]]
-   * @param {boolean} [options.allowNewTargetProperties=false
+   * @param {boolean} [options.allowNewTargetProperties=false]
+   * @param {boolean} [options.returnPathAsAnArray=false]
    */
   constructor({
     differs = {},
     preprocessors = {},
     blacklist = [],
     allowNewTargetProperties = false,
+    returnPathAsAnArray = false,
   } = {}) {
     const processors = blacklist.reduce((acc, regex) => ({
       ...acc,
@@ -40,6 +42,7 @@ class JoeyTheDiffer {
       }));
 
     this.allowNewTargetProperties = allowNewTargetProperties;
+    this.returnPathAsAnArray = returnPathAsAnArray;
   }
 
   /**
@@ -60,7 +63,7 @@ class JoeyTheDiffer {
       : { source, target };
 
     if (customDiffer) {
-      return JoeyTheDiffer.customCompare(
+      return this.customCompare(
         customDiffer,
         { value: source, processedValue: processedSource },
         { value: target, processedValue: processedTarget },
@@ -73,7 +76,7 @@ class JoeyTheDiffer {
     const targetType = JoeyTheDiffer.getType(processedTarget, path);
 
     if (sourceType.isPrimitive || targetType.isPrimitive) {
-      return JoeyTheDiffer.comparePrimitiveTypes(
+      return this.comparePrimitiveTypes(
         { value: source, processedValue: processedSource, type: sourceType },
         { value: target, processedValue: processedTarget, type: targetType },
         path,
@@ -102,7 +105,7 @@ class JoeyTheDiffer {
    * @param {boolean} wasPreprocessed
    * @return {Array} change
    */
-  static customCompare(customDiffer, source, target, path, wasPreprocessed) {
+  customCompare(customDiffer, source, target, path, wasPreprocessed) {
     const { areEqual, meta } = customDiffer(source.processedValue, target.processedValue, path);
 
     if (wasPreprocessed) {
@@ -115,7 +118,7 @@ class JoeyTheDiffer {
     return areEqual
       ? []
       : [{
-        path: path.join('.'),
+        path: this.returnPathAsAnArray ? path : path.join('.'),
         source: source.value,
         target: target.value,
         meta,
@@ -177,7 +180,7 @@ class JoeyTheDiffer {
    * @param {boolean} wasPreprocessed
    * @return {Array} change
    */
-  static comparePrimitiveTypes(source, target, path, wasPreprocessed) {
+  comparePrimitiveTypes(source, target, path, wasPreprocessed) {
     const areEqual = source.processedValue === target.processedValue;
 
     if (areEqual) {
@@ -185,7 +188,7 @@ class JoeyTheDiffer {
     }
 
     const change = {
-      path: path.join('.'),
+      path: this.returnPathAsAnArray ? path : path.join('.'),
       source: source.value,
       target: target.value,
       meta: {},
@@ -244,7 +247,7 @@ class JoeyTheDiffer {
         }
 
         return {
-          path: newPath.join('.'),
+          path: this.returnPathAsAnArray ? newPath : newPath.join('.'),
           source: source[key],
           target: targetValue,
           meta: {
