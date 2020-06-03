@@ -5,9 +5,9 @@ const fs = require('fs');
 
 const { when } = require('jest-when-xt');
 
-const FilesDiffer = require('../FilesDiffer');
+const JoeyTheFilesDiffer = require('../JoeyTheFilesDiffer');
 
-function buildFilesDiffer() {
+function buildJoey() {
   const diffFn = jest.fn(() => []);
 
   const fsPromises = {
@@ -17,39 +17,42 @@ function buildFilesDiffer() {
     writeFile: jest.fn(async () => {}),
   };
 
-  const filesDiffer = new FilesDiffer({ diffFn, fsPromises });
+  const joeyTheFilesDiffer = new JoeyTheFilesDiffer({
+    diffFn,
+    fsPromises,
+  });
 
   return {
     diffFn,
     fsPromises,
-    filesDiffer,
+    joeyTheFilesDiffer,
   };
 }
 
 const fixturesDirPath = `${__dirname}/fixtures`;
 
-describe('FilesDiffer({ diffFn, fsPromises })', () => {
+describe('JoeyTheFilesDiffer({ diffFn, fsPromises })', () => {
   it('should be a class with the following API: diff()', () => {
-    const { filesDiffer } = buildFilesDiffer();
-    expect(filesDiffer.diff).toBeInstanceOf(Function);
+    const { joeyTheFilesDiffer } = buildJoey();
+    expect(joeyTheFilesDiffer.diff).toBeInstanceOf(Function);
   });
 
   it('should inherit the EventEmitter class', () => {
-    expect(Object.getPrototypeOf(FilesDiffer)).toBe(EventEmitter);
+    expect(Object.getPrototypeOf(JoeyTheFilesDiffer)).toBe(EventEmitter);
   });
 
   describe('#diff(source, target, output)', () => {
     describe('diffing 1 source file against 1 target file', () => {
       describe('with no output file', () => {
         it('should apply the diffing function to the content of each file and return the proper results', async () => {
-          const { diffFn, filesDiffer } = buildFilesDiffer();
+          const { diffFn, joeyTheFilesDiffer } = buildJoey();
 
           const diffFnResults = [{ path: 'title' }, { path: 'author' }];
           diffFn.mockReturnValue(diffFnResults);
 
           const source = `${fixturesDirPath}/source.json`;
           const target = `${fixturesDirPath}/target.json`;
-          const results = await filesDiffer.diff(source, target);
+          const results = await joeyTheFilesDiffer.diff(source, target);
 
           expect(results).toEqual([{
             source,
@@ -61,17 +64,17 @@ describe('FilesDiffer({ diffFn, fsPromises })', () => {
 
       describe('with an output file', () => {
         it('should save the results to the output file specified, as JSON', async () => {
-          const { diffFn, fsPromises, filesDiffer } = buildFilesDiffer();
+          const { diffFn, fsPromises, joeyTheFilesDiffer } = buildJoey();
 
           const diffFnResults = [{ path: 'title' }, { path: 'author' }];
           diffFn.mockReturnValue(diffFnResults);
 
-          jest.spyOn(filesDiffer, 'saveResults');
+          jest.spyOn(joeyTheFilesDiffer, 'saveResults');
 
           const source = `${fixturesDirPath}/source.json`;
           const target = `${fixturesDirPath}/target.json`;
           const output = `${fixturesDirPath}/output.json`;
-          const results = await filesDiffer.diff(source, target, output);
+          const results = await joeyTheFilesDiffer.diff(source, target, output);
 
           expect(fsPromises.writeFile).toHaveBeenCalledWith(
             output,
@@ -83,12 +86,12 @@ describe('FilesDiffer({ diffFn, fsPromises })', () => {
 
       describe('with an output directory', () => {
         it('should throw an error', async () => {
-          const { filesDiffer } = buildFilesDiffer();
+          const { joeyTheFilesDiffer } = buildJoey();
 
           const source = `${fixturesDirPath}/source.json`;
           const target = `${fixturesDirPath}/target.json`;
           const output = fixturesDirPath;
-          const resultsP = filesDiffer.diff(source, target, output);
+          const resultsP = joeyTheFilesDiffer.diff(source, target, output);
 
           await expect(resultsP).rejects
             .toThrow(`"${output}" is a directory, please specifiy an output file!`);
@@ -99,7 +102,7 @@ describe('FilesDiffer({ diffFn, fsPromises })', () => {
     describe('diffing 1 source file against 1 target directory', () => {
       describe('with no output file', () => {
         it('should apply the diffing function to the content of each file found in the target directory and return the proper results', async () => {
-          const { diffFn, filesDiffer } = buildFilesDiffer();
+          const { diffFn, joeyTheFilesDiffer } = buildJoey();
 
           const source = `${fixturesDirPath}/bulk/sources/1.json`;
           const target = `${fixturesDirPath}/bulk/targets`;
@@ -119,7 +122,7 @@ describe('FilesDiffer({ diffFn, fsPromises })', () => {
             .calledWith(sourceContent, target3Content)
             .mockReturnValue([3]);
 
-          const results = await filesDiffer.diff(source, target);
+          const results = await joeyTheFilesDiffer.diff(source, target);
 
           expect(diffFn).toHaveBeenCalledWith(sourceContent, target1Content);
           expect(diffFn).toHaveBeenCalledWith(sourceContent, target2Content);
@@ -135,12 +138,12 @@ describe('FilesDiffer({ diffFn, fsPromises })', () => {
 
       describe('with an output file', () => {
         it('should save the combined results to the output file specified, as JSON', async () => {
-          const { fsPromises, filesDiffer } = buildFilesDiffer();
+          const { fsPromises, joeyTheFilesDiffer } = buildJoey();
 
           const source = `${fixturesDirPath}/bulk/sources/1.json`;
           const target = `${fixturesDirPath}/bulk/targets`;
           const output = `${fixturesDirPath}/bulk/output.json`;
-          const results = await filesDiffer.diff(source, target, output);
+          const results = await joeyTheFilesDiffer.diff(source, target, output);
 
           expect(fsPromises.writeFile).toHaveBeenCalledTimes(1);
           expect(fsPromises.writeFile).toHaveBeenCalledWith(
@@ -153,7 +156,7 @@ describe('FilesDiffer({ diffFn, fsPromises })', () => {
 
       describe('with an output directory', () => {
         it('should save each results to a file in the output directory specified, as JSON', async () => {
-          const { diffFn, fsPromises, filesDiffer } = buildFilesDiffer();
+          const { diffFn, fsPromises, joeyTheFilesDiffer } = buildJoey();
 
           const source = `${fixturesDirPath}/bulk/sources/1.json`;
           const target = `${fixturesDirPath}/bulk/targets`;
@@ -174,7 +177,7 @@ describe('FilesDiffer({ diffFn, fsPromises })', () => {
             .mockReturnValue([3]);
 
           const output = `${fixturesDirPath}/bulk/diffs`;
-          const results = await filesDiffer.diff(source, target, output);
+          const results = await joeyTheFilesDiffer.diff(source, target, output);
 
           expect(fsPromises.writeFile).toHaveBeenCalledTimes(3);
           expect(fsPromises.writeFile).toHaveBeenCalledWith(
@@ -199,7 +202,7 @@ describe('FilesDiffer({ diffFn, fsPromises })', () => {
     describe('diffing 1 source directory against 1 target file', () => {
       describe('with no output file', () => {
         it('should apply the diffing function to the content of each file found in the source directory and return the proper results', async () => {
-          const { diffFn, filesDiffer } = buildFilesDiffer();
+          const { diffFn, joeyTheFilesDiffer } = buildJoey();
 
           const source = `${fixturesDirPath}/bulk/sources`;
           const target = `${fixturesDirPath}/bulk/targets/1.json`;
@@ -215,7 +218,7 @@ describe('FilesDiffer({ diffFn, fsPromises })', () => {
             .calledWith(source2Content, targetContent)
             .mockReturnValue([2]);
 
-          const results = await filesDiffer.diff(source, target);
+          const results = await joeyTheFilesDiffer.diff(source, target);
 
           expect(diffFn).toHaveBeenCalledWith(source1Content, targetContent);
           expect(diffFn).toHaveBeenCalledWith(source2Content, targetContent);
@@ -229,12 +232,12 @@ describe('FilesDiffer({ diffFn, fsPromises })', () => {
 
       describe('with an output file', () => {
         it('should save the combined results to the output file specified, as JSON', async () => {
-          const { fsPromises, filesDiffer } = buildFilesDiffer();
+          const { fsPromises, joeyTheFilesDiffer } = buildJoey();
 
           const source = `${fixturesDirPath}/bulk/sources`;
           const target = `${fixturesDirPath}/bulk/targets/1.json`;
           const output = `${fixturesDirPath}/bulk/output.json`;
-          const results = await filesDiffer.diff(source, target, output);
+          const results = await joeyTheFilesDiffer.diff(source, target, output);
 
           expect(fsPromises.writeFile).toHaveBeenCalledTimes(1);
           expect(fsPromises.writeFile).toHaveBeenCalledWith(
@@ -247,7 +250,7 @@ describe('FilesDiffer({ diffFn, fsPromises })', () => {
 
       describe('with an output directory', () => {
         it('should save each results to a file in the output directory specified, as JSON', async () => {
-          const { diffFn, fsPromises, filesDiffer } = buildFilesDiffer();
+          const { diffFn, fsPromises, joeyTheFilesDiffer } = buildJoey();
 
           const source = `${fixturesDirPath}/bulk/sources`;
           const target = `${fixturesDirPath}/bulk/targets/1.json`;
@@ -264,7 +267,7 @@ describe('FilesDiffer({ diffFn, fsPromises })', () => {
             .mockReturnValue([2]);
 
           const output = `${fixturesDirPath}/bulk/diffs`;
-          const results = await filesDiffer.diff(source, target, output);
+          const results = await joeyTheFilesDiffer.diff(source, target, output);
 
           expect(fsPromises.writeFile).toHaveBeenCalledTimes(2);
           expect(fsPromises.writeFile).toHaveBeenCalledWith(
@@ -284,7 +287,7 @@ describe('FilesDiffer({ diffFn, fsPromises })', () => {
     describe('diffing 1 source directory against 1 target directory', () => {
       describe('with no output file', () => {
         it('should apply the diffing function to the content of each matching file pairs found in the directories and return the proper results', async () => {
-          const { diffFn, filesDiffer } = buildFilesDiffer();
+          const { diffFn, joeyTheFilesDiffer } = buildJoey();
 
           const source = `${fixturesDirPath}/bulk/sources`;
           const target = `${fixturesDirPath}/bulk/targets`;
@@ -301,7 +304,7 @@ describe('FilesDiffer({ diffFn, fsPromises })', () => {
             .calledWith(source2Content, target2Content)
             .mockReturnValue([2]);
 
-          const results = await filesDiffer.diff(source, target);
+          const results = await joeyTheFilesDiffer.diff(source, target);
 
           expect(diffFn).toHaveBeenCalledWith(source1Content, target1Content);
           expect(diffFn).toHaveBeenCalledWith(source2Content, target2Content);
@@ -323,12 +326,12 @@ describe('FilesDiffer({ diffFn, fsPromises })', () => {
 
       describe('with an output file', () => {
         it('should save the combined results to the output file specified, as JSON', async () => {
-          const { fsPromises, filesDiffer } = buildFilesDiffer();
+          const { fsPromises, joeyTheFilesDiffer } = buildJoey();
 
           const source = `${fixturesDirPath}/bulk/sources`;
           const target = `${fixturesDirPath}/bulk/targets`;
           const output = `${fixturesDirPath}/bulk/output.json`;
-          const results = await filesDiffer.diff(source, target, output);
+          const results = await joeyTheFilesDiffer.diff(source, target, output);
 
           expect(fsPromises.writeFile).toHaveBeenCalledTimes(1);
           expect(fsPromises.writeFile).toHaveBeenCalledWith(
@@ -341,7 +344,7 @@ describe('FilesDiffer({ diffFn, fsPromises })', () => {
 
       describe('with an output directory', () => {
         it('should save each results to a file in the output directory specified, as JSON', async () => {
-          const { diffFn, fsPromises, filesDiffer } = buildFilesDiffer();
+          const { diffFn, fsPromises, joeyTheFilesDiffer } = buildJoey();
 
           const source = `${fixturesDirPath}/bulk/sources`;
           const target = `${fixturesDirPath}/bulk/targets`;
@@ -359,7 +362,7 @@ describe('FilesDiffer({ diffFn, fsPromises })', () => {
             .mockReturnValue([2]);
 
           const output = `${fixturesDirPath}/bulk/diffs`;
-          const results = await filesDiffer.diff(source, target, output);
+          const results = await joeyTheFilesDiffer.diff(source, target, output);
 
           expect(fsPromises.writeFile).toHaveBeenCalledTimes(2);
           expect(fsPromises.writeFile).toHaveBeenCalledWith(
@@ -378,11 +381,11 @@ describe('FilesDiffer({ diffFn, fsPromises })', () => {
 
     describe('if "source" does not exist', () => {
       it('should throw an error', async () => {
-        const { filesDiffer } = buildFilesDiffer();
+        const { joeyTheFilesDiffer } = buildJoey();
 
         const source = `${fixturesDirPath}/xxx.json`;
         const target = `${fixturesDirPath}/target.json`;
-        const resultsP = filesDiffer.diff(source, target);
+        const resultsP = joeyTheFilesDiffer.diff(source, target);
 
         await expect(resultsP).rejects
           .toThrow(`ENOENT: no such file or directory, stat '${source}'`);
@@ -391,11 +394,11 @@ describe('FilesDiffer({ diffFn, fsPromises })', () => {
 
     describe('if "target" does not exist', () => {
       it('should throw an error', async () => {
-        const { filesDiffer } = buildFilesDiffer();
+        const { joeyTheFilesDiffer } = buildJoey();
 
         const source = `${fixturesDirPath}/source.json`;
         const target = `${fixturesDirPath}/xxx.json`;
-        const resultsP = filesDiffer.diff(source, target);
+        const resultsP = joeyTheFilesDiffer.diff(source, target);
 
         await expect(resultsP).rejects
           .toThrow(`ENOENT: no such file or directory, stat '${target}'`);
@@ -404,11 +407,11 @@ describe('FilesDiffer({ diffFn, fsPromises })', () => {
 
     describe('if neither "source" nor "target" are files or directories', () => {
       it('should throw an error', async () => {
-        const { fsPromises, filesDiffer } = buildFilesDiffer();
+        const { fsPromises, joeyTheFilesDiffer } = buildJoey();
 
         fsPromises.stat = jest.fn(async () => ({ isFile: () => false, isDirectory: () => false }));
 
-        const resultsP = filesDiffer.diff('', '');
+        const resultsP = joeyTheFilesDiffer.diff('', '');
 
         await expect(resultsP).rejects
           .toThrow('Source and target must be either files or directories!');

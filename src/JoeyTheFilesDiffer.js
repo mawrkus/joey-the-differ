@@ -1,21 +1,32 @@
+const fs = require('fs');
 const nodePath = require('path');
 const EventEmitter = require('events');
 
 const intersectionBy = require('lodash.intersectionby');
 
-class FilesDiffer extends EventEmitter {
+const JoeyTheDiffer = require('./JoeyTheDiffer');
+
+class JoeyTheFilesDiffer extends EventEmitter {
   /**
-   * @param {Function} diffFn
-   * @param {Object} fsPromises
-   * @param {AsyncFunction} fsPromises.stat
-   * @param {AsyncFunction} fsPromises.readdir
-   * @param {AsyncFunction} fsPromises.readFile
-   * @param {AsyncFunction} fsPromises.writeFile
+   * @param {Object} options The same options as JoeyTheDiffer
+   * @param {Function} [options.diffFn] For testing purposes
+   * @param {Object} [options.fsPromises] For testing purposes
+   * @param {AsyncFunction} options.fsPromises.stat
+   * @param {AsyncFunction} options.fsPromises.readdir
+   * @param {AsyncFunction} options.fsPromises.readFile
+   * @param {AsyncFunction} options.fsPromises.writeFile
    */
-  constructor({ diffFn, fsPromises }) {
+  constructor(options) {
     super();
-    this.diffFn = diffFn;
-    this.fsPromises = fsPromises;
+
+    if (options.diffFn) {
+      this.diffFn = options.diffFn;
+    } else {
+      const joey = new JoeyTheDiffer(options);
+      this.diffFn = joey.diff.bind(joey);
+    }
+
+    this.fsPromises = options.fsPromises || fs.promises;
   }
 
   /**
@@ -197,4 +208,4 @@ class FilesDiffer extends EventEmitter {
   }
 }
 
-module.exports = FilesDiffer;
+module.exports = JoeyTheFilesDiffer;

@@ -11,34 +11,33 @@ const sortById = (a, b) => {
 };
 
 describe('JoeyTheDiffer({ allowNewTargetProperties, blacklist, preprocessors, differs })', () => {
-  it('should be a class with the following API: diff(), diffFiles()', () => {
+  it('should be a class with the following API: diff()', () => {
     expect(JoeyTheDiffer).toBeInstanceOf(Function);
     expect(JoeyTheDiffer.prototype.diff).toBeInstanceOf(Function);
-    expect(JoeyTheDiffer.prototype.diffFiles).toBeInstanceOf(Function);
   });
 
   describe('#diff(source, target)', () => {
     it('should return an array', () => {
-      const joey = new JoeyTheDiffer();
+      const joeyTheDiffer = new JoeyTheDiffer();
 
-      expect(joey.diff('1', '2')).toBeInstanceOf(Array);
+      expect(joeyTheDiffer.diff('1', '2')).toBeInstanceOf(Array);
     });
 
     describe('when source and target are primitive JSON values', () => {
       describe('strings diffing', () => {
         describe('the same strings', () => {
           it('should return an empty array', () => {
-            const joey = new JoeyTheDiffer();
+            const joeyTheDiffer = new JoeyTheDiffer();
 
-            expect(joey.diff('42', '42')).toEqual([]);
+            expect(joeyTheDiffer.diff('42', '42')).toEqual([]);
           });
         });
 
         describe('different strings', () => {
           it('should return the proper array of differences', () => {
-            const joey = new JoeyTheDiffer();
+            const joeyTheDiffer = new JoeyTheDiffer();
 
-            expect(joey.diff('41', '42')).toEqual([
+            expect(joeyTheDiffer.diff('41', '42')).toEqual([
               {
                 path: '',
                 source: '41',
@@ -56,17 +55,17 @@ describe('JoeyTheDiffer({ allowNewTargetProperties, blacklist, preprocessors, di
       describe('numbers diffing', () => {
         describe('the same numbers', () => {
           it('should return an empty array', () => {
-            const joey = new JoeyTheDiffer();
+            const joeyTheDiffer = new JoeyTheDiffer();
 
-            expect(joey.diff(42, 42)).toEqual([]);
+            expect(joeyTheDiffer.diff(42, 42)).toEqual([]);
           });
         });
 
         describe('different numbers', () => {
           it('should return the proper array of differences', () => {
-            const joey = new JoeyTheDiffer();
+            const joeyTheDiffer = new JoeyTheDiffer();
 
-            expect(joey.diff(41, 42)).toEqual([
+            expect(joeyTheDiffer.diff(41, 42)).toEqual([
               {
                 path: '',
                 source: 41,
@@ -84,17 +83,17 @@ describe('JoeyTheDiffer({ allowNewTargetProperties, blacklist, preprocessors, di
       describe('booleans diffing', () => {
         describe('the same booleans', () => {
           it('should return an empty array', () => {
-            const joey = new JoeyTheDiffer();
+            const joeyTheDiffer = new JoeyTheDiffer();
 
-            expect(joey.diff(true, true)).toEqual([]);
+            expect(joeyTheDiffer.diff(true, true)).toEqual([]);
           });
         });
 
         describe('different booleans', () => {
           it('should return the proper array of differences', () => {
-            const joey = new JoeyTheDiffer();
+            const joeyTheDiffer = new JoeyTheDiffer();
 
-            expect(joey.diff(false, true)).toEqual([
+            expect(joeyTheDiffer.diff(false, true)).toEqual([
               {
                 path: '',
                 source: false,
@@ -111,26 +110,26 @@ describe('JoeyTheDiffer({ allowNewTargetProperties, blacklist, preprocessors, di
 
       describe('nulls diffing', () => {
         it('should return an empty array', () => {
-          const joey = new JoeyTheDiffer();
+          const joeyTheDiffer = new JoeyTheDiffer();
 
-          expect(joey.diff(null, null)).toEqual([]);
+          expect(joeyTheDiffer.diff(null, null)).toEqual([]);
         });
       });
 
       // relax: it's not JSON, but it's useful!
       describe('undefined diffing', () => {
         it('should return an empty array', () => {
-          const joey = new JoeyTheDiffer();
+          const joeyTheDiffer = new JoeyTheDiffer();
 
-          expect(joey.diff(undefined, undefined)).toEqual([]);
+          expect(joeyTheDiffer.diff(undefined, undefined)).toEqual([]);
         });
       });
 
       describe('different types diffing', () => {
         it('should return the proper array of differences', () => {
-          const joey = new JoeyTheDiffer();
+          const joeyTheDiffer = new JoeyTheDiffer();
 
-          expect(joey.diff(42, '42')).toEqual([
+          expect(joeyTheDiffer.diff(42, '42')).toEqual([
             {
               path: '',
               source: 42,
@@ -145,9 +144,9 @@ describe('JoeyTheDiffer({ allowNewTargetProperties, blacklist, preprocessors, di
 
         describe('when diffing undefined to null', () => {
           it('should detect that a new value appeared', () => {
-            const joey = new JoeyTheDiffer();
+            const joeyTheDiffer = new JoeyTheDiffer();
 
-            const diffs = joey.diff(undefined, null);
+            const diffs = joeyTheDiffer.diff(undefined, null);
 
             expect(diffs).toEqual([
               {
@@ -164,9 +163,9 @@ describe('JoeyTheDiffer({ allowNewTargetProperties, blacklist, preprocessors, di
 
           describe('within objects', () => {
             it('should detect that new values appeared', () => {
-              const joey = new JoeyTheDiffer();
+              const joeyTheDiffer = new JoeyTheDiffer();
 
-              const diffs = joey.diff(
+              const diffs = joeyTheDiffer.diff(
                 { reviewType: undefined },
                 { reviewType: { type: null }, isbn: null },
               );
@@ -197,9 +196,9 @@ describe('JoeyTheDiffer({ allowNewTargetProperties, blacklist, preprocessors, di
 
         describe('when diffing null to undefined', () => {
           it('should detect that a value disappeared', () => {
-            const joey = new JoeyTheDiffer();
+            const joeyTheDiffer = new JoeyTheDiffer();
 
-            const diffs = joey.diff(null, undefined);
+            const diffs = joeyTheDiffer.diff(null, undefined);
 
             expect(diffs).toEqual([
               {
@@ -216,9 +215,9 @@ describe('JoeyTheDiffer({ allowNewTargetProperties, blacklist, preprocessors, di
 
           describe('within objects', () => {
             it('should detect that values disappeared', () => {
-              const joey = new JoeyTheDiffer();
+              const joeyTheDiffer = new JoeyTheDiffer();
 
-              const diffs = joey.diff(
+              const diffs = joeyTheDiffer.diff(
                 { reviewType: { type: null }, isbn: null },
                 { reviewType: undefined },
               );
@@ -250,9 +249,9 @@ describe('JoeyTheDiffer({ allowNewTargetProperties, blacklist, preprocessors, di
 
       describe('unknown types diffing', () => {
         it('should throw a type error', () => {
-          const joey = new JoeyTheDiffer();
+          const joeyTheDiffer = new JoeyTheDiffer();
 
-          expect(() => joey.diff(Symbol('?'), '?')).toThrow(TypeError);
+          expect(() => joeyTheDiffer.diff(Symbol('?'), '?')).toThrow(TypeError);
         });
       });
     });
@@ -261,7 +260,7 @@ describe('JoeyTheDiffer({ allowNewTargetProperties, blacklist, preprocessors, di
       describe('for flat objects', () => {
         describe('when all their properties are equal', () => {
           it('should return an empty array', () => {
-            const joey = new JoeyTheDiffer();
+            const joeyTheDiffer = new JoeyTheDiffer();
 
             const source = {
               id: 42,
@@ -277,7 +276,7 @@ describe('JoeyTheDiffer({ allowNewTargetProperties, blacklist, preprocessors, di
               publishedOn: '1532',
             };
 
-            const changes = joey.diff(source, target);
+            const changes = joeyTheDiffer.diff(source, target);
 
             expect(changes).toEqual([]);
           });
@@ -285,7 +284,7 @@ describe('JoeyTheDiffer({ allowNewTargetProperties, blacklist, preprocessors, di
 
         describe('when some of their properties are different', () => {
           it('should return the proper array of differences', () => {
-            const joey = new JoeyTheDiffer();
+            const joeyTheDiffer = new JoeyTheDiffer();
 
             const source = {
               id: 42,
@@ -304,7 +303,7 @@ describe('JoeyTheDiffer({ allowNewTargetProperties, blacklist, preprocessors, di
               starsCount: 8562,
             };
 
-            const changes = joey.diff(source, target);
+            const changes = joeyTheDiffer.diff(source, target);
 
             expect(changes).toEqual([
               {
@@ -351,7 +350,7 @@ describe('JoeyTheDiffer({ allowNewTargetProperties, blacklist, preprocessors, di
       describe('for deep objects', () => {
         describe('when all their properties are equal', () => {
           it('should return an empty array', () => {
-            const joey = new JoeyTheDiffer();
+            const joeyTheDiffer = new JoeyTheDiffer();
 
             const source = {
               id: 42,
@@ -381,7 +380,7 @@ describe('JoeyTheDiffer({ allowNewTargetProperties, blacklist, preprocessors, di
               publishedOn: '1532',
             };
 
-            const changes = joey.diff(source, target);
+            const changes = joeyTheDiffer.diff(source, target);
 
             expect(changes).toEqual([]);
           });
@@ -389,7 +388,7 @@ describe('JoeyTheDiffer({ allowNewTargetProperties, blacklist, preprocessors, di
 
         describe('when some of their properties are different', () => {
           it('should return the proper array of differences', () => {
-            const joey = new JoeyTheDiffer();
+            const joeyTheDiffer = new JoeyTheDiffer();
 
             const source = {
               id: 42,
@@ -421,7 +420,7 @@ describe('JoeyTheDiffer({ allowNewTargetProperties, blacklist, preprocessors, di
               starsCount: 8562,
             };
 
-            const changes = joey.diff(source, target);
+            const changes = joeyTheDiffer.diff(source, target);
 
             expect(changes).toEqual([
               {
@@ -497,13 +496,13 @@ describe('JoeyTheDiffer({ allowNewTargetProperties, blacklist, preprocessors, di
       describe('for flat arrays', () => {
         describe('when all their elements are equal', () => {
           it('should return an empty array', () => {
-            const joey = new JoeyTheDiffer();
+            const joeyTheDiffer = new JoeyTheDiffer();
 
             const source = ['classics', 'philosophy'];
 
             const target = ['classics', 'philosophy'];
 
-            const changes = joey.diff(source, target);
+            const changes = joeyTheDiffer.diff(source, target);
 
             expect(changes).toEqual([]);
           });
@@ -511,13 +510,13 @@ describe('JoeyTheDiffer({ allowNewTargetProperties, blacklist, preprocessors, di
 
         describe('when some of their elements are different', () => {
           it('should return the proper array of differences', () => {
-            const joey = new JoeyTheDiffer();
+            const joeyTheDiffer = new JoeyTheDiffer();
 
             const source = ['classics', 'philosophy'];
 
             const target = ['classic', 'philosophy', 'history', 'politics'];
 
-            const changes = joey.diff(source, target);
+            const changes = joeyTheDiffer.diff(source, target);
 
             expect(changes).toEqual([
               {
@@ -555,7 +554,7 @@ describe('JoeyTheDiffer({ allowNewTargetProperties, blacklist, preprocessors, di
       describe('for deep arrays', () => {
         describe('when all their elements are equal', () => {
           it('should return an empty array', () => {
-            const joey = new JoeyTheDiffer();
+            const joeyTheDiffer = new JoeyTheDiffer();
 
             const source = [
               [7, 'classics'],
@@ -567,7 +566,7 @@ describe('JoeyTheDiffer({ allowNewTargetProperties, blacklist, preprocessors, di
               [93, 'philosophy', ['so', true]],
             ];
 
-            const changes = joey.diff(source, target);
+            const changes = joeyTheDiffer.diff(source, target);
 
             expect(changes).toEqual([]);
           });
@@ -575,7 +574,7 @@ describe('JoeyTheDiffer({ allowNewTargetProperties, blacklist, preprocessors, di
 
         describe('when some of their elements are different', () => {
           it('should return the proper array of differences', () => {
-            const joey = new JoeyTheDiffer();
+            const joeyTheDiffer = new JoeyTheDiffer();
 
             const source = [
               [7, 'classics'],
@@ -589,7 +588,7 @@ describe('JoeyTheDiffer({ allowNewTargetProperties, blacklist, preprocessors, di
               [null, null],
             ];
 
-            const changes = joey.diff(source, target);
+            const changes = joeyTheDiffer.diff(source, target);
 
             expect(changes).toEqual([
               {
@@ -646,7 +645,7 @@ describe('JoeyTheDiffer({ allowNewTargetProperties, blacklist, preprocessors, di
     describe('when mixing objects and arrays', () => {
       describe('when all their properties are equal', () => {
         it('should return an empty array', () => {
-          const joey = new JoeyTheDiffer();
+          const joeyTheDiffer = new JoeyTheDiffer();
 
           const source = {
             id: 42,
@@ -694,7 +693,7 @@ describe('JoeyTheDiffer({ allowNewTargetProperties, blacklist, preprocessors, di
             }],
           };
 
-          const changes = joey.diff(source, target);
+          const changes = joeyTheDiffer.diff(source, target);
 
           expect(changes).toEqual([]);
         });
@@ -702,7 +701,7 @@ describe('JoeyTheDiffer({ allowNewTargetProperties, blacklist, preprocessors, di
 
       describe('when some of their properties are different', () => {
         it('should return the proper array of differences', () => {
-          const joey = new JoeyTheDiffer();
+          const joeyTheDiffer = new JoeyTheDiffer();
 
           const source = {
             id: 42,
@@ -751,7 +750,7 @@ describe('JoeyTheDiffer({ allowNewTargetProperties, blacklist, preprocessors, di
             }],
           };
 
-          const changes = joey.diff(source, target);
+          const changes = joeyTheDiffer.diff(source, target);
 
           expect(changes).toEqual([
             {
@@ -860,7 +859,7 @@ describe('JoeyTheDiffer({ allowNewTargetProperties, blacklist, preprocessors, di
 
     describe('when passing custom differs as option', () => {
       it('should use them properly for diffing', () => {
-        const joey = new JoeyTheDiffer({
+        const joeyTheDiffer = new JoeyTheDiffer({
           differs: {
             'publishedOn': (source, target) => ({
               areEqual: source == target, // eslint-disable-line eqeqeq
@@ -941,7 +940,7 @@ describe('JoeyTheDiffer({ allowNewTargetProperties, blacklist, preprocessors, di
           }],
         };
 
-        const changes = joey.diff(source, target);
+        const changes = joeyTheDiffer.diff(source, target);
 
         expect(changes).toEqual([
           {
@@ -960,7 +959,7 @@ describe('JoeyTheDiffer({ allowNewTargetProperties, blacklist, preprocessors, di
 
     describe('when passing a blacklist as option', () => {
       it('should not diff the corresponding values ', () => {
-        const joey = new JoeyTheDiffer({
+        const joeyTheDiffer = new JoeyTheDiffer({
           blacklist: [
             'publishedOn',
             'reviewsCount',
@@ -1010,7 +1009,7 @@ describe('JoeyTheDiffer({ allowNewTargetProperties, blacklist, preprocessors, di
           }],
         };
 
-        const changes = joey.diff(source, target);
+        const changes = joeyTheDiffer.diff(source, target);
 
         expect(changes).toEqual([]);
       });
@@ -1019,7 +1018,7 @@ describe('JoeyTheDiffer({ allowNewTargetProperties, blacklist, preprocessors, di
     describe('when passing preprocessors as option', () => {
       describe('when preprocessing primitive values', () => {
         it('should properly preprocess the corresponding values before diffing', () => {
-          const joey = new JoeyTheDiffer({
+          const joeyTheDiffer = new JoeyTheDiffer({
             preprocessors: {
               '': (source, target) => ({
                 source: String(source),
@@ -1028,9 +1027,9 @@ describe('JoeyTheDiffer({ allowNewTargetProperties, blacklist, preprocessors, di
             },
           });
 
-          expect(joey.diff(42, '42')).toEqual([]);
+          expect(joeyTheDiffer.diff(42, '42')).toEqual([]);
 
-          expect(joey.diff(null, undefined)).toEqual([{
+          expect(joeyTheDiffer.diff(null, undefined)).toEqual([{
             path: '',
             source: null,
             target: undefined,
@@ -1048,7 +1047,7 @@ describe('JoeyTheDiffer({ allowNewTargetProperties, blacklist, preprocessors, di
 
       describe('when diffing objects', () => {
         it('should properly preprocess the corresponding values before diffing', () => {
-          const joey = new JoeyTheDiffer({
+          const joeyTheDiffer = new JoeyTheDiffer({
             preprocessors: {
               'publishedOn': (source, target) => ({
                 source: String(source),
@@ -1097,7 +1096,7 @@ describe('JoeyTheDiffer({ allowNewTargetProperties, blacklist, preprocessors, di
             relatedBookIds: [],
           };
 
-          const changes = joey.diff(source, target);
+          const changes = joeyTheDiffer.diff(source, target);
 
           expect(changes).toEqual([
             {
@@ -1154,7 +1153,7 @@ describe('JoeyTheDiffer({ allowNewTargetProperties, blacklist, preprocessors, di
           },
         };
 
-        const joey = new JoeyTheDiffer(options);
+        const joeyTheDiffer = new JoeyTheDiffer(options);
 
         const source = {
           id: 42,
@@ -1204,7 +1203,7 @@ describe('JoeyTheDiffer({ allowNewTargetProperties, blacklist, preprocessors, di
           }],
         };
 
-        const changes = joey.diff(source, target);
+        const changes = joeyTheDiffer.diff(source, target);
 
         expect(changes).toEqual([
           {
@@ -1325,7 +1324,7 @@ describe('JoeyTheDiffer({ allowNewTargetProperties, blacklist, preprocessors, di
           },
         };
 
-        const joey = new JoeyTheDiffer(options);
+        const joeyTheDiffer = new JoeyTheDiffer(options);
 
         const source = {
           id: 42,
@@ -1375,7 +1374,7 @@ describe('JoeyTheDiffer({ allowNewTargetProperties, blacklist, preprocessors, di
           }],
         };
 
-        const changes = joey.diff(source, target);
+        const changes = joeyTheDiffer.diff(source, target);
 
         expect(changes).toEqual([
           {
@@ -1425,61 +1424,50 @@ describe('JoeyTheDiffer({ allowNewTargetProperties, blacklist, preprocessors, di
         ]);
       });
     });
-  });
 
-  describe('#diffFiles(sourceFilePath, targetFilePath, optionalOutputFilePath)', () => {
-    it('should call diff() with the content of the files passed as parameters and return the proper results', async () => {
-      const options = {
-        allowNewTargetProperties: false,
-        blacklist: [
-          'reviewsCount',
-          'genres\\.(\\d+)\\.booksCount',
-        ],
-        preprocessors: {
-          starsCount: (source, target) => ({
-            source: source || 0,
-            target: target || 0,
-          }),
-        },
-        differs: {
-          'starsCount': (source, target) => ({
-            areEqual: source <= target,
+    describe('when returning path as an array', () => {
+      it('should return the proper array of differences', () => {
+        const joeyTheDiffer = new JoeyTheDiffer({
+          returnPathAsAnArray: true,
+        });
+
+        const source = {
+          'id': 42,
+          'book.title': 'The Prince',
+          'book': {
+            title: 'The Prince',
+          },
+        };
+
+        const target = {
+          id: 42,
+          book: {
+          },
+        };
+
+        const changes = joeyTheDiffer.diff(source, target);
+
+        expect(changes).toEqual([
+          {
+            path: ['book.title'],
+            source: 'The Prince',
+            target: undefined,
             meta: {
-              op: 'replace',
-              reason: 'number of stars decreased',
-              delta: target - source,
+              op: 'remove',
+              reason: 'value disappeared',
             },
-          }),
-          'genres\\.(\\d+)\\.name': (source, target) => ({
-            areEqual: source.toLowerCase() === target.toLowerCase(),
+          },
+          {
+            path: ['book', 'title'],
+            source: 'The Prince',
+            target: undefined,
             meta: {
-              op: 'replace',
-              reason: 'different genre names in lower case',
+              op: 'remove',
+              reason: 'value disappeared',
             },
-          }),
-        },
-      };
-
-      jest.spyOn(JoeyTheDiffer.prototype, 'diff');
-
-      const joey = new JoeyTheDiffer(options);
-
-      const results = await joey.diffFiles(
-        `${__dirname}/fixtures/source.json`,
-        `${__dirname}/fixtures/target.json`,
-      );
-
-      const source = require('./fixtures/source'); // eslint-disable-line global-require
-      const target = require('./fixtures/target'); // eslint-disable-line global-require
-      const expectedChanges = require('./fixtures/expected'); // eslint-disable-line global-require
-
-      expect(joey.diff).toHaveBeenCalledWith(source, target);
-
-      expect(results).toEqual([{
-        source: expect.stringContaining('fixtures/source.json'),
-        target: expect.stringContaining('fixtures/target.json'),
-        changes: expectedChanges,
-      }]);
+          },
+        ]);
+      });
     });
   });
 });

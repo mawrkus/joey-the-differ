@@ -44,9 +44,9 @@ if (configFile) {
   }
 }
 
-const JoeyTheDiffer = require('..');
+const { JoeyTheFilesDiffer } = require('..');
 
-const joey = new JoeyTheDiffer(options);
+const joey = new JoeyTheFilesDiffer(options);
 
 if (verbose) {
   joey.filesDiffer.on('diff:files:start', ({ total }) => {
@@ -75,7 +75,7 @@ if (verbose) {
 }
 
 joey
-  .diffFiles(sourceFile, targetFile, outputFile)
+  .diff(sourceFile, targetFile, outputFile)
   .then((results) => {
     if (!outputFile) {
       console.log(JSON.stringify(results, null, 2));
