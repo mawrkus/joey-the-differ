@@ -318,7 +318,7 @@ const { JoeyTheFilesDiffer } = require('joey-the-differ');
 
 const joey = new JoeyTheFilesDiffer(options);
 
-const results = await joey.diffFiles(sourcePath, targetPath, optionalOutputPath);
+const results = await joey.diff(sourcePath, targetPath, optionalOutputPath);
 ```
 
 `results` is an array of objects like:
