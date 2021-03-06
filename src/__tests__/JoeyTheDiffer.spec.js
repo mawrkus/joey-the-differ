@@ -251,7 +251,24 @@ describe('JoeyTheDiffer({ allowNewTargetProperties, blacklist, preprocessors, di
         it('should throw a type error', () => {
           const joeyTheDiffer = new JoeyTheDiffer();
 
-          expect(() => joeyTheDiffer.diff(Symbol('?'), '?')).toThrow(TypeError);
+          const diff = () => joeyTheDiffer.diff(Symbol('?'), '?');
+
+          expect(diff).toThrowError(TypeError);
+          expect(diff).toThrowError('Unknown type "[object Symbol]" at root path!');
+        });
+
+        describe('within objects', () => {
+          it('should detect that values disappeared', () => {
+            const joeyTheDiffer = new JoeyTheDiffer();
+
+            const diff = () => joeyTheDiffer.diff(
+              { reviewType: { type: null }, isbn: null },
+              { reviewType: { type: Symbol('crazy'), isbn: null } },
+            );
+
+            expect(diff).toThrowError(TypeError);
+            expect(diff).toThrowError('Unknown type "[object Symbol]" at path "reviewType.type"!');
+          });
         });
       });
     });
@@ -748,6 +765,7 @@ describe('JoeyTheDiffer({ allowNewTargetProperties, blacklist, preprocessors, di
               id: 1,
               name: 'history',
             }],
+            review: undefined,
           };
 
           const changes = joeyTheDiffer.diff(source, target);

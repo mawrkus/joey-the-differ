@@ -46,11 +46,14 @@
     "demo:bulk": "node bin/joey-the-differ.js -s demo/bulk/sources -t demo/bulk/targets -c demo/options.js -o demo/bulk/diffs",
     "demo:bulk:singleout": "node bin/joey-the-differ.js -s demo/bulk/sources -t demo/bulk/targets -c demo/options.js -o demo/bulk/diffs/1+2.json",
     "demo:bulk:1tomany": "node bin/joey-the-differ.js -s demo/bulk/sources/1.json -t demo/bulk/targets -c demo/options.js -o demo/bulk/diffs/1tomany.json",
-    "demo:bulk:manyto1": "node bin/joey-the-differ.js -s demo/bulk/sources -t demo/bulk/targets/1.json -c demo/options.js -o demo/bulk/diffs/manyto1.json"
+    "demo:bulk:manyto1": "node bin/joey-the-differ.js -s demo/bulk/sources -t demo/bulk/targets/1.json -c demo/options.js -o demo/bulk/diffs/manyto1.json",
+    "test:kill:mutants": "stryker run"
   },
   "devDependencies": {
     "@babel/core": "^7.8.4",
     "@babel/preset-env": "^7.8.4",
+    "@stryker-mutator/core": "^4.4.1",
+    "@stryker-mutator/jest-runner": "^4.4.1",
     "babel-jest": "^25.1.0",
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.0.0",

@@ -127,7 +127,7 @@ class JoeyTheDiffer {
 
   /**
    * @param {*} value
-   * @param {string} path
+   * @param {Array} path
    * @return {Object} type
    * @return {string} type.name
    * @return {boolean} type.isPrimitive
@@ -170,7 +170,7 @@ class JoeyTheDiffer {
       };
     }
 
-    throw new TypeError(`Unknown type "${typeString}" at path "${path}"!`);
+    throw new TypeError(`Unknown type "${typeString}" at ${path.length ? `path "${path.join('.')}"` : 'root path'}!`);
   }
 
   /**

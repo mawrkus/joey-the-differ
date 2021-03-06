@@ -1,10 +1,12 @@
 {
   "verbose": true,
   "testPathIgnorePatterns": [
-    "/node_modules/"
+    "/node_modules/",
+    "/.*tmp.*/"
   ],
   "testRegex": "/__tests__/.+\\.spec\\.js$",
   "transform": {
     "^.+\\.js$": "babel-jest"
-  }
+  },
+  "coverageDirectory": "./test-output/coverage"
 }
