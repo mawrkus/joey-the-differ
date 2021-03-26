@@ -1,4 +1,6 @@
 {
+  "clearMocks": true,
+  "restoreMocks": true,
   "verbose": true,
   "testPathIgnorePatterns": [
     "/node_modules/",
