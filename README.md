@@ -348,7 +348,7 @@ You can diff:
 
 ## 🧬 Contribute
 
-- Fork: `git clone https://github.com/mawrkus/node-package.git`
+- Fork: `git clone https://github.com/mawrkus/joey-the-differ.git`
 - Create your feature branch: `git checkout -b feature/my-new-feature`
 - Commit your changes: `git commit -am 'Added some feature'`
 - Check the test: `npm run test`
