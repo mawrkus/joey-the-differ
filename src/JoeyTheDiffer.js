@@ -58,33 +58,22 @@ class JoeyTheDiffer {
       return [];
     }
 
-    const { source: processedSource, target: processedTarget } = preprocessor
-      ? preprocessor(source, target)
-      : { source, target };
-
     if (customDiffer) {
       return this.customCompare(
+        preprocessor,
         customDiffer,
-        { value: source, processedValue: processedSource },
-        { value: target, processedValue: processedTarget },
+        source,
+        target,
         path,
-        Boolean(preprocessor),
       );
     }
 
-    const sourceType = JoeyTheDiffer.getType(processedSource, path);
-    const targetType = JoeyTheDiffer.getType(processedTarget, path);
-
-    if (sourceType.isPrimitive || targetType.isPrimitive) {
-      return this.comparePrimitiveTypes(
-        { value: source, processedValue: processedSource, type: sourceType },
-        { value: target, processedValue: processedTarget, type: targetType },
-        path,
-        Boolean(preprocessor),
-      );
-    }
-
-    return this.compareObjects(processedSource, processedTarget, path);
+    return this.compare(
+      preprocessor,
+      source,
+      target,
+      path,
+    );
   }
 
   /**
@@ -98,20 +87,30 @@ class JoeyTheDiffer {
   }
 
   /**
+   * @param {Function} preprocessor
    * @param {Function} customDiffer
    * @param {Object} source
    * @param {Object} target
    * @param {Array} path
-   * @param {boolean} wasPreprocessed
    * @return {Array} change
    */
-  customCompare(customDiffer, source, target, path, wasPreprocessed) {
-    const { areEqual, meta } = customDiffer(source.processedValue, target.processedValue, path);
+  customCompare(preprocessor, customDiffer, source, target, path) {
+    const { source: processedSource, target: processedTarget } = preprocessor
+      ? preprocessor(source, target)
+      : { source, target };
 
-    if (wasPreprocessed) {
+    const sourceObj = { value: source, processedValue: processedSource };
+    const targetObj = { value: target, processedValue: processedTarget };
+
+    const { areEqual, meta } = customDiffer(
+      sourceObj.processedValue,
+      targetObj.processedValue, path,
+    );
+
+    if (preprocessor) {
       meta.preprocessor = {
-        source: source.processedValue,
-        target: target.processedValue,
+        source: sourceObj.processedValue,
+        target: targetObj.processedValue,
       };
     }
 
@@ -119,10 +118,40 @@ class JoeyTheDiffer {
       ? []
       : [{
         path: this.returnPathAsAnArray ? path : path.join('.'),
-        source: source.value,
-        target: target.value,
+        source: sourceObj.value,
+        target: targetObj.value,
         meta,
       }];
+  }
+
+  /**
+   * @param {Function} preprocessor
+   * @param {Object} source
+   * @param {Object} target
+   * @param {Array} path
+   * @return {Array} change
+   */
+  compare(preprocessor, source, target, path) {
+    const { source: processedSource, target: processedTarget } = preprocessor
+      ? preprocessor(source, target)
+      : { source, target };
+
+    const sourceObj = { value: source, processedValue: processedSource };
+    const targetObj = { value: target, processedValue: processedTarget };
+
+    const sourceType = JoeyTheDiffer.getType(sourceObj.processedValue, path);
+    const targetType = JoeyTheDiffer.getType(targetObj.processedValue, path);
+
+    if (sourceType.isPrimitive || targetType.isPrimitive) {
+      return this.comparePrimitiveTypes(
+        { ...sourceObj, type: sourceType },
+        { ...targetObj, type: targetType },
+        path,
+        Boolean(preprocessor),
+      );
+    }
+
+    return this.compareObjects(sourceObj.processedValue, targetObj.processedValue, path);
   }
 
   /**
@@ -170,7 +199,7 @@ class JoeyTheDiffer {
       };
     }
 
-    throw new TypeError(`Unknown type "${typeString}" at ${path.length ? `path "${path.join('.')}"` : 'root path'}!`);
+    throw new TypeError(`Unsupported type "${typeString}" at ${path.length ? `path "${path.join('.')}"` : 'root path'}!`);
   }
 
   /**
