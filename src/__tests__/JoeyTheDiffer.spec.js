@@ -254,7 +254,7 @@ describe('JoeyTheDiffer({ allowNewTargetProperties, blacklist, preprocessors, di
           const diff = () => joeyTheDiffer.diff(Symbol('?'), '?');
 
           expect(diff).toThrowError(TypeError);
-          expect(diff).toThrowError('Unknown type "[object Symbol]" at root path!');
+          expect(diff).toThrowError('Unsupported type "[object Symbol]" at root path!');
         });
 
         describe('within objects', () => {
@@ -267,7 +267,7 @@ describe('JoeyTheDiffer({ allowNewTargetProperties, blacklist, preprocessors, di
             );
 
             expect(diff).toThrowError(TypeError);
-            expect(diff).toThrowError('Unknown type "[object Symbol]" at path "reviewType.type"!');
+            expect(diff).toThrowError('Unsupported type "[object Symbol]" at path "reviewType.type"!');
           });
         });
       });
