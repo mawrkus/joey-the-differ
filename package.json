@@ -1,6 +1,6 @@
 {
   "name": "joey-the-differ",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "JSON diffing on steroids",
   "author": "mawrkus <web@sparring-partner.be>",
   "license": "MIT",
