@@ -266,6 +266,7 @@ console.log(changes);
 | `blacklist` | String[] | [] | An array of regular expressions used to match specific properties identified by their path | `'genres\\.(\\d+)\\.booksCount'` will prevent diffing the `booksCount` property of all the `genres` array elements (objects) |
 | `preprocessors` | Object | {} | Preprocessors, associating a regular expression to a transform function  | See "Usage" above |
 | `differs` | Object | {} | Custom differs, associating a regular expression to a diffing function  | See "Usage" above |
+| `extendedTypesDiffer` | Function | null | Custom differ for non-JSON types | Receives the same parameters as a any diffing function |
 
 #### diff(source, target)
 

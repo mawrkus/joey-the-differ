@@ -12,11 +12,12 @@ class JoeyTheDiffer {
    * @param {boolean} [options.returnPathAsAnArray=false]
    */
   constructor({
-    differs = {},
     preprocessors = {},
+    differs = {},
     blacklist = [],
     allowNewTargetProperties = false,
     returnPathAsAnArray = false,
+    extendedTypesDiffer = null,
   } = {}) {
     const processors = blacklist.reduce((acc, regex) => ({
       ...acc,
@@ -43,6 +44,17 @@ class JoeyTheDiffer {
 
     this.allowNewTargetProperties = allowNewTargetProperties;
     this.returnPathAsAnArray = returnPathAsAnArray;
+    this.extendedTypesDiffer = extendedTypesDiffer;
+  }
+
+  /**
+   * @param {Array} path
+   * @return {Object|Null}
+   */
+  findProcessors(path) {
+    const pathAsString = path.join('.');
+    const found = this.processors.find(({ regex }) => (new RegExp(regex)).test(pathAsString));
+    return found || {};
   }
 
   /**
@@ -58,59 +70,51 @@ class JoeyTheDiffer {
       return [];
     }
 
-    if (customDiffer) {
-      return this.customCompare(
-        preprocessor,
-        customDiffer,
-        source,
-        target,
-        path,
-      );
-    }
-
-    return this.compare(
-      preprocessor,
-      source,
-      target,
-      path,
-    );
-  }
-
-  /**
-   * @param {Array} path
-   * @return {Object|Null}
-   */
-  findProcessors(path) {
-    const pathAsString = path.join('.');
-    const found = this.processors.find(({ regex }) => (new RegExp(regex)).test(pathAsString));
-    return found || {};
-  }
-
-  /**
-   * @param {Function} preprocessor
-   * @param {Function} customDiffer
-   * @param {Object} source
-   * @param {Object} target
-   * @param {Array} path
-   * @return {Array} change
-   */
-  customCompare(preprocessor, customDiffer, source, target, path) {
     const { source: processedSource, target: processedTarget } = preprocessor
       ? preprocessor(source, target)
       : { source, target };
 
     const sourceObj = { value: source, processedValue: processedSource };
     const targetObj = { value: target, processedValue: processedTarget };
+    const wasPreprocessed = Boolean(preprocessor);
 
+    if (customDiffer) {
+      return this.customCompare(
+        customDiffer,
+        sourceObj,
+        targetObj,
+        path,
+        wasPreprocessed,
+      );
+    }
+
+    return this.compare(
+      sourceObj,
+      targetObj,
+      path,
+      wasPreprocessed,
+    );
+  }
+
+  /**
+   * @param {Function} customDiffer
+   * @param {Object} source
+   * @param {Object} target
+   * @param {Array} path
+   * @param {Boolean} wasPreprocessed
+   * @return {Array} change
+   */
+  customCompare(customDiffer, source, target, path, wasPreprocessed) {
     const { areEqual, meta } = customDiffer(
-      sourceObj.processedValue,
-      targetObj.processedValue, path,
+      source.processedValue,
+      target.processedValue,
+      path,
     );
 
-    if (preprocessor) {
+    if (wasPreprocessed) {
       meta.preprocessor = {
-        source: sourceObj.processedValue,
-        target: targetObj.processedValue,
+        source: source.processedValue,
+        target: target.processedValue,
       };
     }
 
@@ -118,40 +122,44 @@ class JoeyTheDiffer {
       ? []
       : [{
         path: this.returnPathAsAnArray ? path : path.join('.'),
-        source: sourceObj.value,
-        target: targetObj.value,
+        source: source.value,
+        target: target.value,
         meta,
       }];
   }
 
   /**
-   * @param {Function} preprocessor
    * @param {Object} source
    * @param {Object} target
    * @param {Array} path
+   * @param {Boolean} wasPreprocessed
    * @return {Array} change
    */
-  compare(preprocessor, source, target, path) {
-    const { source: processedSource, target: processedTarget } = preprocessor
-      ? preprocessor(source, target)
-      : { source, target };
+  compare(source, target, path, wasPreprocessed) {
+    let sourceType;
+    let targetType;
 
-    const sourceObj = { value: source, processedValue: processedSource };
-    const targetObj = { value: target, processedValue: processedTarget };
+    try {
+      sourceType = JoeyTheDiffer.getType(source.processedValue, path);
+      targetType = JoeyTheDiffer.getType(target.processedValue, path);
+    } catch (error) {
+      if (this.extendedTypesDiffer) {
+        return this.customCompare(this.extendedTypesDiffer, source, target, path, wasPreprocessed);
+      }
 
-    const sourceType = JoeyTheDiffer.getType(sourceObj.processedValue, path);
-    const targetType = JoeyTheDiffer.getType(targetObj.processedValue, path);
+      throw error;
+    }
 
     if (sourceType.isPrimitive || targetType.isPrimitive) {
       return this.comparePrimitiveTypes(
-        { ...sourceObj, type: sourceType },
-        { ...targetObj, type: targetType },
+        { ...source, type: sourceType },
+        { ...target, type: targetType },
         path,
-        Boolean(preprocessor),
+        wasPreprocessed,
       );
     }
 
-    return this.compareObjects(sourceObj.processedValue, targetObj.processedValue, path);
+    return this.compareObjects(source.processedValue, target.processedValue, path);
   }
 
   /**
@@ -199,7 +207,7 @@ class JoeyTheDiffer {
       };
     }
 
-    throw new TypeError(`Unsupported type "${typeString}" at ${path.length ? `path "${path.join('.')}"` : 'root path'}!`);
+    throw new TypeError(`Unsupported type "${typeString}" at ${path.length ? `path "${path.join('.')}"` : 'root path'}! Do you need the "extendedTypesDiffer" option?`);
   }
 
   /**
