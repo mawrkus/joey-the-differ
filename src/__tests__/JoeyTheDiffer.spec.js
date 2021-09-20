@@ -247,18 +247,18 @@ describe('JoeyTheDiffer({ allowNewTargetProperties, blacklist, preprocessors, di
         });
       });
 
-      describe('unknown types diffing', () => {
+      describe('diffing unsupported types', () => {
         it('should throw a type error', () => {
           const joeyTheDiffer = new JoeyTheDiffer();
 
           const diff = () => joeyTheDiffer.diff(Symbol('?'), '?');
 
           expect(diff).toThrowError(TypeError);
-          expect(diff).toThrowError('Unsupported type "[object Symbol]" at root path!');
+          expect(diff).toThrowError('Unsupported type "[object Symbol]" at root path! Do you need the "extendedTypesDiffer" option?');
         });
 
         describe('within objects', () => {
-          it('should detect that values disappeared', () => {
+          it('should throw a type error', () => {
             const joeyTheDiffer = new JoeyTheDiffer();
 
             const diff = () => joeyTheDiffer.diff(
@@ -267,7 +267,30 @@ describe('JoeyTheDiffer({ allowNewTargetProperties, blacklist, preprocessors, di
             );
 
             expect(diff).toThrowError(TypeError);
-            expect(diff).toThrowError('Unsupported type "[object Symbol]" at path "reviewType.type"!');
+            expect(diff).toThrowError('Unsupported type "[object Symbol]" at path "reviewType.type"! Do you need the "extendedTypesDiffer" option?');
+          });
+        });
+
+        describe('when passing an extended types differ as option', () => {
+          it('should use it properly for diffing', () => {
+            const extendedTypesDiffer = jest.fn((source, target) => ({
+              areEqual: String(source) === String(target),
+            }));
+
+            const joeyTheDiffer = new JoeyTheDiffer({
+              extendedTypesDiffer,
+            });
+
+            const sourceDate = new Date('2021');
+            const targetDate = new Date('2021');
+
+            const source = { id: 1, createdOn: sourceDate };
+            const target = { id: 1, createdOn: targetDate };
+
+            const changes = joeyTheDiffer.diff(source, target);
+
+            expect(extendedTypesDiffer).toHaveBeenCalledWith(sourceDate, targetDate, ['createdOn']);
+            expect(changes).toEqual([]);
           });
         });
       });
